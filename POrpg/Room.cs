@@ -65,6 +65,9 @@ public class Room
                           $"A: {_player.Aggression}, W: {_player.Wisdom}");
         Console.SetCursorPosition(textMargin, line++);
         Console.Write($"Standing on: {this[_player.Position].Description}");
+        
+        Console.SetCursorPosition(0, _height + 1);
+        Console.WriteLine("Move: WSAD/arrows");
     }
 
     private enum Direction
@@ -75,20 +78,20 @@ public class Room
         Right
     }
 
-    public void ProcessInput(char input)
+    public void ProcessInput(ConsoleKey input)
     {
         switch (input)
         {
-            case 'w':
+            case ConsoleKey.W or ConsoleKey.UpArrow:
                 TryMovePlayer(Direction.Up);
                 break;
-            case 's':
+            case ConsoleKey.S or ConsoleKey.DownArrow:
                 TryMovePlayer(Direction.Down);
                 break;
-            case 'a':
+            case ConsoleKey.A or ConsoleKey.LeftArrow:
                 TryMovePlayer(Direction.Left);
                 break;
-            case 'd':
+            case ConsoleKey.D or ConsoleKey.RightArrow:
                 TryMovePlayer(Direction.Right);
                 break;
         }

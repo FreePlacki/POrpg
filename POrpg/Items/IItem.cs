@@ -6,7 +6,7 @@ public interface IItem : IDrawable
 {
     public Attributes? Attributes => null;
     public int? Damage => null;
-    public void PickUp(Player player);
+    public bool OnPickUp(Player player) { return false; }
     
     string? Description
     {

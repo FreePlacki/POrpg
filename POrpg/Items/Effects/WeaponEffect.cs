@@ -12,5 +12,4 @@ public abstract class WeaponEffect : IWeapon
     public string Symbol => Weapon.Symbol;
     public abstract string Name { get; }
     public virtual int Damage => Weapon.Damage;
-    public void PickUp(Player player) => Weapon.PickUp(player);
 }

@@ -78,6 +78,7 @@ public class Room
         console.Column = _width + 5;
         console.Line = 1;
 
+        /* Stats */
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
         foreach (var attribute in _player.Attributes)
         {
@@ -89,6 +90,21 @@ public class Room
         console.WriteLine($"{"Coins",-15} {new StyledText(_player.Coins.ToString(), Style.Yellow).Text}");
         console.WriteLine($"{"Gold",-15} {new StyledText(_player.Gold.ToString(), Style.Yellow).Text}");
 
+        /* Inventory */
+        if (_player.Inventory.Count > 0)
+        {
+            console.HorizontalDivider();
+            console.WriteLine(new StyledText("Inventory:", Style.Underline));
+        }
+
+        var i = 1;
+        foreach (var item in _player.Inventory)
+        {
+            console.WriteLine($"{i}. {item.Name}");
+            i++;
+        }
+
+        /* Standing on */
         console.HorizontalDivider();
         if (CurrentItem != null)
         {
@@ -136,10 +152,6 @@ public class Room
         }
     }
 
-    private IItem? CurrentItem => _items[_player.Position.X, _player.Position.Y];
-
-    private void RemoveCurrentItem() => _items[_player.Position.X, _player.Position.Y] = null;
-
     private void TryMovePlayer(Direction direction)
     {
         var newPos = direction switch
@@ -157,9 +169,14 @@ public class Room
         }
     }
 
+    private IItem? CurrentItem => _items[_player.Position.X, _player.Position.Y];
+
+    private void RemoveCurrentItem() => _items[_player.Position.X, _player.Position.Y] = null;
+
     private void TryPickUpItem()
     {
-        CurrentItem?.PickUp(_player);
+        if (CurrentItem == null) return;
+        _player.PickUp(CurrentItem);
         RemoveCurrentItem();
     }
 

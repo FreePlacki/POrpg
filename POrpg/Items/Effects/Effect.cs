@@ -13,5 +13,4 @@ public abstract class Effect : IItem
     public abstract string Name { get; }
     Attributes? IItem.Attributes => Item.Attributes;
     int? IItem.Damage => Item.Damage;
-    public void PickUp(Player player) => Item.PickUp(player);
 }

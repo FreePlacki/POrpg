@@ -32,7 +32,7 @@ Create a console-based RPG game where:
    - [ ] There are at least three types of unusable items.
    - [x] There are two types of currency: coins and gold.
    - [x] Each weapon has a damage value (weapon usage is not implemented at this stage, only equipping is).
-   - [ ] If the player steps on a tile with an item, they can pick it up by pressing `E`.
+   - [x] If the player steps on a tile with an item, they can pick it up by pressing `E`.
 
 4. **Effects:**
    - [x] Items can be modified with additional effects.
@@ -50,7 +50,7 @@ Create a console-based RPG game where:
 5. **Game State Display:**
    - [x] The world is drawn in the console.
    - [ ] Next to the world, the following information is displayed:
-     - [ ] inventory,
+     - [x] inventory,
      - [ ] currently equipped items,
      - [x] if the player is standing on an item, information about it,
      - [x] the player’s current attribute values,

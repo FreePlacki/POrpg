@@ -2,17 +2,21 @@ namespace POrpg;
 
 public class Player : IDrawable
 {
-    public override string ToString() => "¶";
-    public string Description => "Player";
+    public char Symbol => '¶';
+    public string Name => "Player";
 
     public Position Position;
 
-    public int Strength = 10;
-    public int Dexterity = 11;
-    public int Health = 12;
-    public int Luck = 13;
-    public int Aggression = 14;
-    public int Wisdom = 15;
-    
+    public readonly Attributes Attributes = new(
+        new()
+        {
+            { Attribute.Strength, 10 },
+            { Attribute.Dexterity, 11 },
+            { Attribute.Health, 12 },
+            { Attribute.Luck, 13 },
+            { Attribute.Aggression, 14 },
+            { Attribute.Wisdom, 15 }
+        });
+
     public Player(Position position) => Position = position;
 }

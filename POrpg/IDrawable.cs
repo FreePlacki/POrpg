@@ -2,7 +2,8 @@ namespace POrpg;
 
 public interface IDrawable
 {
-    string ToString();
-    string Description { get; }
+    char Symbol { get; }
+    string Name { get; }
+    string? Description => null;
     bool IsPassable => true;
 }

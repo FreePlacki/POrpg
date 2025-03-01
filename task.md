@@ -14,7 +14,7 @@ Create a console-based RPG game where:
      - [x] empty (` `),
      - [x] a wall (`█`),
      - [x] occupied by the player (`¶`),
-     - [ ] containing multiple items (any symbol, depending on the items).
+     - [ ] containing multiple items (any symbol, depending on the items). // multiple?
    - [x] Player's starting position: **(0, 0)**.
    - [x] At this stage, generating a labyrinth or randomly placing items is not required.
      The world can have predefined placements for items and walls.

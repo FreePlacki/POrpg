@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using POrpg.Items;
+using POrpg.Items.Effects;
 
 namespace POrpg;
 
@@ -11,10 +13,12 @@ public class Room
 {
     private readonly Position _playerInitialPosition = (0, 0);
 
-    private readonly IDrawable[,] _grid;
-    private readonly Player _player;
     private readonly int _width;
     private readonly int _height;
+    private readonly IDrawable[,] _grid;
+
+    // TODO
+    private readonly Player _player;
 
     public IDrawable this[Position p]
     {
@@ -35,6 +39,11 @@ public class Room
                 this[(x, y)] = x * y % 3 == 1 ? new WallTile() : new EmptyTile();
             }
         }
+
+        this[(3, 3)] = new Sword();
+        this[(3, 4)] = new Unlucky(new Unlucky(new Sword()));
+        this[(3, 5)] = new Powerful(new Sword());
+        this[(3, 6)] = new Unlucky(new Powerful(new Sword()));
     }
 
     public void Draw()
@@ -45,29 +54,33 @@ public class Room
             {
                 if ((x, y) == _player.Position)
                 {
-                    Console.Write(_player);
+                    Console.Write(_player.Symbol);
                     continue;
                 }
 
-                Console.Write(this[(x, y)]);
+                Console.Write(this[(x, y)].Symbol);
             }
 
             Console.WriteLine();
         }
 
         var textMargin = _width + 5;
-        var line = 0;
-        Console.SetCursorPosition(textMargin, line++);
-        Console.Write("Player Stats:");
-        Console.SetCursorPosition(textMargin, line++);
-        Console.Write($"P: {_player.Strength}, A: {_player.Dexterity}, " +
-                          $"H: {_player.Health}, L: {_player.Luck}, " +
-                          $"A: {_player.Aggression}, W: {_player.Wisdom}");
-        Console.SetCursorPosition(textMargin, line++);
-        Console.Write($"Standing on: {this[_player.Position].Description}");
-        
-        Console.SetCursorPosition(0, _height + 1);
-        Console.WriteLine("Move: WSAD/arrows");
+        var console = new ConsoleHelper(column: textMargin);
+        console.Write("Player Stats:");
+        foreach (var attribute in _player.Attributes)
+        {
+            console.Write($"{attribute.Key,-15} {attribute.Value}");
+        }
+
+        console.HorizontalDivider();
+        var current = this[_player.Position];
+        console.Write($"Standing on: {current.Name}");
+        if (current.Description != null)
+            console.Write($"{current.Description}");
+
+        console.Column = 0;
+        console.Line = _height + 1;
+        console.Write("Move: WSAD/arrows");
     }
 
     private enum Direction
@@ -105,7 +118,7 @@ public class Room
             Direction.Down => (_player.Position.X, _player.Position.Y + 1),
             Direction.Left => (_player.Position.X - 1, _player.Position.Y),
             Direction.Right => (_player.Position.X + 1, _player.Position.Y),
-            // TODO ?
+            // TODO
             _ => throw new UnreachableException()
         };
         if (CanMoveTo(newPos))

@@ -8,6 +8,8 @@ public class Player : IDrawable
     public string Name => "Player";
 
     public Position Position;
+    public int Coins { get; set; }
+    public int Gold { get; set; }
 
     public readonly Attributes Attributes = new(
         new()

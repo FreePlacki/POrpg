@@ -17,6 +17,7 @@ public class Room
     private readonly int _width;
     private readonly int _height;
     private readonly IDrawable[,] _grid;
+    private readonly IItem?[,] _items;
 
     // TODO
     private readonly Player _player;
@@ -31,6 +32,7 @@ public class Room
     {
         (_width, _height) = (width, height);
         _grid = new IDrawable[width, height];
+        _items = new IItem?[width, height];
         _player = new Player(_playerInitialPosition);
 
         for (var y = 0; y < _height; y++)
@@ -41,17 +43,21 @@ public class Room
             }
         }
 
-        this[(3, 3)] = new Sword();
-        this[(3, 4)] = new Unlucky(new Unlucky(new Sword()));
-        this[(3, 5)] = new Powerful(new Sword());
-        this[(3, 6)] = new Unlucky(new Powerful(new Sword()));
+        _items[3, 3] = new Sword();
+        _items[3, 4] = new Unlucky(new Unlucky(new Sword()));
+        _items[3, 5] = new Powerful(new Sword());
+        _items[3, 6] = new Unlucky(new Powerful(new Sword()));
+        _items[5, 3] = new Coin();
+        _items[6, 3] = new Coin();
+        _items[7, 3] = new Gold();
+        _items[8, 3] = new Gold();
     }
 
     public void Draw()
     {
         var sw = Stopwatch.StartNew();
         var console = new ConsoleHelper();
-        
+
         for (var y = 0; y < _height; y++)
         {
             for (var x = 0; x < _width; x++)
@@ -62,7 +68,8 @@ public class Room
                     continue;
                 }
 
-                console.Write(this[(x, y)].Symbol);
+                var item = _items[x, y];
+                console.Write(item != null ? item.Symbol : this[(x, y)].Symbol);
             }
 
             console.WriteLine();
@@ -70,7 +77,7 @@ public class Room
 
         console.Column = _width + 5;
         console.Line = 1;
-        
+
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
         foreach (var attribute in _player.Attributes)
         {
@@ -78,13 +85,17 @@ public class Room
             console.WriteLine(new StyledText(attribute.Value.ToString(), Style.Gradient));
         }
 
+        console.WriteLine();
+        console.WriteLine($"{"Coins",-15} {new StyledText(_player.Coins.ToString(), Style.Yellow).Text}");
+        console.WriteLine($"{"Gold",-15} {new StyledText(_player.Gold.ToString(), Style.Yellow).Text}");
+
         console.HorizontalDivider();
-        var current = this[_player.Position];
-        console.WriteLine(new StyledText("Standing on:", Style.Underline));
-        console.WriteLine(current.Name);
-        if (current.Description != null)
+        if (CurrentItem != null)
         {
-            console.WriteLine($"{current.Description}");
+            console.WriteLine(new StyledText("Standing on:", Style.Underline));
+            console.WriteLine(CurrentItem.Name);
+            if (CurrentItem.Description != null)
+                console.WriteLine($"{CurrentItem.Description}");
             console.WriteLine(new StyledText("(E) to pick up", Style.Faint));
         }
 
@@ -119,8 +130,15 @@ public class Room
             case ConsoleKey.D or ConsoleKey.RightArrow:
                 TryMovePlayer(Direction.Right);
                 break;
+            case ConsoleKey.E:
+                TryPickUpItem();
+                break;
         }
     }
+
+    private IItem? CurrentItem => _items[_player.Position.X, _player.Position.Y];
+
+    private void RemoveCurrentItem() => _items[_player.Position.X, _player.Position.Y] = null;
 
     private void TryMovePlayer(Direction direction)
     {
@@ -137,6 +155,12 @@ public class Room
         {
             _player.Position = newPos;
         }
+    }
+
+    private void TryPickUpItem()
+    {
+        CurrentItem?.PickUp(_player);
+        RemoveCurrentItem();
     }
 
     private bool CanMoveTo(Position p) =>

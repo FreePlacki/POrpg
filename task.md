@@ -30,7 +30,7 @@ Create a console-based RPG game where:
    - [x] The room contains predefined items coded within the program.
    - [ ] There are at least three types of weapons, including one two-handed weapon. Weapons have damage value.
    - [ ] There are at least three types of unusable items.
-   - [ ] There are two types of currency: coins and gold.
+   - [x] There are two types of currency: coins and gold.
    - [x] Each weapon has a damage value (weapon usage is not implemented at this stage, only equipping is).
    - [ ] If the player steps on a tile with an item, they can pick it up by pressing `E`.
 
@@ -54,7 +54,7 @@ Create a console-based RPG game where:
      - [ ] currently equipped items,
      - [x] if the player is standing on an item, information about it,
      - [x] the player’s current attribute values,
-     - [ ] the number of collected coins and gold.
+     - [x] the number of collected coins and gold.
 
 6. **Inventory Management:**
    - [ ] The player can manage their inventory by:

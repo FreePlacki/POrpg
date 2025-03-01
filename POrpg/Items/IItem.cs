@@ -6,8 +6,9 @@ public interface IItem : IDrawable
 {
     public Attributes? Attributes => null;
     public int? Damage => null;
+    public void PickUp(Player player);
     
-    string? IDrawable.Description
+    string? Description
     {
         get
         {

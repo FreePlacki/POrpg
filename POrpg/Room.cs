@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using POrpg.ConsoleHelpers;
 using POrpg.Items;
 using POrpg.Items.Effects;
 
@@ -48,39 +49,50 @@ public class Room
 
     public void Draw()
     {
+        var sw = Stopwatch.StartNew();
+        var console = new ConsoleHelper();
+        
         for (var y = 0; y < _height; y++)
         {
             for (var x = 0; x < _width; x++)
             {
                 if ((x, y) == _player.Position)
                 {
-                    Console.Write(_player.Symbol);
+                    console.Write(new StyledText(_player.Symbol, Style.Magenta));
                     continue;
                 }
 
-                Console.Write(this[(x, y)].Symbol);
+                console.Write(this[(x, y)].Symbol);
             }
 
-            Console.WriteLine();
+            console.WriteLine();
         }
 
-        var textMargin = _width + 5;
-        var console = new ConsoleHelper(column: textMargin);
-        console.Write("Player Stats:");
+        console.Column = _width + 5;
+        console.Line = 1;
+        
+        console.WriteLine(new StyledText("Player Stats:", Style.Underline));
         foreach (var attribute in _player.Attributes)
         {
-            console.Write($"{attribute.Key,-15} {attribute.Value}");
+            console.Write($"{attribute.Key,-15} ");
+            console.WriteLine(new StyledText(attribute.Value.ToString(), Style.Gradient));
         }
 
         console.HorizontalDivider();
         var current = this[_player.Position];
-        console.Write($"Standing on: {current.Name}");
+        console.WriteLine(new StyledText("Standing on:", Style.Underline));
+        console.WriteLine(current.Name);
         if (current.Description != null)
-            console.Write($"{current.Description}");
+        {
+            console.WriteLine($"{current.Description}");
+            console.WriteLine(new StyledText("(E) to pick up", Style.Faint));
+        }
 
         console.Column = 0;
         console.Line = _height + 1;
-        console.Write("Move: WSAD/arrows");
+        console.WriteLine(new StyledText("Move: WSAD/arrows", Style.Faint));
+        sw.Stop();
+        console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Microseconds} μs", Style.Faint));
     }
 
     private enum Direction

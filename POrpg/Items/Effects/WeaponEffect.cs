@@ -9,7 +9,7 @@ public abstract class WeaponEffect : IWeapon
         Weapon = weapon;
     }
     
-    public char Symbol => Weapon.Symbol;
+    public string Symbol => Weapon.Symbol;
     public abstract string Name { get; }
     public virtual int Damage => Weapon.Damage;
 }

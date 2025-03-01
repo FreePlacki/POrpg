@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Text;
+using POrpg.ConsoleHelpers;
 
 namespace POrpg;
 
@@ -22,7 +23,8 @@ public static class EnumExtensions
         var result = new StringBuilder();
         foreach (var attribute in attributes)
         {
-            result.Append($"({attribute.Value:+#;-#} {attribute.Key}) ");
+            var value = new StyledText($"{attribute.Value:+#;-#}", Style.GoodBad).Text;
+            result.Append($"({value} {attribute.Key}) ");
         }
 
         return result.ToString().TrimEnd();

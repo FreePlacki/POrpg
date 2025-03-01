@@ -20,7 +20,7 @@ public interface IItem : IDrawable
             {
                 sb.Append($"Effects: {Attributes.EffectDescription()}");
             }
-            var desc = sb.ToString().TrimEnd();
+            var desc = sb.ToString().Trim();
             return string.IsNullOrWhiteSpace(desc) ? null : desc;
         }
     }

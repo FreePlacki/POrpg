@@ -9,7 +9,7 @@ public abstract class Effect : IItem
         Item = item;
     }
 
-    public char Symbol => Item.Symbol;
+    public string Symbol => Item.Symbol;
     public abstract string Name { get; }
     Attributes? IItem.Attributes => Item.Attributes;
     int? IItem.Damage => Item.Damage;

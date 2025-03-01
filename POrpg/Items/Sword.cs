@@ -1,8 +1,10 @@
+using POrpg.ConsoleHelpers;
+
 namespace POrpg.Items;
 
 public class Sword : IWeapon
 {
     public int Damage => 10;
-    public char Symbol => 'S';
+    public string Symbol => new StyledText("S", Style.Cyan).Text;
     public string Name => "Sword";
 }

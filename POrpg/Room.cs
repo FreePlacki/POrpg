@@ -100,7 +100,19 @@ public class Room
         var i = 1;
         foreach (var item in _player.Inventory)
         {
-            console.WriteLine($"{i}. {item.Name}");
+            if (i == _selectedItem)
+            {
+                console.WriteLine($"{new StyledText(i.ToString(), Style.Magenta).Text}. {item.Name}");
+                var desc = _player.Inventory.ElementAt(i - 1).Description;
+                if (desc != null)
+                    console.WriteLine(desc);
+                console.WriteLine(InputHint("Q", " to drop"));
+            }
+            else
+            {
+                console.WriteLine($"{InputHint(i.ToString())}. {item.Name}");
+            }
+
             i++;
         }
 
@@ -112,12 +124,12 @@ public class Room
             console.WriteLine(CurrentItem.Name);
             if (CurrentItem.Description != null)
                 console.WriteLine($"{CurrentItem.Description}");
-            console.WriteLine(new StyledText("(E) to pick up", Style.Faint));
+            console.WriteLine(InputHint("E", " to pick up"));
         }
 
         console.Column = 0;
         console.Line = _height + 1;
-        console.WriteLine(new StyledText("Move: WSAD/arrows", Style.Faint));
+        console.WriteLine(InputHint("WSAD", " to move"));
         sw.Stop();
         console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Microseconds} μs", Style.Faint));
     }
@@ -130,9 +142,9 @@ public class Room
         Right
     }
 
-    public void ProcessInput(ConsoleKey input)
+    public void ProcessInput(ConsoleKeyInfo input)
     {
-        switch (input)
+        switch (input.Key)
         {
             case ConsoleKey.W or ConsoleKey.UpArrow:
                 TryMovePlayer(Direction.Up);
@@ -148,6 +160,13 @@ public class Room
                 break;
             case ConsoleKey.E:
                 TryPickUpItem();
+                break;
+            case ConsoleKey.Q:
+                TryDropItem();
+                break;
+            case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
+                or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
+                TrySelectItem(int.Parse(input.KeyChar.ToString()));
                 break;
         }
     }
@@ -169,15 +188,40 @@ public class Room
         }
     }
 
-    private IItem? CurrentItem => _items[_player.Position.X, _player.Position.Y];
+    private IItem? CurrentItem
+    {
+        get => _items[_player.Position.X, _player.Position.Y];
+        set => _items[_player.Position.X, _player.Position.Y] = value;
+    }
+
+    private int? _selectedItem;
 
     private void RemoveCurrentItem() => _items[_player.Position.X, _player.Position.Y] = null;
+
+    private static string InputHint(string keys, string description = "") =>
+        new StyledText($"{new StyledText(keys, Style.Magenta).Text}{description}", Style.Faint).Text;
 
     private void TryPickUpItem()
     {
         if (CurrentItem == null) return;
         _player.PickUp(CurrentItem);
         RemoveCurrentItem();
+    }
+
+    private void TryDropItem()
+    {
+        if (_selectedItem == null || _selectedItem > _player.Inventory.Count) return;
+        // TODO: cannot drop on another item?
+        if (CurrentItem != null) return;
+        CurrentItem = _player.Drop(_selectedItem.Value - 1);
+        _selectedItem = null;
+    }
+
+    private void TrySelectItem(int index)
+    {
+        if (index > _player.Inventory.Count) return;
+        if (index == _selectedItem) _selectedItem = null;
+        else _selectedItem = index;
     }
 
     private bool CanMoveTo(Position p) =>

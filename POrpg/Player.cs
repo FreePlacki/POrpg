@@ -34,4 +34,12 @@ public class Player : IDrawable
         Inventory.Add(item);
         Attributes = (Attributes + item.Attributes)!;
     }
+
+    public IItem Drop(int index)
+    {
+        var item = Inventory[index];
+        Attributes = (Attributes - item.Attributes)!;
+        Inventory.RemoveAt(index);
+        return item;
+    }
 }

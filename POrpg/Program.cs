@@ -13,7 +13,7 @@ class Program
             Console.Clear();
             room.Draw();
             var input = Console.ReadKey(true);
-            room.ProcessInput(input.Key);
+            room.ProcessInput(input);
         }
     }
 }

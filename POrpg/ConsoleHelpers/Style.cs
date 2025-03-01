@@ -23,6 +23,7 @@ public enum Style : byte
 public class StyledText : TextDecorator
 {
     private readonly byte _colorCode;
+    private readonly byte _reset = 0;
 
     public StyledText(IConsoleText text, Style style) : base(text)
     {
@@ -38,6 +39,7 @@ public class StyledText : TextDecorator
             Style.GoodBad => text.InitialText.StartsWith('-') ? Style.Red : Style.Green,
             _ => style
         };
+        if (s != Style.Faint && s != Style.Underline) _reset = (byte)Style.Normal;
         _colorCode = (byte)s;
     }
 
@@ -45,5 +47,5 @@ public class StyledText : TextDecorator
     {
     }
 
-    public override string Text => $"\u001b[{_colorCode}m{InnerText.Text}\u001b[0m";
+    public override string Text => $"\u001b[{_colorCode}m{InnerText.Text}\u001b[{_reset}m";
 }

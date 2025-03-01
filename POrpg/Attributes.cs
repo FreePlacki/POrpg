@@ -49,12 +49,24 @@ public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
 
         var result = new Attributes(new());
 
-        foreach (var (key, value) in lhs._attributes)
+        foreach (var (key, value) in lhs)
             result.Add(key, value);
         foreach (var (key, value) in rhs)
             result.Add(key, value);
 
         return result;
+    }
+
+    public static Attributes? operator -(Attributes? lhs, Attributes? rhs)
+    {
+        if (lhs == null) return rhs;
+        if (rhs == null) return lhs;
+
+        foreach (var (key, value) in rhs)
+            if (lhs._attributes.ContainsKey(key))
+                lhs._attributes[key] -= value;
+        
+        return lhs;
     }
 
     private void Add(Attribute attribute, int value)

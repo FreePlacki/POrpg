@@ -5,7 +5,8 @@ namespace POrpg;
 public enum Hand
 {
     Left,
-    Right
+    Right,
+    Both,
 }
 
 public record InventorySlot
@@ -17,6 +18,7 @@ public record InventorySlot
 
 public class Inventory
 {
+    // NOTE: two-handed weapons are stored in LeftHand only
     public IItem? LeftHand { get; private set; }
     public IItem? RightHand { get; private set; }
 
@@ -26,7 +28,7 @@ public class Inventory
     {
         get => slot switch
         {
-            InventorySlot.HandSlot(Hand.Left) => LeftHand,
+            InventorySlot.HandSlot(Hand.Left or Hand.Both) => LeftHand,
             InventorySlot.HandSlot(Hand.Right) => RightHand,
             InventorySlot.BackpackSlot s => Backpack.ElementAtOrDefault(s.Slot),
             _ => throw new ArgumentOutOfRangeException(nameof(slot), slot, null)
@@ -35,7 +37,7 @@ public class Inventory
         {
             switch (slot)
             {
-                case InventorySlot.HandSlot(Hand.Left):
+                case InventorySlot.HandSlot(Hand.Left or Hand.Both):
                     LeftHand = value;
                     break;
                 case InventorySlot.HandSlot(Hand.Right):
@@ -50,8 +52,26 @@ public class Inventory
         }
     }
 
-    public void Swap(InventorySlot to, InventorySlot from)
+    public void Swap(InventorySlot from, InventorySlot to)
     {
+        var fromItem = this[from];
+        if (to is InventorySlot.HandSlot)
+        {
+            if (fromItem?.IsTwoHanded == true)
+            {
+                // swapping with the same weapon (does nothing)
+                if (from is InventorySlot.HandSlot) return;
+                
+                if (LeftHand != null) this[from] = LeftHand;
+                else RemoveAt(from);
+                LeftHand = fromItem;
+                if (RightHand != null) MoveToBackpack(new InventorySlot.HandSlot(Hand.Right));
+                return;
+            }
+            // putting an item in hand makes the two-handed weapon go back to backpack
+            if (LeftHand?.IsTwoHanded == true) MoveToBackpack(new InventorySlot.HandSlot(Hand.Left));
+        }
+
         if (this[to] == null)
         {
             this[to] = this[from];

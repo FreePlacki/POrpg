@@ -12,4 +12,6 @@ public abstract class WeaponEffect : IWeapon
     public string Symbol => Weapon.Symbol;
     public abstract string Name { get; }
     public virtual int Damage => Weapon.Damage;
+    Attributes? IItem.Attributes => Weapon.Attributes;
+    bool IItem.IsTwoHanded => Weapon.IsTwoHanded;
 }

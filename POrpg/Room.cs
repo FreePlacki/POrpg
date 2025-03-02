@@ -49,6 +49,7 @@ public class Room
         _items[3, 6] = new Unlucky(new Powerful(new Sword()));
         _items[3, 7] = new TwoHandedSword();
         _items[3, 8] = new Powerful(new Unlucky(new TwoHandedSword()));
+        _items[3, 9] = new Legendary(new Unlucky(new Sword()));
         _items[5, 3] = new Coin();
         _items[6, 3] = new Coin();
         _items[7, 3] = new Gold();

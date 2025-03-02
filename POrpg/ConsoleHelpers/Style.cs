@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace POrpg.ConsoleHelpers;
 
 public enum Style : byte
@@ -18,16 +20,17 @@ public enum Style : byte
 
     Gradient,
     GoodBad,
+    Rainbow,
 }
 
 public class StyledText : TextDecorator
 {
-    private readonly byte _colorCode;
-    private readonly byte _reset = 0;
+    private readonly Style _style;
+    private readonly byte _reset;
 
     public StyledText(IConsoleText text, Style style) : base(text)
     {
-        var s = style switch
+        _style = style switch
         {
             Style.Gradient =>
                 int.Parse(text.InitialText) switch
@@ -39,13 +42,30 @@ public class StyledText : TextDecorator
             Style.GoodBad => text.InitialText.StartsWith('-') ? Style.Red : Style.Green,
             _ => style
         };
-        if (s != Style.Faint && s != Style.Underline) _reset = (byte)Style.Normal;
-        _colorCode = (byte)s;
+        if (_style != Style.Faint && _style != Style.Underline) _reset = (byte)Style.Normal;
     }
 
     public StyledText(string text, Style style) : this(new PlainText(text), style)
     {
     }
 
-    public override string Text => $"\u001b[{_colorCode}m{InnerText.Text}\u001b[{_reset}m";
+    public override string Text
+    {
+        get
+        {
+            if (_style == Style.Rainbow)
+            {
+                var sb = new StringBuilder();
+                int i = (byte)Style.Red;
+                foreach (var c in InnerText.Text)
+                {
+                    sb.Append($"\u001b[{i}m{c}\u001b[0m");
+                    i++;
+                    if (i > (byte)Style.Cyan) i = (byte)Style.Red;
+                }
+                return sb.ToString();
+            }
+            return $"\u001b[{(byte)_style}m{InnerText.Text}\u001b[{_reset}m";
+        }
+    }
 }

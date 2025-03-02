@@ -23,6 +23,7 @@ public static class EnumExtensions
         var result = new StringBuilder();
         foreach (var attribute in attributes)
         {
+            if (attribute.Value == 0) continue;
             var value = new StyledText($"{attribute.Value:+#;-#}", Style.GoodBad).Text;
             result.Append($"({value} {attribute.Key}) ");
         }

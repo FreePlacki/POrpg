@@ -47,9 +47,17 @@ public class ConsoleHelper
         Line++;
     }
 
-    public void Write(string text) => Write(new PlainText(text));
+    public void Write(string? text)
+    {
+        if (text == null) return;
+        Write(new PlainText(text));
+    }
 
-    public void WriteLine(string text = "") => WriteLine(new PlainText(text));
+    public void WriteLine(string? text = "")
+    {
+        if (text == null) return;
+        WriteLine(new PlainText(text));
+    }
 
     public void HorizontalDivider(int width = 30)
     {

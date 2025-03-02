@@ -24,7 +24,7 @@ Create a console-based RPG game where:
    - [x] Cannot move beyond the world boundaries.
    - [x] Cannot pass through walls.
    - [x] Has various attributes such as Strength (P), Dexterity (A), Health (H), Luck (L), Aggression (A), and Wisdom (W).
-   - [ ] Has two hands, each capable of holding an item.
+   - [x] Has two hands, each capable of holding an item.
 
 3. **Items:**
    - [x] The room contains predefined items coded within the program.
@@ -49,14 +49,14 @@ Create a console-based RPG game where:
 
 5. **Game State Display:**
    - [x] The world is drawn in the console.
-   - [ ] Next to the world, the following information is displayed:
+   - [x] Next to the world, the following information is displayed:
      - [x] inventory,
-     - [ ] currently equipped items,
+     - [x] currently equipped items,
      - [x] if the player is standing on an item, information about it,
      - [x] the player’s current attribute values,
      - [x] the number of collected coins and gold.
 
 6. **Inventory Management:**
-   - [ ] The player can manage their inventory by:
-     - [ ] dropping items on the ground,
-     - [ ] equipping and unequipping items in both hands (correct handling of two-handed weapons is required).
+   - [x] The player can manage their inventory by:
+     - [x] dropping items on the ground,
+     - [x] equipping and unequipping items in both hands (correct handling of two-handed weapons is required).

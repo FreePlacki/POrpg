@@ -78,7 +78,19 @@ public class Room
         console.Column = _width + 5;
         console.Line = 1;
 
-        /* Stats */
+        DrawStats(console);
+        DrawInventory(console);
+        DrawStandingOn(console);
+
+        console.Column = 0;
+        console.Line = _height + 1;
+        console.WriteLine(InputHint("WSAD", "Move"));
+        sw.Stop();
+        console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
+    }
+
+    private void DrawStats(ConsoleHelper console)
+    {
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
         foreach (var attribute in _player.Attributes)
         {
@@ -89,49 +101,81 @@ public class Room
         console.WriteLine();
         console.WriteLine($"{"Coins",-15} {new StyledText(_player.Coins.ToString(), Style.Yellow).Text}");
         console.WriteLine($"{"Gold",-15} {new StyledText(_player.Gold.ToString(), Style.Yellow).Text}");
+    }
 
-        /* Inventory */
-        if (_player.Inventory.Count > 0)
+    private void DrawInventory(ConsoleHelper console)
+    {
+        console.HorizontalDivider();
+        console.WriteLine(new StyledText("Inventory:", Style.Underline));
+
+        if (_selectedSlot is InventorySlot.HandSlot(Hand.Left))
         {
-            console.HorizontalDivider();
-            console.WriteLine(new StyledText("Inventory:", Style.Underline));
+            console.Write($"{new StyledText("L", Style.Magenta).Text}. ");
+            if (_player.Inventory.LeftHand != null)
+            {
+                console.WriteLine(_player.Inventory.LeftHand.Name);
+                console.WriteLine(_player.Inventory.LeftHand.Description);
+                console.WriteLine(InputHint("Q", "Drop"));
+                console.WriteLine(InputHint("B", "Move to backpack"));
+            }
+            else
+                console.WriteLine("Empty");
+        }
+        else
+        {
+            console.Write($"{InputHint("L")}. ");
+            console.WriteLine(_player.Inventory.LeftHand != null ? _player.Inventory.LeftHand.Name : "Empty");
         }
 
-        var i = 1;
-        foreach (var item in _player.Inventory)
+        if (_selectedSlot is InventorySlot.HandSlot(Hand.Right))
         {
-            if (i == _selectedItem)
+            console.Write($"{new StyledText("R", Style.Magenta).Text}. ");
+            if (_player.Inventory.RightHand != null)
             {
-                console.WriteLine($"{new StyledText(i.ToString(), Style.Magenta).Text}. {item.Name}");
-                var desc = _player.Inventory.ElementAt(i - 1).Description;
-                if (desc != null)
-                    console.WriteLine(desc);
-                console.WriteLine(InputHint("Q", " to drop"));
+                console.WriteLine(_player.Inventory.RightHand.Name);
+                console.WriteLine(_player.Inventory.RightHand.Description);
+                console.WriteLine(InputHint("Q", "Drop"));
+                console.WriteLine(InputHint("B", "Move to backpack"));
+            }
+            else
+                console.WriteLine("Empty");
+        }
+        else
+        {
+            console.Write($"{InputHint("R")}. ");
+            console.WriteLine(_player.Inventory.RightHand != null ? _player.Inventory.RightHand.Name : "Empty");
+        }
+
+        if (_player.Inventory.Backpack.Count > 0)
+            console.WriteLine();
+
+        var i = 0;
+        foreach (var item in _player.Inventory.Backpack)
+        {
+            if (_selectedSlot is InventorySlot.BackpackSlot s && i == s.Slot)
+            {
+                console.WriteLine($"{new StyledText((i + 1).ToString(), Style.Magenta).Text}. {item.Name}");
+                console.WriteLine(_player.Inventory[new InventorySlot.BackpackSlot(i)]!.Description);
+                console.WriteLine(InputHint("Q", "Drop"));
             }
             else
             {
-                console.WriteLine($"{InputHint(i.ToString())}. {item.Name}");
+                console.WriteLine($"{InputHint((i + 1).ToString())}. {item.Name}");
             }
 
             i++;
         }
+    }
 
-        /* Standing on */
+    private void DrawStandingOn(ConsoleHelper console)
+    {
         console.HorizontalDivider();
-        if (CurrentItem != null)
-        {
-            console.WriteLine(new StyledText("Standing on:", Style.Underline));
-            console.WriteLine(CurrentItem.Name);
-            if (CurrentItem.Description != null)
-                console.WriteLine($"{CurrentItem.Description}");
-            console.WriteLine(InputHint("E", " to pick up"));
-        }
+        if (CurrentItem == null) return;
 
-        console.Column = 0;
-        console.Line = _height + 1;
-        console.WriteLine(InputHint("WSAD", " to move"));
-        sw.Stop();
-        console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Microseconds} μs", Style.Faint));
+        console.WriteLine(new StyledText("Standing on:", Style.Underline));
+        console.WriteLine(CurrentItem.Name);
+        console.WriteLine(CurrentItem.Description);
+        console.WriteLine(InputHint("E", "Pick up"));
     }
 
     private enum Direction
@@ -164,9 +208,18 @@ public class Room
             case ConsoleKey.Q:
                 TryDropItem();
                 break;
+            case ConsoleKey.L:
+                TrySelectItem(new InventorySlot.HandSlot(Hand.Left));
+                break;
+            case ConsoleKey.R:
+                TrySelectItem(new InventorySlot.HandSlot(Hand.Right));
+                break;
+            case ConsoleKey.B:
+                TryMoveToBackpack();
+                break;
             case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
                 or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
-                TrySelectItem(int.Parse(input.KeyChar.ToString()));
+                TrySelectItem(new InventorySlot.BackpackSlot(int.Parse(input.KeyChar.ToString()) - 1));
                 break;
         }
     }
@@ -194,12 +247,17 @@ public class Room
         set => _items[_player.Position.X, _player.Position.Y] = value;
     }
 
-    private int? _selectedItem;
+    private InventorySlot? _selectedSlot;
 
     private void RemoveCurrentItem() => _items[_player.Position.X, _player.Position.Y] = null;
 
-    private static string InputHint(string keys, string description = "") =>
-        new StyledText($"{new StyledText(keys, Style.Magenta).Text}{description}", Style.Faint).Text;
+    private static string InputHint(string keys, string? description = null)
+    {
+        if (description == null)
+            return new StyledText(new StyledText(keys, Style.Magenta), Style.Faint).Text;
+        
+        return new StyledText($"{description} ({new StyledText(keys, Style.Magenta).Text})", Style.Faint).Text;
+    }
 
     private void TryPickUpItem()
     {
@@ -210,18 +268,39 @@ public class Room
 
     private void TryDropItem()
     {
-        if (_selectedItem == null || _selectedItem > _player.Inventory.Count) return;
+        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return;
         // TODO: cannot drop on another item?
         if (CurrentItem != null) return;
-        CurrentItem = _player.Drop(_selectedItem.Value - 1);
-        _selectedItem = null;
+        CurrentItem = _player.Drop(_selectedSlot);
+        _selectedSlot = null;
     }
 
-    private void TrySelectItem(int index)
+    private void TrySelectItem(InventorySlot slot)
     {
-        if (index > _player.Inventory.Count) return;
-        if (index == _selectedItem) _selectedItem = null;
-        else _selectedItem = index;
+        if (slot is InventorySlot.BackpackSlot s && s.Slot >= _player.Inventory.Backpack.Count)
+            return;
+        if (_selectedSlot == slot)
+        {
+            _selectedSlot = null;
+            return;
+        }
+
+        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null)
+        {
+            _selectedSlot = slot;
+            return;
+        }
+
+        _player.Inventory.Swap(slot, _selectedSlot);
+        _selectedSlot = slot;
+    }
+
+    private void TryMoveToBackpack()
+    {
+        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return;
+        if (_selectedSlot is not InventorySlot.HandSlot slot) return;
+        _player.Inventory.MoveToBackpack(slot);
+        _selectedSlot = null;
     }
 
     private bool CanMoveTo(Position p) =>

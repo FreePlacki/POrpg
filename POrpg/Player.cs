@@ -11,8 +11,7 @@ public class Player : IDrawable
     public Position Position;
     public int Coins { get; set; }
     public int Gold { get; set; }
-    
-    public List<IItem> Inventory { get; } = [];
+    public Inventory Inventory { get; } = new();
 
     public Attributes Attributes = new(
         new()
@@ -31,15 +30,14 @@ public class Player : IDrawable
     {
         if (item.OnPickUp(this)) return;
         // TODO: do all items affect attributes or only equipped ones?
-        Inventory.Add(item);
+        Inventory.Append(item);
         Attributes = (Attributes + item.Attributes)!;
     }
 
-    public IItem Drop(int index)
+    public IItem Drop(InventorySlot slot)
     {
-        var item = Inventory[index];
+        var item = Inventory.RemoveAt(slot)!;
         Attributes = (Attributes - item.Attributes)!;
-        Inventory.RemoveAt(index);
         return item;
     }
 }

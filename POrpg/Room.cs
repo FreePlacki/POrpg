@@ -16,44 +16,41 @@ public class Room
 
     private readonly int _width;
     private readonly int _height;
-    private readonly IDrawable[,] _grid;
-    private readonly IItem?[,] _items;
-
-    // TODO
+    private readonly Tile[,] _tiles;
+    
     private readonly Player _player;
 
-    public IDrawable this[Position p]
+    private Tile this[Position p]
     {
-        get => _grid[p.X, p.Y];
-        set => _grid[p.X, p.Y] = value;
+        get => _tiles[p.X, p.Y];
+        set => _tiles[p.X, p.Y] = value;
     }
 
     public Room(int width, int height)
     {
         (_width, _height) = (width, height);
-        _grid = new IDrawable[width, height];
-        _items = new IItem?[width, height];
+        _tiles = new Tile[width, height];
         _player = new Player(_playerInitialPosition);
 
         for (var y = 0; y < _height; y++)
         {
             for (var x = 0; x < _width; x++)
             {
-                this[(x, y)] = x * y % 3 == 1 ? new WallTile() : new EmptyTile();
+                this[(x, y)] = x * y % 3 == 1 ? new WallTile() : new FloorTile();
             }
         }
 
-        _items[3, 3] = new Sword();
-        _items[3, 4] = new Unlucky(new Unlucky(new Sword()));
-        _items[3, 5] = new Powerful(new Sword());
-        _items[3, 6] = new Unlucky(new Powerful(new Sword()));
-        _items[3, 7] = new TwoHandedSword();
-        _items[3, 8] = new Powerful(new Unlucky(new TwoHandedSword()));
-        _items[3, 9] = new Legendary(new Unlucky(new Sword()));
-        _items[5, 3] = new Coin();
-        _items[6, 3] = new Coin();
-        _items[7, 3] = new Gold();
-        _items[8, 3] = new Gold();
+        _tiles[3, 3] = new FloorTile(new Sword());
+        _tiles[3, 4] = new FloorTile(new Unlucky(new Unlucky(new Sword())));
+        _tiles[3, 5] = new FloorTile(new Powerful(new Sword()));
+        _tiles[3, 6] = new FloorTile(new Unlucky(new Powerful(new Sword())));
+        _tiles[3, 7] = new FloorTile(new TwoHandedSword());
+        _tiles[3, 8] = new FloorTile(new Powerful(new Unlucky(new TwoHandedSword())));
+        _tiles[3, 9] = new FloorTile(new Legendary(new Unlucky(new Sword())));
+        _tiles[5, 3] = new FloorTile(new Coin());
+        _tiles[6, 3] = new FloorTile(new Coin(), new Gold());
+        _tiles[7, 3] = new FloorTile(new Gold());
+        _tiles[8, 3] = new FloorTile(new Gold());
     }
 
     public void Draw()
@@ -71,8 +68,7 @@ public class Room
                     continue;
                 }
 
-                var item = _items[x, y];
-                console.Write(item != null ? item.Symbol : this[(x, y)].Symbol);
+                console.Write(_tiles[x, y].Symbol);
             }
 
             console.WriteLine();
@@ -197,6 +193,10 @@ public class Room
         console.WriteLine(CurrentItem.Name);
         console.WriteLine(CurrentItem.Description);
         console.WriteLine(InputHint("E", "Pick up"));
+        if (CurrentTile.HasManyItems)
+        {
+            console.WriteLine(InputHint(",.", "Cycle items"));
+        }
     }
 
     private enum Direction
@@ -238,6 +238,12 @@ public class Room
             case ConsoleKey.B:
                 TryMoveToBackpack();
                 break;
+            case ConsoleKey.OemPeriod:
+                CurrentTile.CycleItems();
+                break;
+            case ConsoleKey.OemComma:
+                CurrentTile.CycleItems(reverse: true);
+                break;
             case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
                 or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
                 TrySelectItem(new InventorySlot.BackpackSlot(int.Parse(input.KeyChar.ToString()) - 1));
@@ -262,15 +268,12 @@ public class Room
         }
     }
 
-    private IItem? CurrentItem
-    {
-        get => _items[_player.Position.X, _player.Position.Y];
-        set => _items[_player.Position.X, _player.Position.Y] = value;
-    }
+    private Tile CurrentTile => _tiles[_player.Position.X, _player.Position.Y];
+    private IItem? CurrentItem => CurrentTile.CurrentItem;
 
     private InventorySlot? _selectedSlot;
 
-    private void RemoveCurrentItem() => _items[_player.Position.X, _player.Position.Y] = null;
+    private void RemoveCurrentItem() => _tiles[_player.Position.X, _player.Position.Y].RemoveCurrentItem();
 
     private static string InputHint(string keys, string? description = null)
     {
@@ -289,9 +292,7 @@ public class Room
     private void TryDropItem()
     {
         if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return;
-        // TODO: cannot drop on another item?
-        if (CurrentItem != null) return;
-        CurrentItem = _player.Drop(_selectedSlot);
+        CurrentTile.Add(_player.Drop(_selectedSlot));
         _selectedSlot = null;
     }
 

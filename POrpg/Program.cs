@@ -8,6 +8,7 @@ class Program
         const int roomHeight = 20;
         var room = new Room(roomWidth, roomHeight);
 
+        Console.CursorVisible = false;
         while (true)
         {
             Console.Clear();

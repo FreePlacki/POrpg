@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using POrpg.ConsoleHelpers;
+using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Effects;
 
@@ -17,7 +18,7 @@ public class Room
     private readonly int _width;
     private readonly int _height;
     private readonly Tile[,] _tiles;
-    
+
     private readonly Player _player;
 
     private Tile this[Position p]
@@ -108,72 +109,87 @@ public class Room
     {
         console.WriteLine(new StyledText("Inventory:", Style.Underline));
 
-        switch (_selectedSlot)
+        if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
         {
-            case InventorySlot.HandSlot(Hand.Left):
-                console.Write($"{new StyledText("L", Style.Magenta).Text}. ");
-                if (_player.Inventory.LeftHand != null)
+            console.Write($"{new StyledText("L", Style.Magenta).Text}. ");
+            var leftHand = _player.Inventory.Equipment.LeftHand;
+            if (leftHand != null)
+            {
+                console.WriteLine(leftHand.Name);
+                console.WriteLine(leftHand.Description);
+                console.WriteLine(InputHint("Q", "Drop"));
+                console.WriteLine(InputHint("B", "Move to backpack"));
+            }
+            else
+            {
+                console.WriteLine("Empty");
+            }
+
+            console.Write($"{InputHint("R")}. ");
+            var rightHand = _player.Inventory.Equipment.RightHand;
+            console.WriteLine(rightHand != null ? rightHand.Name : "Empty");
+        }
+        else if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.RightHand))
+        {
+            console.Write($"{InputHint("L")}. ");
+            var leftHand = _player.Inventory.Equipment.LeftHand;
+            console.WriteLine(leftHand != null ? leftHand.Name : "Empty");
+
+            console.Write($"{new StyledText("R", Style.Magenta).Text}. ");
+            var rightHand = _player.Inventory.Equipment.RightHand;
+            if (rightHand != null)
+            {
+                console.WriteLine(rightHand.Name);
+                console.WriteLine(rightHand.Description);
+                console.WriteLine(InputHint("Q", "Drop"));
+                console.WriteLine(InputHint("B", "Move to backpack"));
+            }
+            else
+            {
+                console.WriteLine("Empty");
+            }
+        }
+        else
+        {
+            if (_player.Inventory.Equipment.LeftHand?.IsTwoHanded == true)
+            {
+                var leftHand = _player.Inventory.Equipment.LeftHand;
+                if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
                 {
-                    console.WriteLine(_player.Inventory.LeftHand.Name);
-                    console.WriteLine(_player.Inventory.LeftHand.Description);
+                    console.WriteLine(
+                        $"{new StyledText("LR", Style.Magenta).Text}. {leftHand.Name}");
+                    console.WriteLine(leftHand.Description);
                     console.WriteLine(InputHint("Q", "Drop"));
                     console.WriteLine(InputHint("B", "Move to backpack"));
                 }
                 else
                 {
-                    console.WriteLine("Empty");
+                    console.WriteLine($"{InputHint("LR")}. {leftHand.Name}");
                 }
-
-                console.Write($"{InputHint("R")}. ");
-                console.WriteLine(_player.Inventory.RightHand != null ? _player.Inventory.RightHand.Name : "Empty");
-                break;
-            case InventorySlot.HandSlot(Hand.Right):
+            }
+            else
+            {
                 console.Write($"{InputHint("L")}. ");
-                console.WriteLine(_player.Inventory.LeftHand != null ? _player.Inventory.LeftHand.Name : "Empty");
-
-                console.Write($"{new StyledText("R", Style.Magenta).Text}. ");
-                if (_player.Inventory.RightHand != null)
-                {
-                    console.WriteLine(_player.Inventory.RightHand.Name);
-                    console.WriteLine(_player.Inventory.RightHand.Description);
-                    console.WriteLine(InputHint("Q", "Drop"));
-                    console.WriteLine(InputHint("B", "Move to backpack"));
-                    break;
-                }
-
-                console.WriteLine("Empty");
-                break;
-            case InventorySlot.HandSlot(Hand.Both):
-                console.WriteLine($"{new StyledText("LR", Style.Magenta).Text}. {_player.Inventory.LeftHand!.Name}");
-                console.WriteLine(_player.Inventory.LeftHand.Description);
-                console.WriteLine(InputHint("Q", "Drop"));
-                console.WriteLine(InputHint("B", "Move to backpack"));
-
-                break;
-            default:
-                if (_player.Inventory.LeftHand?.IsTwoHanded == true)
-                {
-                    console.WriteLine($"{InputHint("LR")}. {_player.Inventory.LeftHand!.Name}");
-                    break;
-                }
-
-                console.Write($"{InputHint("L")}. ");
-                console.WriteLine(_player.Inventory.LeftHand != null ? _player.Inventory.LeftHand.Name : "Empty");
+                console.WriteLine(_player.Inventory.Equipment.LeftHand != null
+                    ? _player.Inventory.Equipment.LeftHand.Name
+                    : "Empty");
                 console.Write($"{InputHint("R")}. ");
-                console.WriteLine(_player.Inventory.RightHand != null ? _player.Inventory.RightHand.Name : "Empty");
-                break;
+                console.WriteLine(_player.Inventory.Equipment.RightHand != null
+                    ? _player.Inventory.Equipment.RightHand.Name
+                    : "Empty");
+            }
         }
 
-        if (_player.Inventory.Backpack.Count > 0)
+        if (!_player.Inventory.Backpack.IsEmpty)
             console.WriteLine();
 
         var i = 0;
-        foreach (var item in _player.Inventory.Backpack)
+        foreach (var item in _player.Inventory.Backpack.Items)
         {
-            if (_selectedSlot is InventorySlot.BackpackSlot s && i == s.Slot)
+            if (_selectedSlot == new BackpackSlot(i))
             {
                 console.WriteLine($"{new StyledText((i + 1).ToString(), Style.Magenta).Text}. {item.Name}");
-                console.WriteLine(_player.Inventory[new InventorySlot.BackpackSlot(i)]!.Description);
+                console.WriteLine(item.Description);
                 console.WriteLine(InputHint("Q", "Drop"));
             }
             else
@@ -230,10 +246,10 @@ public class Room
                 TryDropItem();
                 break;
             case ConsoleKey.L:
-                TrySelectItem(new InventorySlot.HandSlot(Hand.Left));
+                TrySelectItem(new EquipmentSlot(EquipmentSlotType.LeftHand));
                 break;
             case ConsoleKey.R:
-                TrySelectItem(new InventorySlot.HandSlot(Hand.Right));
+                TrySelectItem(new EquipmentSlot(EquipmentSlotType.RightHand));
                 break;
             case ConsoleKey.B:
                 TryMoveToBackpack();
@@ -246,7 +262,7 @@ public class Room
                 break;
             case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
                 or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
-                TrySelectItem(new InventorySlot.BackpackSlot(int.Parse(input.KeyChar.ToString()) - 1));
+                TrySelectItem(new BackpackSlot(int.Parse(input.KeyChar.ToString()) - 1));
                 break;
         }
     }
@@ -298,13 +314,10 @@ public class Room
 
     private void TrySelectItem(InventorySlot slot)
     {
-        if (slot is InventorySlot.BackpackSlot s && s.Slot >= _player.Inventory.Backpack.Count)
-            return;
+        if (!slot.IsValid(_player.Inventory)) return;
 
-        var newSlot = slot is InventorySlot.HandSlot && _player.Inventory.LeftHand?.IsTwoHanded == true
-            ? new InventorySlot.HandSlot(Hand.Both)
-            : slot;
-        
+        var newSlot = slot.Normalize(_player.Inventory);
+
         // deselect when selecting the current active slot
         if (_selectedSlot == newSlot)
         {
@@ -317,18 +330,16 @@ public class Room
             _selectedSlot = newSlot;
             return;
         }
-        
+
         _player.Inventory.Swap(_selectedSlot, newSlot);
-        _selectedSlot = slot is InventorySlot.HandSlot && _player.Inventory.LeftHand?.IsTwoHanded == true
-            ? new InventorySlot.HandSlot(Hand.Both)
-            : slot;
+        _selectedSlot = slot.Normalize(_player.Inventory);
     }
 
     private void TryMoveToBackpack()
     {
-        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return;
-        if (_selectedSlot is not InventorySlot.HandSlot slot) return;
-        _player.Inventory.MoveToBackpack(slot);
+        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null ||
+            !_selectedSlot.CanMoveToBackpack) return;
+        _selectedSlot.MoveToBackpack(_player.Inventory);
         _selectedSlot = null;
     }
 

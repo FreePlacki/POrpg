@@ -1,4 +1,5 @@
 using POrpg.ConsoleHelpers;
+using POrpg.Inventory;
 using POrpg.Items;
 
 namespace POrpg;
@@ -11,7 +12,7 @@ public class Player : IDrawable
     public Position Position;
     public int Coins { get; set; }
     public int Gold { get; set; }
-    public Inventory Inventory { get; } = new();
+    public Inventory.Inventory Inventory { get; } = new();
 
     public Attributes Attributes = new(
         new()
@@ -29,8 +30,8 @@ public class Player : IDrawable
     public void PickUp(IItem item)
     {
         if (item.OnPickUp(this)) return;
+        Inventory.AppendToBackpack(item);
         // TODO: do all items affect attributes or only equipped ones?
-        Inventory.Append(item);
         Attributes = (Attributes + item.Attributes)!;
     }
 

@@ -2,7 +2,7 @@
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main(string[] _)
     {
         const int roomWidth = 40;
         const int roomHeight = 20;
@@ -16,5 +16,6 @@ class Program
             var input = Console.ReadKey(true);
             room.ProcessInput(input);
         }
+        // ReSharper disable once FunctionNeverReturns
     }
 }

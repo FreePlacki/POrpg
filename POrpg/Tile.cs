@@ -40,6 +40,7 @@ public class FloorTile : Tile
 
     public override void CycleItems(bool reverse = false)
     {
+        if (!HasManyItems) return;
         var offset = reverse ? -1 : 1;
         _currentItemIndex = (_currentItemIndex + offset + _items.Count) % _items.Count;
     }
@@ -47,7 +48,7 @@ public class FloorTile : Tile
     public override void Add(IItem item)
     {
         _items.Add(item);
-        _currentItemIndex++;
+        _currentItemIndex = _items.Count - 1;
     }
 
     public override void RemoveCurrentItem()

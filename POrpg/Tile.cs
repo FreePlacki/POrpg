@@ -55,7 +55,7 @@ public class FloorTile : Tile
     {
         _items.RemoveAt(_currentItemIndex);
         if (IsEmpty) return;
-        CycleItems(reverse: true);
+        _currentItemIndex = (_currentItemIndex - 1 + _items.Count) % _items.Count;
     }
 }
 

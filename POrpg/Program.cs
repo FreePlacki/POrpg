@@ -1,4 +1,6 @@
-﻿namespace POrpg;
+﻿using POrpg.ConsoleHelpers;
+
+namespace POrpg;
 
 class Program
 {
@@ -9,10 +11,14 @@ class Program
         var room = new Room(roomWidth, roomHeight);
 
         Console.CursorVisible = false;
+        Console.Clear();
+        
+        (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 80)];
+        var console = new ConsoleHelper(columns);
         while (true)
         {
-            Console.Clear();
-            room.Draw();
+            room.Draw(console);
+            console.Reset();
             var input = Console.ReadKey(true);
             room.ProcessInput(input);
         }

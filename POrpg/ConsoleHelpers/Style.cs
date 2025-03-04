@@ -63,8 +63,10 @@ public class StyledText : TextDecorator
                     i++;
                     if (i > (byte)Style.Cyan) i = (byte)Style.Red;
                 }
+
                 return sb.ToString();
             }
+
             return $"\u001b[{(byte)_style}m{InnerText.Text}\u001b[{_reset}m";
         }
     }

@@ -54,10 +54,9 @@ public class Room
         _tiles[8, 3] = new FloorTile(new Gold());
     }
 
-    public void Draw()
+    public void Draw(ConsoleHelper console)
     {
         var sw = Stopwatch.StartNew();
-        var console = new ConsoleHelper();
 
         for (var y = 0; y < _height; y++)
         {
@@ -75,8 +74,7 @@ public class Room
             console.WriteLine();
         }
 
-        console.Column = _width + 5;
-        console.Line = 1;
+        console.ChangeColumn(1);
 
         DrawStats(console);
         console.HorizontalDivider();
@@ -84,8 +82,8 @@ public class Room
         console.HorizontalDivider();
         DrawStandingOn(console);
 
-        console.Column = 0;
-        console.Line = _height + 1;
+        console.ChangeColumn(0);
+        console.WriteLine();
         console.WriteLine(InputHint("WSAD", "Move"));
         sw.Stop();
         console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));

@@ -11,10 +11,10 @@ public enum EquipmentSlotType
 
 public class Equipment
 {
-    public IItem? LeftHand { get; set; }
-    public IItem? RightHand { get; set; }
+    public Item? LeftHand { get; set; }
+    public Item? RightHand { get; set; }
 
-    public void SetItem(EquipmentSlotType slot, IItem? item)
+    public void SetItem(EquipmentSlotType slot, Item? item)
     {
         switch (slot)
         {
@@ -36,7 +36,7 @@ public class Equipment
         }
     }
 
-    public IItem? GetItem(EquipmentSlotType slot) => slot switch
+    public Item? GetItem(EquipmentSlotType slot) => slot switch
     {
         EquipmentSlotType.LeftHand or EquipmentSlotType.BothHands => LeftHand,
         EquipmentSlotType.RightHand => RightHand,
@@ -52,13 +52,13 @@ public record EquipmentSlot : InventorySlot
         SlotType = slotType;
     }
 
-    public override IItem? Get(Inventory inventory) =>
+    public override Item? Get(Inventory inventory) =>
         inventory.Equipment.GetItem(SlotType);
 
-    public override void Set(Inventory inventory, IItem? item) =>
+    public override void Set(Inventory inventory, Item? item) =>
         inventory.Equipment.SetItem(SlotType, item);
 
-    public override IItem? Remove(Inventory inventory)
+    public override Item? Remove(Inventory inventory)
     {
         var item = Get(inventory);
         Set(inventory, null);

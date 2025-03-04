@@ -2,9 +2,8 @@ using POrpg.ConsoleHelpers;
 
 namespace POrpg.Items;
 
-public class Sword : IWeapon
+public class Sword : Weapon
 {
-    public int Damage => 10;
-    public string Symbol => new StyledText("S", Style.Cyan).Text;
-    public string Name => "Sword";
+    public override int? Damage => 10;
+    public override string Name => "Sword";
 }

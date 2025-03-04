@@ -1,17 +1,16 @@
 namespace POrpg.Items.Effects;
 
-public abstract class Effect : IItem
+public abstract class Effect : Item
 {
-    protected readonly IItem Item;
+    protected readonly Item Item;
 
-    public Effect(IItem item)
+    protected Effect(Item item)
     {
         Item = item;
     }
 
-    public string Symbol => Item.Symbol;
-    public abstract string Name { get; }
-    Attributes? IItem.Attributes => Item.Attributes;
-    int? IItem.Damage => Item.Damage;
-    bool IItem.IsTwoHanded => Item.IsTwoHanded;
+    public override string Symbol => Item.Symbol;
+    public override Attributes? Attributes => Item.Attributes;
+    public override int? Damage => Item.Damage;
+    public override bool IsTwoHanded => Item.IsTwoHanded;
 }

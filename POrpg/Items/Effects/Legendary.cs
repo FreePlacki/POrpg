@@ -2,15 +2,15 @@ using POrpg.ConsoleHelpers;
 
 namespace POrpg.Items.Effects;
 
-public class Legendary : Effect, IWeapon
+public class Legendary : Effect
 {
-    public Legendary(IItem item) : base(item)
+    public Legendary(Item item) : base(item)
     {
     }
 
     public override string Name => $"{Item.Name} ({new StyledText("Legendary", Style.Rainbow).Text})";
 
-    Attributes? IItem.Attributes =>
+    public override Attributes? Attributes =>
         new Attributes(new Dictionary<Attribute, int>
         {
             { Attribute.Strength, 5 },
@@ -20,6 +20,4 @@ public class Legendary : Effect, IWeapon
             { Attribute.Aggression, 5 },
             { Attribute.Wisdom, 5 }
         }) + Item.Attributes;
-
-    public int Damage => Item.Damage ?? throw new InvalidOperationException();
 }

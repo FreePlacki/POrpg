@@ -5,9 +5,9 @@ namespace POrpg.Inventory;
 // the slots are records so that we can use structural ==
 public abstract record InventorySlot
 {
-    public abstract IItem? Get(Inventory inventory);
-    public abstract void Set(Inventory inventory, IItem? item);
-    public abstract IItem? Remove(Inventory inventory);
+    public abstract Item? Get(Inventory inventory);
+    public abstract void Set(Inventory inventory, Item? item);
+    public abstract Item? Remove(Inventory inventory);
 
     public abstract bool IsValid(Inventory inventory);
 
@@ -25,7 +25,7 @@ public class Inventory
     public Equipment Equipment { get; } = new();
     public Backpack Backpack { get; } = new();
 
-    public IItem? this[InventorySlot slot]
+    public Item? this[InventorySlot slot]
     {
         get => slot.Get(this);
         set => slot.Set(this, value);
@@ -65,7 +65,7 @@ public class Inventory
         }
     }
 
-    public void AppendToBackpack(IItem item) => this[new BackpackSlot(Backpack.Items.Count)] = item;
+    public void AppendToBackpack(Item item) => this[new BackpackSlot(Backpack.Items.Count)] = item;
 
-    public IItem? RemoveAt(InventorySlot slot) => slot.Remove(this);
+    public Item? RemoveAt(InventorySlot slot) => slot.Remove(this);
 }

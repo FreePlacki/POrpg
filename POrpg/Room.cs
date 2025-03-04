@@ -285,7 +285,7 @@ public class Room
     }
 
     private Tile CurrentTile => _tiles[_player.Position.X, _player.Position.Y];
-    private IItem? CurrentItem => CurrentTile.CurrentItem;
+    private Item? CurrentItem => CurrentTile.CurrentItem;
 
     private InventorySlot? _selectedSlot;
 

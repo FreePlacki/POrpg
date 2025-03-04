@@ -9,9 +9,9 @@ public abstract class Tile : IDrawable
     public abstract string Name { get; }
     public virtual bool IsPassable => true;
 
-    public virtual IEnumerable<IItem> Items => [];
-    public virtual void Add(IItem item) => throw new InvalidOperationException();
-    public virtual IItem? CurrentItem => throw new InvalidOperationException();
+    public virtual IEnumerable<Item> Items => [];
+    public virtual void Add(Item item) => throw new InvalidOperationException();
+    public virtual Item? CurrentItem => throw new InvalidOperationException();
     public virtual void RemoveCurrentItem() => throw new InvalidOperationException();
     public virtual bool HasManyItems => throw new InvalidOperationException();
     public virtual void CycleItems(bool reverse = false) => throw new InvalidOperationException();
@@ -19,20 +19,20 @@ public abstract class Tile : IDrawable
 
 public class FloorTile : Tile
 {
-    private readonly List<IItem> _items;
+    private readonly List<Item> _items;
     private bool IsEmpty => _items.Count == 0;
 
     private int _currentItemIndex;
     public override bool HasManyItems => _items.Count > 1;
-    public override IItem? CurrentItem => _items.ElementAtOrDefault(_currentItemIndex);
-    public override IEnumerable<IItem> Items => _items;
+    public override Item? CurrentItem => _items.ElementAtOrDefault(_currentItemIndex);
+    public override IEnumerable<Item> Items => _items;
 
     public override string Symbol => IsEmpty ? " " :
         HasManyItems ? new StyledText(CurrentItem!.Symbol, Style.Underline).Text : CurrentItem!.Symbol;
 
     public override string Name => IsEmpty ? "Empty Tile" : _items[0].Name;
 
-    public FloorTile(params IItem[] items)
+    public FloorTile(params Item[] items)
     {
         _items = items.ToList();
         _currentItemIndex = items.Length - 1;
@@ -45,7 +45,7 @@ public class FloorTile : Tile
         _currentItemIndex = (_currentItemIndex + offset + _items.Count) % _items.Count;
     }
 
-    public override void Add(IItem item)
+    public override void Add(Item item)
     {
         _items.Add(item);
         _currentItemIndex = _items.Count - 1;

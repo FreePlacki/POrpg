@@ -1,12 +1,12 @@
 namespace POrpg.Items.Effects;
 
-public class Unlucky : Effect, IWeapon
+public class Unlucky : Effect
 {
-    public Unlucky(IItem item) : base(item)
+    public Unlucky(Item item) : base(item)
     {
     }
 
     public override string Name => $"{Item.Name} (Unlucky)";
-    Attributes? IItem.Attributes => new Attributes(new Dictionary<Attribute, int> { { Attribute.Luck, -5}}) + Item.Attributes;
-    public int Damage => Item.Damage ?? throw new InvalidOperationException();
+    public override Attributes? Attributes => new Attributes(new Dictionary<Attribute, int> { { Attribute.Luck, -5}}) + Item.Attributes;
+    public override int? Damage => Item.Damage;
 }

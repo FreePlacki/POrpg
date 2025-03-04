@@ -2,12 +2,12 @@ using POrpg.ConsoleHelpers;
 
 namespace POrpg.Items;
 
-public class Gold : IItem
+public class Gold : Item
 {
-    public string Symbol => new StyledText("G", Style.Yellow).Text;
-    public string Name => "Gold";
+    public override string Symbol => new StyledText("G", Style.Yellow).Text;
+    public override string Name => "Gold";
 
-    public bool OnPickUp(Player player)
+    public override bool OnPickUp(Player player)
     {
         player.Gold += 1;
         return true;

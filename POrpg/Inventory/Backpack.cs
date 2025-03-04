@@ -4,7 +4,7 @@ namespace POrpg.Inventory;
 
 public class Backpack
 {
-    public List<IItem> Items { get; } = [];
+    public List<Item> Items { get; } = [];
     public bool IsEmpty => Items.Count == 0;
 }
 
@@ -17,14 +17,14 @@ public record BackpackSlot : InventorySlot
         SlotIndex = slotIndex;
     }
 
-    public override IItem? Get(Inventory inventory)
+    public override Item? Get(Inventory inventory)
     {
         return SlotIndex < inventory.Backpack.Items.Count
             ? inventory.Backpack.Items[SlotIndex]
             : null;
     }
 
-    public override void Set(Inventory inventory, IItem? item)
+    public override void Set(Inventory inventory, Item? item)
     {
         if (SlotIndex >= inventory.Backpack.Items.Count)
         {
@@ -43,7 +43,7 @@ public record BackpackSlot : InventorySlot
         inventory.Backpack.Items[SlotIndex] = item;
     }
 
-    public override IItem? Remove(Inventory inventory)
+    public override Item? Remove(Inventory inventory)
     {
         var item = Get(inventory);
         Set(inventory, null);

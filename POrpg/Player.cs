@@ -27,7 +27,7 @@ public class Player : IDrawable
 
     public Player(Position position) => Position = position;
 
-    public void PickUp(IItem item)
+    public void PickUp(Item item)
     {
         if (item.OnPickUp(this)) return;
         Inventory.AppendToBackpack(item);
@@ -35,7 +35,7 @@ public class Player : IDrawable
         Attributes = (Attributes + item.Attributes)!;
     }
 
-    public IItem Drop(InventorySlot slot)
+    public Item Drop(InventorySlot slot)
     {
         var item = Inventory.RemoveAt(slot)!;
         Attributes = (Attributes - item.Attributes)!;

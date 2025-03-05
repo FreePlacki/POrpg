@@ -1,28 +1,30 @@
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace POrpg.ConsoleHelpers;
 
-public class ConsoleHelper
+public partial class ConsoleHelper
 {
-    public int Line { get; set; }
-
+    private readonly (int start, int width)[] _columns;
+    private int[] _currentColumnHeights;
+    private int[] _previousColumnHeights;
+    private int _line;
     private int _column;
-    private readonly StringBuilder _buffer = new();
+    private int _columnIndex;
+    private readonly StringBuilder _buffer = new(50);
 
-    public int Column
+    public ConsoleHelper((int start, int width)[] columns)
     {
-        get => _column;
-        set
-        {
-            _column = value;
-            _buffer.Clear();
-        }
+        _columns = columns;
+        _currentColumnHeights = new int[_columns.Length];
+        _previousColumnHeights = new int[_columns.Length];
     }
 
-    public ConsoleHelper(int line = 0, int column = 0)
+    public void ChangeColumn(int newColumnIndex)
     {
-        Line = line;
-        Column = column;
+        _currentColumnHeights[_columnIndex] = _line;
+        _columnIndex = newColumnIndex;
+        SetCursorPosition(_columns[_columnIndex].start, _currentColumnHeights[_columnIndex]);
     }
 
     public void Write(IConsoleText text)
@@ -33,18 +35,20 @@ public class ConsoleHelper
         {
             if (i != 0)
                 WriteLine();
-            i++;
             _buffer.Append(l);
+            _column += GetVisibleLength(l);
+            i++;
         }
     }
 
     public void WriteLine(IConsoleText text)
     {
         Write(text);
-        Console.SetCursorPosition(Column, Line);
         Console.Write(_buffer.ToString());
         _buffer.Clear();
-        Line++;
+        var padding = _columns[_columnIndex].start + _columns[_columnIndex].width - _column;
+        Console.Write(new string(' ', padding));
+        SetCursorPosition(_columns[_columnIndex].start, _line + 1);
     }
 
     public void Write(string? text)
@@ -64,12 +68,39 @@ public class ConsoleHelper
         WriteLine(new StyledText(new string('=', width), Style.Faint));
     }
 
-    // [GeneratedRegex(@"\u001b\[[0-9;]+m", RegexOptions.Compiled)]
-    // private static partial Regex AnsiRegex();
-    //
-    // private static int GetVisibleLength(string text)
-    // {
-    //     var cleanedText = AnsiRegex().Replace(text, "");
-    //     return cleanedText.Length;
-    // }
+    private void SetCursorPosition(int column, int line)
+    {
+        Console.SetCursorPosition(column, line);
+        _column = column;
+        _line = line;
+    }
+
+    public void Reset()
+    {
+        for (var i = 0; i < _columns.Length; i++)
+        {
+            var s = new string(' ', _columns[i].width);
+            for (var j = _currentColumnHeights[i]; j < _previousColumnHeights[i]; j++)
+            {
+                SetCursorPosition(_columns[i].start, j);
+                Console.Write(s);
+            }
+        }
+
+        _line = 0;
+       _columnIndex = 0;
+        _column = _columns[_columnIndex].start;
+        _previousColumnHeights = _currentColumnHeights;
+        _currentColumnHeights = new int[_columns.Length];
+        SetCursorPosition(_columns[_columnIndex].start, _line);
+    }
+
+    [GeneratedRegex(@"\u001b\[[0-9;]+m", RegexOptions.Compiled)]
+    private static partial Regex AnsiRegex();
+
+    private static int GetVisibleLength(string text)
+    {
+        var cleanedText = AnsiRegex().Replace(text, "");
+        return cleanedText.Length;
+    }
 }

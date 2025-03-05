@@ -14,7 +14,7 @@ public class Player : IDrawable
     public int Gold { get; set; }
     public Inventory.Inventory Inventory { get; } = new();
 
-    public Attributes Attributes = new(
+    private readonly Attributes _attributes = new(
         new()
         {
             { Attribute.Strength, 15 },
@@ -25,20 +25,19 @@ public class Player : IDrawable
             { Attribute.Wisdom, 42 }
         });
 
+    public Attributes Attributes => _attributes + Inventory.TotalAttributes;
+
     public Player(Position position) => Position = position;
 
     public void PickUp(Item item)
     {
         if (item.OnPickUp(this)) return;
         Inventory.AppendToBackpack(item);
-        // TODO: do all items affect attributes or only equipped ones?
-        Attributes = (Attributes + item.Attributes)!;
     }
 
     public Item Drop(InventorySlot slot)
     {
         var item = Inventory.RemoveAt(slot)!;
-        Attributes = (Attributes - item.Attributes)!;
         return item;
     }
 }

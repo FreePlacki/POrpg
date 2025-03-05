@@ -42,10 +42,11 @@ public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
     }
 
     public int this[Attribute attribute] => _attributes[attribute];
+    
+    public bool IsEmpty => _attributes.Count == 0;
 
-    public static Attributes? operator +(Attributes? lhs, Attributes? rhs)
+    public static Attributes operator +(Attributes lhs, Attributes? rhs)
     {
-        if (lhs == null) return rhs;
         if (rhs == null) return lhs;
 
         var result = new Attributes(new());
@@ -56,18 +57,6 @@ public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
             result.Add(key, value);
 
         return result;
-    }
-
-    public static Attributes? operator -(Attributes? lhs, Attributes? rhs)
-    {
-        if (lhs == null) return rhs;
-        if (rhs == null) return lhs;
-
-        foreach (var (key, value) in rhs)
-            if (lhs._attributes.ContainsKey(key))
-                lhs._attributes[key] -= value;
-        
-        return lhs;
     }
 
     private void Add(Attribute attribute, int value)

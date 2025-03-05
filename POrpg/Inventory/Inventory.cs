@@ -31,6 +31,25 @@ public class Inventory
         set => slot.Set(this, value);
     }
 
+    public Attributes? TotalAttributes
+    {
+        get
+        {
+            // TODO: do all items affect attributes or only equipped ones?
+            var result = new Attributes(new());
+            foreach (var item in Backpack.Items)
+            {
+                if (item.Attributes == null) continue;
+                result += item.Attributes;
+            }
+            
+            result += Equipment.LeftHand?.Attributes;
+            result += Equipment.RightHand?.Attributes;
+            
+            return result.IsEmpty ? null : result;
+        }
+    }
+
     public void Swap(InventorySlot from, InventorySlot to)
     {
         var fromItem = this[from];

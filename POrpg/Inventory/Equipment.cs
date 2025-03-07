@@ -20,11 +20,11 @@ public class Equipment
         {
             case EquipmentSlotType.LeftHand or EquipmentSlotType.BothHands:
                 LeftHand = item;
-                if (item?.IsTwoHanded == true) RightHand = null;
+                if (item?.EquipmentSpace == EquipmentSpace.TwoHand) RightHand = null;
                 break;
             case EquipmentSlotType.RightHand:
                 RightHand = item;
-                if (item?.IsTwoHanded == true)
+                if (item?.EquipmentSpace == EquipmentSpace.TwoHand)
                 {
                     LeftHand = item;
                     RightHand = null;
@@ -69,7 +69,7 @@ public record EquipmentSlot : InventorySlot
 
     public override InventorySlot Normalize(Inventory inventory)
     {
-        if (inventory.Equipment.LeftHand?.IsTwoHanded == true)
+        if (inventory.Equipment.LeftHand?.EquipmentSpace == EquipmentSpace.TwoHand)
         {
             return new EquipmentSlot(EquipmentSlotType.BothHands);
         }

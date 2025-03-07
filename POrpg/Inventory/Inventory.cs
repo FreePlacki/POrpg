@@ -20,6 +20,13 @@ public abstract record InventorySlot
     }
 }
 
+public enum EquipmentSpace
+{
+    Unequipable,
+    SingleHand,
+    TwoHand
+}
+
 public class Inventory
 {
     public Equipment Equipment { get; } = new();
@@ -57,7 +64,7 @@ public class Inventory
             to == new EquipmentSlot(EquipmentSlotType.LeftHand) ||
             to == new EquipmentSlot(EquipmentSlotType.RightHand))
         {
-            if (fromItem?.IsTwoHanded == true)
+            if (fromItem?.EquipmentSpace == EquipmentSpace.TwoHand)
             {
                 if (Equipment.LeftHand != null)
                     this[from] = Equipment.LeftHand;
@@ -69,7 +76,7 @@ public class Inventory
             }
 
             // putting an item in hand makes the two-handed weapon go back to backpack
-            if (Equipment.LeftHand?.IsTwoHanded == true)
+            if (Equipment.LeftHand?.EquipmentSpace == EquipmentSpace.TwoHand)
                 new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);
         }
 

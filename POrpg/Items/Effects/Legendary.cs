@@ -10,7 +10,7 @@ public class Legendary : Effect
 
     public override string Name => $"{Item.Name} ({new StyledText("Legendary", Style.Rainbow).Text})";
 
-    public override Attributes? Attributes =>
+    public override Attributes Attributes =>
         new Attributes(new Dictionary<Attribute, int>
         {
             { Attribute.Strength, 5 },

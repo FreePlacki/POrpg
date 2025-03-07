@@ -45,8 +45,7 @@ public class Room
         _tiles[3, 4] = new FloorTile(new Unlucky(new Unlucky(new Sword())));
         _tiles[3, 5] = new FloorTile(new Powerful(new Sword()));
         _tiles[3, 6] = new FloorTile(new Unlucky(new Powerful(new Sword())));
-        _tiles[3, 7] = new FloorTile(new TwoHandedSword());
-        _tiles[3, 8] = new FloorTile(new Powerful(new Unlucky(new TwoHandedSword())));
+        _tiles[3, 7] = new FloorTile(new Unlucky(new TwoHanded(new Powerful(new Sword()))));
         _tiles[3, 9] = new FloorTile(new Legendary(new Unlucky(new Sword())));
         _tiles[5, 3] = new FloorTile(new Coin());
         _tiles[6, 3] = new FloorTile(new Coin(), new Gold());
@@ -149,7 +148,7 @@ public class Room
         }
         else
         {
-            if (_player.Inventory.Equipment.LeftHand?.IsTwoHanded == true)
+            if (_player.Inventory.Equipment.LeftHand?.EquipmentSpace == EquipmentSpace.TwoHand)
             {
                 var leftHand = _player.Inventory.Equipment.LeftHand;
                 if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))

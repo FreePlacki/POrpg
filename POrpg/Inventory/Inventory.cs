@@ -12,9 +12,7 @@ public abstract record InventorySlot
     public abstract bool IsValid(Inventory inventory);
 
     // ex. if the left hand contains a two-handed item the slot type is actually BothHands
-    public virtual void Normalize(Inventory inventory)
-    {
-    }
+    public virtual InventorySlot Normalize(Inventory inventory, InventorySlot? selectedSlot) => this;
 
     public virtual bool CanMoveToBackpack => false;
 

@@ -32,6 +32,7 @@ public class Player : IDrawable
     public void PickUp(Item item)
     {
         if (item.OnPickUp(this)) return;
+        if (Inventory.Backpack.IsFull) return;
         Inventory.AppendToBackpack(item);
     }
 

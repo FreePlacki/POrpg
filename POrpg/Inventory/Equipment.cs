@@ -14,12 +14,12 @@ public enum EquipmentSlotType
 
 public class Equipment
 {
-    private readonly Dictionary<EquipmentSlotType, Item?> _equipment = new ()
-        {
-            {EquipmentSlotType.LeftHand, null},
-            {EquipmentSlotType.RightHand, null},
-            {EquipmentSlotType.BothHands, null}
-        };
+    private readonly Dictionary<EquipmentSlotType, Item?> _equipment = new()
+    {
+        { EquipmentSlotType.LeftHand, null },
+        { EquipmentSlotType.RightHand, null },
+        { EquipmentSlotType.BothHands, null }
+    };
 
     public Item? LeftHand => _equipment[EquipmentSlotType.LeftHand];
     public Item? RightHand => _equipment[EquipmentSlotType.RightHand];
@@ -60,10 +60,12 @@ public record EquipmentSlot : InventorySlot
 
     public override bool IsValid(Inventory inventory) => true;
 
-    public override void Normalize(Inventory inventory)
+    public override InventorySlot Normalize(Inventory inventory, InventorySlot? selectedSlot)
     {
-        if (Get(inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands)
-            SlotType = EquipmentSlotType.BothHands;
+        if (selectedSlot?.Get(inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands ||
+            (inventory.Equipment.BothHands != null && selectedSlot == null))
+            return new EquipmentSlot(EquipmentSlotType.BothHands);
+        return this;
     }
 
     public override bool CanMoveToBackpack => true;

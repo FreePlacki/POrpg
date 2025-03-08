@@ -120,7 +120,8 @@ public class Room
                 console.WriteLine(leftHand.Name);
                 console.WriteLine(leftHand.Description);
                 console.WriteLine(InputHint("Q", "Drop"));
-                console.WriteLine(InputHint("B", "Move to backpack"));
+                console.WriteLine(
+                    InputHint("B", $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
             }
             else
             {
@@ -144,7 +145,8 @@ public class Room
                 console.WriteLine(rightHand.Name);
                 console.WriteLine(rightHand.Description);
                 console.WriteLine(InputHint("Q", "Drop"));
-                console.WriteLine(InputHint("B", "Move to backpack"));
+                console.WriteLine(
+                    InputHint("B", $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
             }
             else
             {
@@ -162,7 +164,8 @@ public class Room
                         $"{new StyledText("LR", Style.Magenta).Text}. {item.Name}");
                     console.WriteLine(item.Description);
                     console.WriteLine(InputHint("Q", "Drop"));
-                    console.WriteLine(InputHint("B", "Move to backpack"));
+                    console.WriteLine(
+                        InputHint("B", $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
                 }
                 else
                 {
@@ -210,7 +213,7 @@ public class Room
         console.WriteLine(new StyledText("Standing on:", Style.Underline));
         console.WriteLine(CurrentItem.Name);
         console.WriteLine(CurrentItem.Description);
-        console.WriteLine(InputHint("E", "Pick up"));
+        console.WriteLine(InputHint("E", $"Pick up{(_player.Inventory.Backpack.IsFull ? "[backpack full]" : "")}"));
         if (CurrentTile.HasManyItems)
         {
             console.WriteLine(InputHint(",.", "Cycle items"));
@@ -318,10 +321,7 @@ public class Room
     {
         if (!slot.IsValid(_player.Inventory)) return;
 
-        if (slot is EquipmentSlot &&
-            (_selectedSlot?.Get(_player.Inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands ||
-             (_player.Inventory.Equipment.BothHands != null && _selectedSlot == null)))
-            slot = new EquipmentSlot(EquipmentSlotType.BothHands);
+        slot.Normalize(_player.Inventory, _selectedSlot);
 
         // deselect when selecting the current active slot
         if (_selectedSlot == slot)
@@ -343,7 +343,7 @@ public class Room
     private void TryMoveToBackpack()
     {
         if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null ||
-            !_selectedSlot.CanMoveToBackpack) return;
+            !_selectedSlot.CanMoveToBackpack || _player.Inventory.Backpack.IsFull) return;
         _selectedSlot.MoveToBackpack(_player.Inventory);
         _selectedSlot = null;
     }

@@ -109,7 +109,7 @@ public class Room
         if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
         {
             console.Write($"{new StyledText("L", Style.Magenta).Text}. ");
-            var leftHand = _player.Inventory.Equipment.LeftHand;
+            var leftHand = _player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
             if (leftHand != null)
             {
                 console.WriteLine(leftHand.Name);
@@ -148,20 +148,20 @@ public class Room
         }
         else
         {
-            if (_player.Inventory.Equipment.LeftHand?.EquipmentSpace == EquipmentSpace.TwoHand)
+            if (_player.Inventory.Equipment.BothHands != null)
             {
-                var leftHand = _player.Inventory.Equipment.LeftHand;
+                var item = _player.Inventory.Equipment.BothHands;
                 if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
                 {
                     console.WriteLine(
-                        $"{new StyledText("LR", Style.Magenta).Text}. {leftHand.Name}");
-                    console.WriteLine(leftHand.Description);
+                        $"{new StyledText("LR", Style.Magenta).Text}. {item.Name}");
+                    console.WriteLine(item.Description);
                     console.WriteLine(InputHint("Q", "Drop"));
                     console.WriteLine(InputHint("B", "Move to backpack"));
                 }
                 else
                 {
-                    console.WriteLine($"{InputHint("LR")}. {leftHand.Name}");
+                    console.WriteLine($"{InputHint("LR")}. {item.Name}");
                 }
             }
             else
@@ -328,7 +328,7 @@ public class Room
             return;
         }
 
-        _player.Inventory.Swap(_selectedSlot, newSlot);
+        _player.Inventory.Swap(_selectedSlot, slot);
         _selectedSlot = slot.Normalize(_player.Inventory);
     }
 

@@ -14,5 +14,5 @@ public abstract class Effect : Item
     public override string Symbol => Item.Symbol;
     public override Attributes? Attributes => Item.Attributes;
     public override int? Damage => Item.Damage;
-    public override EquipmentSpace EquipmentSpace => Item.EquipmentSpace;
+    public override EquipmentSlotType EquipmentSlotType => Item.EquipmentSlotType;
 }

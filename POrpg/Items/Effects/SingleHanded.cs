@@ -9,5 +9,5 @@ public class SingleHanded : Effect
     }
 
     public override string Name => Item.Name;
-    public override EquipmentSpace EquipmentSpace => EquipmentSpace.SingleHand;
+    public override EquipmentSlotType EquipmentSlotType => EquipmentSlotType.LeftHand | EquipmentSlotType.RightHand;
 }

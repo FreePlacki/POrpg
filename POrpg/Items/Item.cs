@@ -7,7 +7,7 @@ public abstract class Item : IDrawable
 {
     public virtual Attributes? Attributes => null;
     public virtual int? Damage => null;
-    public virtual EquipmentSpace EquipmentSpace => EquipmentSpace.Unequipable;
+    public virtual EquipmentSlotType EquipmentSlotType => EquipmentSlotType.None;
 
     public virtual bool OnPickUp(Player player) => false;
 

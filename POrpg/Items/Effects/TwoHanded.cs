@@ -8,6 +8,6 @@ public class TwoHanded : Effect
     {
     }
 
-    public override string Name => $"{Item.Name} (Two-Handed)";
-    public override EquipmentSpace EquipmentSpace => EquipmentSpace.TwoHand;
+    public override string Name => $"Two-Handed {Item.Name}";
+    public override EquipmentSlotType EquipmentSlotType => EquipmentSlotType.BothHands;
 }

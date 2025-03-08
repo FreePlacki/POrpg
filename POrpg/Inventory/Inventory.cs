@@ -20,13 +20,6 @@ public abstract record InventorySlot
     }
 }
 
-public enum EquipmentSpace
-{
-    Unequipable,
-    SingleHand,
-    TwoHand
-}
-
 public class Inventory
 {
     public Equipment Equipment { get; } = new();
@@ -42,17 +35,12 @@ public class Inventory
     {
         get
         {
-            // TODO: do all items affect attributes or only equipped ones?
             var result = new Attributes(new());
-            foreach (var item in Backpack.Items)
-            {
-                if (item.Attributes == null) continue;
-                result += item.Attributes;
-            }
-            
+
             result += Equipment.LeftHand?.Attributes;
             result += Equipment.RightHand?.Attributes;
-            
+            result += Equipment.BothHands?.Attributes;
+
             return result.IsEmpty ? null : result;
         }
     }
@@ -64,31 +52,27 @@ public class Inventory
             to == new EquipmentSlot(EquipmentSlotType.LeftHand) ||
             to == new EquipmentSlot(EquipmentSlotType.RightHand))
         {
-            if (fromItem?.EquipmentSpace == EquipmentSpace.TwoHand)
+            if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands)
             {
-                if (Equipment.LeftHand != null)
-                    this[from] = Equipment.LeftHand;
-                else RemoveAt(from);
-                Equipment.LeftHand = fromItem;
-                if (Equipment.RightHand != null)
-                    new EquipmentSlot(EquipmentSlotType.RightHand).MoveToBackpack(this);
+                new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);
+                new EquipmentSlot(EquipmentSlotType.RightHand).MoveToBackpack(this);
+
+                to = new EquipmentSlot(EquipmentSlotType.BothHands);
+                this[to] = fromItem;
+                this[from] = null;
                 return;
             }
 
-            // putting an item in hand makes the two-handed weapon go back to backpack
-            if (Equipment.LeftHand?.EquipmentSpace == EquipmentSpace.TwoHand)
-                new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);
+            if (Equipment.BothHands != null)
+            {
+                new EquipmentSlot(EquipmentSlotType.BothHands).MoveToBackpack(this);
+                this[to] = fromItem;
+                this[from] = null;
+                return;
+            }
         }
 
-        if (this[to] == null)
-        {
-            this[to] = fromItem;
-            RemoveAt(from);
-        }
-        else
-        {
-            (this[from], this[to]) = (this[to], this[from]);
-        }
+        (this[from], this[to]) = (this[to], this[from]);
     }
 
     public void AppendToBackpack(Item item) => this[new BackpackSlot(Backpack.Items.Count)] = item;

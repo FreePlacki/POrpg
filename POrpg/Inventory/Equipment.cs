@@ -1,62 +1,55 @@
+using System.Diagnostics;
 using POrpg.Items;
 
 namespace POrpg.Inventory;
 
+[Flags]
 public enum EquipmentSlotType
 {
-    LeftHand,
-    RightHand,
-    BothHands
+    None = 0,
+    LeftHand = 1,
+    RightHand = 2,
+    BothHands = 4
 }
 
 public class Equipment
 {
-    public Item? LeftHand { get; set; }
-    public Item? RightHand { get; set; }
-
-    public void SetItem(EquipmentSlotType slot, Item? item)
-    {
-        switch (slot)
+    private readonly Dictionary<EquipmentSlotType, Item?> _equipment = new ()
         {
-            case EquipmentSlotType.LeftHand or EquipmentSlotType.BothHands:
-                LeftHand = item;
-                if (item?.EquipmentSpace == EquipmentSpace.TwoHand) RightHand = null;
-                break;
-            case EquipmentSlotType.RightHand:
-                RightHand = item;
-                if (item?.EquipmentSpace == EquipmentSpace.TwoHand)
-                {
-                    LeftHand = item;
-                    RightHand = null;
-                }
+            {EquipmentSlotType.LeftHand, null},
+            {EquipmentSlotType.RightHand, null},
+            {EquipmentSlotType.BothHands, null}
+        };
 
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(slot), slot, null);
+    public Item? LeftHand => _equipment[EquipmentSlotType.LeftHand];
+    public Item? RightHand => _equipment[EquipmentSlotType.RightHand];
+    public Item? BothHands => _equipment[EquipmentSlotType.BothHands];
+
+    public Item? this[EquipmentSlotType slot]
+    {
+        get => _equipment[slot];
+        set
+        {
+            Debug.Assert((value?.EquipmentSlotType & slot) != 0);
+            _equipment[slot] = value;
         }
     }
-
-    public Item? GetItem(EquipmentSlotType slot) => slot switch
-    {
-        EquipmentSlotType.LeftHand or EquipmentSlotType.BothHands => LeftHand,
-        EquipmentSlotType.RightHand => RightHand,
-        _ => throw new ArgumentOutOfRangeException(nameof(slot), slot, null)
-    };
 }
+
 public record EquipmentSlot : InventorySlot
 {
-    public EquipmentSlotType SlotType { get; }
+    private readonly EquipmentSlotType _slotType;
 
     public EquipmentSlot(EquipmentSlotType slotType)
     {
-        SlotType = slotType;
+        _slotType = slotType;
     }
 
     public override Item? Get(Inventory inventory) =>
-        inventory.Equipment.GetItem(SlotType);
+        inventory.Equipment[_slotType];
 
     public override void Set(Inventory inventory, Item? item) =>
-        inventory.Equipment.SetItem(SlotType, item);
+        inventory.Equipment[_slotType] = item;
 
     public override Item? Remove(Inventory inventory)
     {
@@ -69,12 +62,7 @@ public record EquipmentSlot : InventorySlot
 
     public override InventorySlot Normalize(Inventory inventory)
     {
-        if (inventory.Equipment.LeftHand?.EquipmentSpace == EquipmentSpace.TwoHand)
-        {
-            return new EquipmentSlot(EquipmentSlotType.BothHands);
-        }
-
-        return this;
+        return inventory.Equipment.BothHands != null ? new EquipmentSlot(EquipmentSlotType.BothHands) : this;
     }
 
     public override bool CanMoveToBackpack => true;

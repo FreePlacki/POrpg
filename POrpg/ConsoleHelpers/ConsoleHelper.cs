@@ -45,7 +45,8 @@ public partial class ConsoleHelper
     {
         Write(text);
         var padding = _columns[_columnIndex].start + _columns[_columnIndex].width - _column;
-        WriteToBuffer(new string(' ', padding));
+        if (padding > 0)
+            WriteToBuffer(new string(' ', padding));
         SetCursorPosition(_columns[_columnIndex].start, _line + 1);
     }
 
@@ -102,11 +103,26 @@ public partial class ConsoleHelper
     
     private void WriteToBuffer(string s)
     {
+        if (string.IsNullOrEmpty(s)) return;
+
         while (_line >= _lines.Count)
             _lines.Add(new StringBuilder());
-        var len = GetVisibleLength(_lines[_line].ToString());
-        if (len < _column) _lines[_line].Append(new string(' ', _column - len));
-        _lines[_line].Append(s);
+
+        var currentLine = _lines[_line];
+        var visibleLength = GetVisibleLength(currentLine.ToString());
+
+        if (_column < visibleLength - 1)
+        {
+            currentLine.Remove(_column, GetVisibleLength(s));
+            currentLine.Insert(_column, s);
+            _column += s.Length - GetVisibleLength(s);
+        }
+        else
+        {
+            if (visibleLength < _column)
+                currentLine.Append(new string(' ', _column - visibleLength));
+            currentLine.Append(s);
+        }
     }
 
     [GeneratedRegex(@"\u001b\[[0-9;]+m", RegexOptions.Compiled)]

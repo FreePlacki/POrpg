@@ -12,7 +12,10 @@ public abstract record InventorySlot
     public abstract bool IsValid(Inventory inventory);
 
     // ex. if the left hand contains a two-handed item the slot type is actually BothHands
-    public virtual InventorySlot Normalize(Inventory inventory) => this;
+    public virtual void Normalize(Inventory inventory)
+    {
+    }
+
     public virtual bool CanMoveToBackpack => false;
 
     public virtual void MoveToBackpack(Inventory slot)
@@ -48,10 +51,9 @@ public class Inventory
     public void Swap(InventorySlot from, InventorySlot to)
     {
         var fromItem = this[from];
-        if (to == new EquipmentSlot(EquipmentSlotType.BothHands) ||
-            to == new EquipmentSlot(EquipmentSlotType.LeftHand) ||
-            to == new EquipmentSlot(EquipmentSlotType.RightHand))
+        if (to is EquipmentSlot t)
         {
+            if (fromItem != null && (fromItem.EquipmentSlotType & t.SlotType) == 0) return;
             if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands)
             {
                 new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);

@@ -28,8 +28,8 @@ Create a console-based RPG game where:
 
 3. **Items:**
    - [x] The room contains predefined items coded within the program.
-   - [ ] There are at least three types of weapons, including one two-handed weapon. Weapons have damage value.
-   - [ ] There are at least three types of unusable items.
+   - [x] There are at least three types of weapons, including one two-handed weapon. Weapons have damage value.
+   - [x] There are at least three types of unusable items.
    - [x] There are two types of currency: coins and gold.
    - [x] Each weapon has a damage value (weapon usage is not implemented at this stage, only equipping is).
    - [x] If the player steps on a tile with an item, they can pick it up by pressing `E`.

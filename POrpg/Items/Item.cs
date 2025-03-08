@@ -1,4 +1,5 @@
 using System.Text;
+using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 
 namespace POrpg.Items;
@@ -25,7 +26,7 @@ public abstract class Item : IDrawable
             return string.IsNullOrWhiteSpace(desc) ? null : desc;
         }
     }
-    
-    public abstract string Symbol { get; }
+
+    public virtual string Symbol => new StyledText("I", Style.Blue).Text;
     public abstract string Name { get; }
 }

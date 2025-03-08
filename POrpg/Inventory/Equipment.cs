@@ -38,18 +38,18 @@ public class Equipment
 
 public record EquipmentSlot : InventorySlot
 {
-    private readonly EquipmentSlotType _slotType;
+    public EquipmentSlotType SlotType { get; private set; }
 
     public EquipmentSlot(EquipmentSlotType slotType)
     {
-        _slotType = slotType;
+        SlotType = slotType;
     }
 
     public override Item? Get(Inventory inventory) =>
-        inventory.Equipment[_slotType];
+        inventory.Equipment[SlotType];
 
     public override void Set(Inventory inventory, Item? item) =>
-        inventory.Equipment[_slotType] = item;
+        inventory.Equipment[SlotType] = item;
 
     public override Item? Remove(Inventory inventory)
     {
@@ -60,9 +60,10 @@ public record EquipmentSlot : InventorySlot
 
     public override bool IsValid(Inventory inventory) => true;
 
-    public override InventorySlot Normalize(Inventory inventory)
+    public override void Normalize(Inventory inventory)
     {
-        return inventory.Equipment.BothHands != null ? new EquipmentSlot(EquipmentSlotType.BothHands) : this;
+        if (Get(inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands)
+            SlotType = EquipmentSlotType.BothHands;
     }
 
     public override bool CanMoveToBackpack => true;

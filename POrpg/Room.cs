@@ -47,10 +47,15 @@ public class Room
         _tiles[3, 6] = new FloorTile(new Unlucky(new Powerful(new Sword())));
         _tiles[3, 7] = new FloorTile(new Unlucky(new TwoHanded(new Powerful(new Sword()))));
         _tiles[3, 9] = new FloorTile(new Legendary(new Unlucky(new Sword())));
+        _tiles[3, 10] = new FloorTile(new Powerful(new Powerful(new Powerful(new Bow()))));
         _tiles[5, 3] = new FloorTile(new Coin());
         _tiles[6, 3] = new FloorTile(new Coin(), new Gold());
         _tiles[7, 3] = new FloorTile(new Gold());
         _tiles[8, 3] = new FloorTile(new Gold());
+
+        _tiles[10, 3] = new FloorTile(new UnusableItem("Apple"));
+        _tiles[11, 3] = new FloorTile(new UnusableItem("Rock"));
+        _tiles[12, 3] = new FloorTile(new UnusableItem("Broken Sword"));
     }
 
     public void Draw(ConsoleHelper console)
@@ -313,10 +318,13 @@ public class Room
     {
         if (!slot.IsValid(_player.Inventory)) return;
 
-        var newSlot = slot.Normalize(_player.Inventory);
+        if (slot is EquipmentSlot &&
+            (_selectedSlot?.Get(_player.Inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands ||
+             (_player.Inventory.Equipment.BothHands != null && _selectedSlot == null)))
+            slot = new EquipmentSlot(EquipmentSlotType.BothHands);
 
         // deselect when selecting the current active slot
-        if (_selectedSlot == newSlot)
+        if (_selectedSlot == slot)
         {
             _selectedSlot = null;
             return;
@@ -324,12 +332,12 @@ public class Room
 
         if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null)
         {
-            _selectedSlot = newSlot;
+            _selectedSlot = slot;
             return;
         }
 
         _player.Inventory.Swap(_selectedSlot, slot);
-        _selectedSlot = slot.Normalize(_player.Inventory);
+        _selectedSlot = slot;
     }
 
     private void TryMoveToBackpack()

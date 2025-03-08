@@ -11,7 +11,7 @@ public partial class ConsoleHelper
     private int _line;
     private int _column;
     private int _columnIndex;
-    private readonly StringBuilder _buffer = new(50);
+    private readonly List<StringBuilder> _lines = new(60);
 
     public ConsoleHelper((int start, int width)[] columns)
     {
@@ -35,7 +35,7 @@ public partial class ConsoleHelper
         {
             if (i != 0)
                 WriteLine();
-            _buffer.Append(l);
+            WriteToBuffer(l);
             _column += GetVisibleLength(l);
             i++;
         }
@@ -44,10 +44,8 @@ public partial class ConsoleHelper
     public void WriteLine(IConsoleText text)
     {
         Write(text);
-        Console.Write(_buffer.ToString());
-        _buffer.Clear();
         var padding = _columns[_columnIndex].start + _columns[_columnIndex].width - _column;
-        Console.Write(new string(' ', padding));
+        WriteToBuffer(new string(' ', padding));
         SetCursorPosition(_columns[_columnIndex].start, _line + 1);
     }
 
@@ -68,13 +66,6 @@ public partial class ConsoleHelper
         WriteLine(new StyledText(new string('=', width), Style.Faint));
     }
 
-    private void SetCursorPosition(int column, int line)
-    {
-        Console.SetCursorPosition(column, line);
-        _column = column;
-        _line = line;
-    }
-
     public void Reset()
     {
         for (var i = 0; i < _columns.Length; i++)
@@ -83,16 +74,39 @@ public partial class ConsoleHelper
             for (var j = _currentColumnHeights[i]; j < _previousColumnHeights[i]; j++)
             {
                 SetCursorPosition(_columns[i].start, j);
-                Console.Write(s);
+                WriteToBuffer(s);
             }
         }
 
+        foreach (var sb in _lines)
+        {
+            Console.WriteLine(sb.ToString());
+        }
+
+        _lines.Clear();
+
         _line = 0;
-       _columnIndex = 0;
+        _columnIndex = 0;
         _column = _columns[_columnIndex].start;
         _previousColumnHeights = _currentColumnHeights;
         _currentColumnHeights = new int[_columns.Length];
         SetCursorPosition(_columns[_columnIndex].start, _line);
+        Console.SetCursorPosition(_columns[_columnIndex].start, _line);
+    }
+    
+    private void SetCursorPosition(int column, int line)
+    {
+        _column = column;
+        _line = line;
+    }
+    
+    private void WriteToBuffer(string s)
+    {
+        while (_line >= _lines.Count)
+            _lines.Add(new StringBuilder());
+        var len = GetVisibleLength(_lines[_line].ToString());
+        if (len < _column) _lines[_line].Append(new string(' ', _column - len));
+        _lines[_line].Append(s);
     }
 
     [GeneratedRegex(@"\u001b\[[0-9;]+m", RegexOptions.Compiled)]

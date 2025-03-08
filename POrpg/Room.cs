@@ -88,7 +88,7 @@ public class Room
 
         console.ChangeColumn(0);
         console.WriteLine();
-        console.WriteLine(InputHint("WSAD", "Move"));
+        console.WriteLine($"{InputHint("WSAD", "Move")}\t{InputHint("C", "Redraw")}");
         sw.Stop();
         console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
     }

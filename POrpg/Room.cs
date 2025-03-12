@@ -307,7 +307,7 @@ public class Room
 
     private void TryPickUpItem()
     {
-        if (CurrentItem == null) return;
+        if (CurrentItem == null || _player.Inventory.Backpack.IsFull) return;
         _player.PickUp(CurrentItem);
         RemoveCurrentItem();
     }

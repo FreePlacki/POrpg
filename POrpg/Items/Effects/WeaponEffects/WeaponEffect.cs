@@ -1,4 +1,6 @@
-namespace POrpg.Items.Effects;
+using POrpg.Inventory;
+
+namespace POrpg.Items.Effects.WeaponEffects;
 
 public abstract class WeaponEffect : Weapon
 {
@@ -8,4 +10,7 @@ public abstract class WeaponEffect : Weapon
     {
         Weapon = weapon;
     }
+    
+    public override Attributes? Attributes => Weapon.Attributes;
+    public override EquipmentSlotType EquipmentSlotType => Weapon.EquipmentSlotType;
 }

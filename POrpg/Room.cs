@@ -43,20 +43,21 @@ public class Room
         }
 
         _tiles[3, 3] = new FloorTile(new Sword());
-        _tiles[3, 4] = new FloorTile(new Powerful(new Sword()));
+        _tiles[3, 4] = new FloorTile(new TwoHandedWeapon(new Sword()));
         _tiles[3, 5] = new FloorTile(new Powerful(new Powerful(new Sword())));
         _tiles[3, 6] = new FloorTile(new UnluckyWeapon(new Powerful(new Sword())));
         _tiles[3, 7] = new FloorTile(new UnluckyWeapon(new TwoHandedWeapon(new Powerful(new Sword()))));
         _tiles[3, 9] = new FloorTile(new LegendaryWeapon(new UnluckyWeapon(new Sword())));
         _tiles[3, 10] = new FloorTile(new Powerful(new Powerful(new Powerful(new Bow()))));
+        _tiles[3, 11] = new FloorTile(new UnluckyWeapon(new Powerful(new Powerful(new Dagger()))));
         _tiles[5, 3] = new FloorTile(new Coin());
         _tiles[6, 3] = new FloorTile(new Coin(), new Gold());
         _tiles[7, 3] = new FloorTile(new Gold());
         _tiles[8, 3] = new FloorTile(new Gold());
 
-        _tiles[10, 3] = new FloorTile(new UnusableItem("Apple"));
-        _tiles[11, 3] = new FloorTile(new Unlucky(new UnusableItem("Rock")));
-        _tiles[12, 3] = new FloorTile(new TwoHanded(new UnusableItem("Broken Sword")));
+        _tiles[10, 3] = new FloorTile(new Unlucky(new UnusableItem("Apple")));
+        _tiles[11, 3] = new FloorTile(new TwoHanded(new UnusableItem("Rock")));
+        _tiles[12, 3] = new FloorTile(new Unequippable(new UnusableItem("Broken Sword")));
     }
 
     public void Draw(ConsoleHelper console)
@@ -322,7 +323,7 @@ public class Room
     {
         if (!slot.IsValid(_player.Inventory)) return;
 
-        slot.Normalize(_player.Inventory, _selectedSlot);
+        slot = slot.Normalize(_player.Inventory, _selectedSlot);
 
         // deselect when selecting the current active slot
         if (_selectedSlot == slot)
@@ -338,6 +339,7 @@ public class Room
         }
 
         _player.Inventory.Swap(_selectedSlot, slot);
+        slot = slot.Normalize(_player.Inventory, _selectedSlot);
         _selectedSlot = slot;
     }
 

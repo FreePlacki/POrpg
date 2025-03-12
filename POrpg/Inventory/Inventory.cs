@@ -51,7 +51,6 @@ public class Inventory
         var fromItem = this[from];
         if (to is EquipmentSlot t)
         {
-            if (fromItem != null && (fromItem.EquipmentSlotType & t.SlotType) == 0) return;
             if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands)
             {
                 new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);

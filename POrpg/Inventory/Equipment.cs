@@ -38,7 +38,7 @@ public class Equipment
 
 public record EquipmentSlot : InventorySlot
 {
-    public EquipmentSlotType SlotType { get; private set; }
+    public EquipmentSlotType SlotType { get; }
 
     public EquipmentSlot(EquipmentSlotType slotType)
     {
@@ -62,8 +62,9 @@ public record EquipmentSlot : InventorySlot
 
     public override InventorySlot Normalize(Inventory inventory, InventorySlot? selectedSlot)
     {
-        if (selectedSlot?.Get(inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands ||
-            (inventory.Equipment.BothHands != null && selectedSlot == null))
+        // if (selectedSlot?.Get(inventory)?.EquipmentSlotType == EquipmentSlotType.BothHands ||
+        //     (inventory.Equipment.BothHands != null && selectedSlot == null))
+        if (inventory.Equipment.BothHands != null)
             return new EquipmentSlot(EquipmentSlotType.BothHands);
         return this;
     }

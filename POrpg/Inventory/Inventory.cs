@@ -46,32 +46,82 @@ public class Inventory
         }
     }
 
+    // TODO refactor?
     public void Swap(InventorySlot from, InventorySlot to)
     {
-        var fromItem = this[from];
-        if (to is EquipmentSlot t)
+        var fromItem = this[from.Normalize(this, from)];
+        var toItem = this[to.Normalize(this, from)];
+
+        switch (from)
         {
-            if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands)
-            {
-                new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);
-                new EquipmentSlot(EquipmentSlotType.RightHand).MoveToBackpack(this);
+            case BackpackSlot:
+                switch (to)
+                {
+                    case EquipmentSlot:
+                        if (fromItem?.EquipmentSlotType == EquipmentSlotType.None) return;
 
-                to = new EquipmentSlot(EquipmentSlotType.BothHands);
-                this[to] = fromItem;
-                this[from] = null;
-                return;
-            }
+                        if (toItem?.EquipmentSlotType == EquipmentSlotType.BothHands &&
+                            fromItem?.EquipmentSlotType != EquipmentSlotType.BothHands)
+                        {
+                            this[new EquipmentSlot(EquipmentSlotType.BothHands)] = null;
+                            this[to] = fromItem;
+                            this[from] = toItem;
+                            return;
+                        }
 
-            if (Equipment.BothHands != null)
-            {
-                new EquipmentSlot(EquipmentSlotType.BothHands).MoveToBackpack(this);
-                this[to] = fromItem;
-                this[from] = null;
-                return;
-            }
+                        if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands &&
+                            toItem?.EquipmentSlotType != EquipmentSlotType.BothHands)
+                        {
+                            this[from] = null;
+                            new EquipmentSlot(EquipmentSlotType.LeftHand).MoveToBackpack(this);
+                            new EquipmentSlot(EquipmentSlotType.RightHand).MoveToBackpack(this);
+                            this[new EquipmentSlot(EquipmentSlotType.BothHands)] = fromItem;
+                            return;
+                        }
+
+                        if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands &&
+                            toItem?.EquipmentSlotType == EquipmentSlotType.BothHands)
+                        {
+                            this[new EquipmentSlot(EquipmentSlotType.BothHands)] = fromItem;
+                            this[from] = toItem;
+                            return;
+                        }
+
+                        break;
+                }
+
+                break;
+            case EquipmentSlot:
+                switch (to)
+                {
+                    case BackpackSlot:
+                        if (toItem?.EquipmentSlotType == EquipmentSlotType.None) return;
+                        if (fromItem?.EquipmentSlotType == EquipmentSlotType.BothHands &&
+                            toItem?.EquipmentSlotType != EquipmentSlotType.BothHands)
+                        {
+                            this[to] = fromItem;
+                            this[new EquipmentSlot(EquipmentSlotType.BothHands)] = null;
+                            this[new EquipmentSlot(EquipmentSlotType.LeftHand)] = toItem;
+                            return;
+                        }
+
+                        if (fromItem?.EquipmentSlotType != EquipmentSlotType.BothHands &&
+                            toItem?.EquipmentSlotType == EquipmentSlotType.BothHands)
+                        {
+                            this[new EquipmentSlot(EquipmentSlotType.BothHands)] = toItem;
+                            this[new EquipmentSlot(EquipmentSlotType.LeftHand)] = null;
+                            this[new EquipmentSlot(EquipmentSlotType.RightHand)] = null;
+                            this[to] = fromItem;
+                            return;
+                        }
+
+                        break;
+                }
+
+                break;
         }
 
-        (this[from], this[to]) = (this[to], this[from]);
+        (this[from], this[to]) = (toItem, fromItem);
     }
 
     public void AppendToBackpack(Item item) => this[new BackpackSlot(Backpack.Items.Count)] = item;

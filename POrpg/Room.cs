@@ -55,9 +55,9 @@ public class Room
         _tiles[7, 3] = new FloorTile(new Gold());
         _tiles[8, 3] = new FloorTile(new Gold());
 
-        _tiles[10, 3] = new FloorTile(new Unlucky(new UnusableItem("Apple")));
+        _tiles[10, 3] = new FloorTile(new Unlucky(new SingleHanded(new UnusableItem("Apple"))));
         _tiles[11, 3] = new FloorTile(new TwoHanded(new UnusableItem("Rock")));
-        _tiles[12, 3] = new FloorTile(new Unequippable(new UnusableItem("Broken Sword")));
+        _tiles[12, 3] = new FloorTile(new UnusableItem("Broken Sword"));
     }
 
     public void Draw(ConsoleHelper console)
@@ -323,10 +323,10 @@ public class Room
     {
         if (!slot.IsValid(_player.Inventory)) return;
 
-        slot = slot.Normalize(_player.Inventory, _selectedSlot);
+        var normSlot = slot.Normalize(_player.Inventory, _selectedSlot);
 
         // deselect when selecting the current active slot
-        if (_selectedSlot == slot)
+        if (_selectedSlot == normSlot)
         {
             _selectedSlot = null;
             return;
@@ -334,7 +334,7 @@ public class Room
 
         if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null)
         {
-            _selectedSlot = slot;
+            _selectedSlot = normSlot;
             return;
         }
 

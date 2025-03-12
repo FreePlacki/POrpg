@@ -3,6 +3,7 @@ using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Effects;
+using POrpg.Items.Effects.WeaponEffects;
 
 namespace POrpg;
 
@@ -42,11 +43,11 @@ public class Room
         }
 
         _tiles[3, 3] = new FloorTile(new Sword());
-        _tiles[3, 4] = new FloorTile(new Unlucky(new Unlucky(new Sword())));
-        _tiles[3, 5] = new FloorTile(new Powerful(new Sword()));
-        _tiles[3, 6] = new FloorTile(new Unlucky(new Powerful(new Sword())));
-        _tiles[3, 7] = new FloorTile(new Unlucky(new TwoHanded(new Powerful(new Sword()))));
-        _tiles[3, 9] = new FloorTile(new Legendary(new Unlucky(new Sword())));
+        _tiles[3, 4] = new FloorTile(new Powerful(new Sword()));
+        _tiles[3, 5] = new FloorTile(new Powerful(new Powerful(new Sword())));
+        _tiles[3, 6] = new FloorTile(new UnluckyWeapon(new Powerful(new Sword())));
+        _tiles[3, 7] = new FloorTile(new UnluckyWeapon(new TwoHandedWeapon(new Powerful(new Sword()))));
+        _tiles[3, 9] = new FloorTile(new LegendaryWeapon(new UnluckyWeapon(new Sword())));
         _tiles[3, 10] = new FloorTile(new Powerful(new Powerful(new Powerful(new Bow()))));
         _tiles[5, 3] = new FloorTile(new Coin());
         _tiles[6, 3] = new FloorTile(new Coin(), new Gold());
@@ -54,8 +55,8 @@ public class Room
         _tiles[8, 3] = new FloorTile(new Gold());
 
         _tiles[10, 3] = new FloorTile(new UnusableItem("Apple"));
-        _tiles[11, 3] = new FloorTile(new UnusableItem("Rock"));
-        _tiles[12, 3] = new FloorTile(new UnusableItem("Broken Sword"));
+        _tiles[11, 3] = new FloorTile(new Unlucky(new UnusableItem("Rock")));
+        _tiles[12, 3] = new FloorTile(new TwoHanded(new UnusableItem("Broken Sword")));
     }
 
     public void Draw(ConsoleHelper console)

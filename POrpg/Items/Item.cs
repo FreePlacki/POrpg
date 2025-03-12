@@ -7,18 +7,15 @@ namespace POrpg.Items;
 public abstract class Item : IDrawable
 {
     public virtual Attributes? Attributes => null;
-    public virtual int? Damage => null;
     public virtual EquipmentSlotType EquipmentSlotType => EquipmentSlotType.None;
 
     public virtual bool OnPickUp(Player player) => false;
 
-    public string? Description
+    public virtual string? Description
     {
         get
         {
             var sb = new StringBuilder();
-            if (Damage != null)
-                sb.AppendLine($"Damage: {Damage}");
             if (Attributes?.IsEmpty == false)
                 sb.Append($"Effects: {Attributes.EffectDescription()}");
 

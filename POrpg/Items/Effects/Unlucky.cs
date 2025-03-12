@@ -8,5 +8,4 @@ public class Unlucky : Effect
 
     public override string Name => $"{Item.Name} (Unlucky)";
     public override Attributes? Attributes => new Attributes(new Dictionary<Attribute, int> { { Attribute.Luck, -5}}) + Item.Attributes;
-    public override int? Damage => Item.Damage;
 }

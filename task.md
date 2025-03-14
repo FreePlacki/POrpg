@@ -69,7 +69,7 @@ Create a console-based RPG game where:
 Create following systems:
 - creation of the dungeon,
 - presentation of the game state.
-  
+
 ## Requirements
 
 ### Creation of the dungeon
@@ -81,9 +81,9 @@ List of available building procedures:
  - [ ] adding paths - adds random paths through the dungeon,
  - [x] adding chambers - adds random empty fields in the dungeon,
  - [x] adding a central room - adds a large central room to the dungeon,
- - [ ] adding items - distributes random items on non-wall fields,
- - [ ] adding weapons - distributes random weapons on non-wall fields,
- - [ ] adding modified weapons - distributes random weapons with modifiers on non-wall fields,
+ - [x] adding items - distributes random items on non-wall fields,
+ - [x] adding weapons - distributes random weapons on non-wall fields,
+ - [x] adding modified weapons - distributes random weapons with modifiers on non-wall fields,
  - [ ] adding potions - distributes random potions on non-wall fields,
  - [ ] adding enemies - distributes random enemies on non-wall fields.
 

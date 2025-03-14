@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Diagnostics;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
@@ -18,7 +19,7 @@ public enum InitialDungeonState
     Filled,
 }
 
-public class Dungeon
+public class Dungeon : IEnumerable<Tile>
 {
     private readonly Position _playerInitialPosition = (0, 0);
 
@@ -30,14 +31,14 @@ public class Dungeon
 
     public Tile this[Position p]
     {
-        get => _tiles[p.X, p.Y];
-        set => _tiles[p.X, p.Y] = value;
+        get => _tiles[p.Y, p.X];
+        set => _tiles[p.Y, p.X] = value;
     }
 
     public Dungeon(InitialDungeonState initialState, int width, int height)
     {
         (Width, Height) = (width, height);
-        _tiles = new Tile[width, height];
+        _tiles = new Tile[height, width];
         _player = new Player(_playerInitialPosition);
 
         for (var y = 0; y < Height; y++)
@@ -52,14 +53,14 @@ public class Dungeon
                 };
             }
         }
-        
+
         this[(0, 0)] = new FloorTile();
     }
 
     public Dungeon(int width, int height)
     {
         (Width, Height) = (width, height);
-        _tiles = new Tile[width, height];
+        _tiles = new Tile[height, width];
         _player = new Player(_playerInitialPosition);
 
         for (var y = 0; y < Height; y++)
@@ -96,13 +97,14 @@ public class Dungeon
         {
             for (var x = 0; x < Width; x++)
             {
-                if ((x, y) == _player.Position)
+                Position pos = (x, y);
+                if (pos == _player.Position)
                 {
                     console.Write(new StyledText(_player.Symbol, Style.Magenta));
                     continue;
                 }
 
-                console.Write(_tiles[x, y].Symbol);
+                console.Write(this[pos].Symbol);
             }
 
             console.WriteLine();
@@ -319,12 +321,10 @@ public class Dungeon
         }
     }
 
-    private Tile CurrentTile => _tiles[_player.Position.X, _player.Position.Y];
+    private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
 
     private InventorySlot? _selectedSlot;
-
-    private void RemoveCurrentItem() => _tiles[_player.Position.X, _player.Position.Y].RemoveCurrentItem();
 
     private static string InputHint(string keys, string? description = null)
     {
@@ -337,7 +337,7 @@ public class Dungeon
     {
         if (CurrentItem == null || _player.Inventory.Backpack.IsFull) return;
         _player.PickUp(CurrentItem);
-        RemoveCurrentItem();
+        CurrentTile.RemoveCurrentItem();
     }
 
     private void TryDropItem()
@@ -381,4 +381,17 @@ public class Dungeon
 
     private bool CanMoveTo(Position p) =>
         p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height && this[p].IsPassable;
+
+    public IEnumerator<Tile> GetEnumerator()
+    {
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                yield return _tiles[y, x];
+            }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

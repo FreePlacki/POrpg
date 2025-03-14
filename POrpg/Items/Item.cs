@@ -7,7 +7,7 @@ namespace POrpg.Items;
 public abstract class Item : IDrawable
 {
     public virtual Attributes? Attributes => null;
-    public virtual EquipmentSlotType EquipmentSlotType => EquipmentSlotType.None;
+    public virtual EquipmentSlotType EquipmentSlotType => EquipmentSlotType.LeftHand | EquipmentSlotType.RightHand;
 
     public virtual bool OnPickUp(Player player) => false;
 

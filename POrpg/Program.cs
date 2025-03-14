@@ -9,15 +9,18 @@ class Program
     {
         const int roomWidth = 40;
         const int roomHeight = 20;
-        var dungeon = new ConcreteDungeonBuilder(InitialDungeonState.Filled, roomWidth, roomHeight)
+        var dungeon = new ConcreteDungeonBuilder(InitialDungeonState.Empty, roomWidth, roomHeight)
             .AddCentralRoom()
             .AddRandomChambers(4)
+            .AddMoney()
+            .AddUnusableItems(maxEffects: 3)
+            .AddWeapons(maxEffects: 4)
             .Build();
 
         Console.CursorVisible = false;
         Console.Clear();
 
-        (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 80)];
+        (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 100)];
         var console = new ConsoleHelper(columns);
 
         while (true)

@@ -1,4 +1,5 @@
 using POrpg.ConsoleHelpers;
+using POrpg.Dungeon;
 using POrpg.Inventory;
 using POrpg.Items;
 

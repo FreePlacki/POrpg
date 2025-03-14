@@ -1,6 +1,4 @@
-using POrpg.Items.Effects.WeaponEffects;
-
-namespace POrpg.Items.Effects;
+namespace POrpg.Items.Effects.WeaponEffects;
 
 public class Powerful : WeaponEffect
 {

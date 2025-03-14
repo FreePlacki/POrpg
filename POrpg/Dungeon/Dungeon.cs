@@ -5,38 +5,66 @@ using POrpg.Items;
 using POrpg.Items.Effects;
 using POrpg.Items.Effects.WeaponEffects;
 
-namespace POrpg;
+namespace POrpg.Dungeon;
 
 public record struct Position(int X, int Y)
 {
     public static implicit operator Position((int x, int y) p) => new() { X = p.x, Y = p.y };
 }
 
-public class Room
+public enum InitialDungeonState
+{
+    Empty,
+    Filled,
+}
+
+public class Dungeon
 {
     private readonly Position _playerInitialPosition = (0, 0);
 
-    private readonly int _width;
-    private readonly int _height;
+    public int Width { get; }
+    public int Height { get; }
     private readonly Tile[,] _tiles;
 
     private readonly Player _player;
 
-    private Tile this[Position p]
+    public Tile this[Position p]
     {
         get => _tiles[p.X, p.Y];
         set => _tiles[p.X, p.Y] = value;
     }
 
-    public Room(int width, int height)
+    public Dungeon(InitialDungeonState initialState, int width, int height)
     {
-        (_width, _height) = (width, height);
+        (Width, Height) = (width, height);
         _tiles = new Tile[width, height];
         _player = new Player(_playerInitialPosition);
 
-        for (var y = 0; y < _height; y++)
+        for (var y = 0; y < Height; y++)
         {
-            for (var x = 0; x < _width; x++)
+            for (var x = 0; x < Width; x++)
+            {
+                this[(x, y)] = initialState switch
+                {
+                    InitialDungeonState.Empty => new FloorTile(),
+                    InitialDungeonState.Filled => new WallTile(),
+                    _ => throw new ArgumentOutOfRangeException(nameof(initialState), initialState, null)
+                };
+            }
+        }
+        
+        this[(0, 0)] = new FloorTile();
+    }
+
+    public Dungeon(int width, int height)
+    {
+        (Width, Height) = (width, height);
+        _tiles = new Tile[width, height];
+        _player = new Player(_playerInitialPosition);
+
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
             {
                 this[(x, y)] = x * y % 3 == 1 ? new WallTile() : new FloorTile();
             }
@@ -64,9 +92,9 @@ public class Room
     {
         var sw = Stopwatch.StartNew();
 
-        for (var y = 0; y < _height; y++)
+        for (var y = 0; y < Height; y++)
         {
-            for (var x = 0; x < _width; x++)
+            for (var x = 0; x < Width; x++)
             {
                 if ((x, y) == _player.Position)
                 {
@@ -352,5 +380,5 @@ public class Room
     }
 
     private bool CanMoveTo(Position p) =>
-        p.X >= 0 && p.X < _width && p.Y >= 0 && p.Y < _height && this[p].IsPassable;
+        p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height && this[p].IsPassable;
 }

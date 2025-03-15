@@ -3,8 +3,6 @@ using System.Diagnostics;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 using POrpg.Items;
-using POrpg.Items.Effects;
-using POrpg.Items.Effects.WeaponEffects;
 
 namespace POrpg.Dungeon;
 
@@ -21,8 +19,6 @@ public enum InitialDungeonState
 
 public class Dungeon : IEnumerable<Tile>
 {
-    private readonly Position _playerInitialPosition = (0, 0);
-
     public int Width { get; }
     public int Height { get; }
     private readonly Tile[,] _tiles;
@@ -35,11 +31,11 @@ public class Dungeon : IEnumerable<Tile>
         set => _tiles[p.Y, p.X] = value;
     }
 
-    public Dungeon(InitialDungeonState initialState, int width, int height)
+    public Dungeon(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
     {
         (Width, Height) = (width, height);
         _tiles = new Tile[height, width];
-        _player = new Player(_playerInitialPosition);
+        _player = new Player(playerInitialPosition);
 
         for (var y = 0; y < Height; y++)
         {
@@ -54,39 +50,7 @@ public class Dungeon : IEnumerable<Tile>
             }
         }
 
-        this[(0, 0)] = new FloorTile();
-    }
-
-    public Dungeon(int width, int height)
-    {
-        (Width, Height) = (width, height);
-        _tiles = new Tile[height, width];
-        _player = new Player(_playerInitialPosition);
-
-        for (var y = 0; y < Height; y++)
-        {
-            for (var x = 0; x < Width; x++)
-            {
-                this[(x, y)] = x * y % 3 == 1 ? new WallTile() : new FloorTile();
-            }
-        }
-
-        _tiles[3, 3] = new FloorTile(new Sword());
-        _tiles[3, 4] = new FloorTile(new TwoHandedWeapon(new Sword()));
-        _tiles[3, 5] = new FloorTile(new Powerful(new Powerful(new Sword())));
-        _tiles[3, 6] = new FloorTile(new UnluckyWeapon(new Powerful(new Sword())));
-        _tiles[3, 7] = new FloorTile(new UnluckyWeapon(new TwoHandedWeapon(new Powerful(new Sword()))));
-        _tiles[3, 9] = new FloorTile(new LegendaryWeapon(new UnluckyWeapon(new Sword())));
-        _tiles[3, 10] = new FloorTile(new Powerful(new Powerful(new Powerful(new Bow()))));
-        _tiles[3, 11] = new FloorTile(new UnluckyWeapon(new Powerful(new Powerful(new Dagger()))));
-        _tiles[5, 3] = new FloorTile(new Coin());
-        _tiles[6, 3] = new FloorTile(new Coin(), new Gold());
-        _tiles[7, 3] = new FloorTile(new Gold());
-        _tiles[8, 3] = new FloorTile(new Gold());
-
-        _tiles[10, 3] = new FloorTile(new Unlucky(new SingleHanded(new UnusableItem("Apple"))));
-        _tiles[11, 3] = new FloorTile(new TwoHanded(new UnusableItem("Rock")));
-        _tiles[12, 3] = new FloorTile(new UnusableItem("Broken Sword"));
+        this[playerInitialPosition] = new FloorTile();
     }
 
     public void Draw(ConsoleHelper console)
@@ -379,8 +343,9 @@ public class Dungeon : IEnumerable<Tile>
         _selectedSlot = null;
     }
 
-    private bool CanMoveTo(Position p) =>
-        p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height && this[p].IsPassable;
+    public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
+
+    private bool CanMoveTo(Position p) => IsInBounds(p) && this[p].IsPassable;
 
     public IEnumerator<Tile> GetEnumerator()
     {

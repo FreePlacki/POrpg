@@ -263,7 +263,10 @@ public class Dungeon : IEnumerable<Tile>
                 break;
             case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
                 or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
-                TrySelectItem(new BackpackSlot(int.Parse(input.KeyChar.ToString()) - 1));
+                if (int.TryParse(input.KeyChar.ToString(), out var slot))
+                {
+                    TrySelectItem(new BackpackSlot(slot - 1));
+                }
                 break;
         }
     }

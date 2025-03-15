@@ -108,10 +108,12 @@ public class ConcreteDungeonBuilder : DungeonBuilder
         ];
         List<WallCandidate> candidates = [];
 
+        var seed = PlayerInitialPosition;
+
         foreach (var d in directions)
         {
-            Position neighbor = (PlayerInitialPosition.X + d.X, PlayerInitialPosition.Y + d.Y);
-            Position wall = (PlayerInitialPosition.X + d.X / 2, PlayerInitialPosition.Y + d.Y / 2);
+            Position neighbor = (seed.X + d.X, seed.Y + d.Y);
+            Position wall = (seed.X + d.X / 2, seed.Y + d.Y / 2);
             if (Dungeon.IsInBounds(neighbor) && !Dungeon[neighbor].IsPassable)
                 candidates.Add(new WallCandidate(wall, neighbor));
         }

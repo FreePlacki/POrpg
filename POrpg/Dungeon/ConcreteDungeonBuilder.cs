@@ -39,11 +39,6 @@ public class ConcreteDungeonBuilder : DungeonBuilder
     {
     }
 
-    public override DungeonBuilder AddRandomPaths(int numPaths)
-    {
-        throw new NotImplementedException();
-    }
-
     private void AddFloor(Position position)
     {
         if (!Dungeon[position].IsPassable)
@@ -94,7 +89,7 @@ public class ConcreteDungeonBuilder : DungeonBuilder
         return AddRoom(position, width, height);
     }
 
-    private struct WallCandidate(Position wallPosition, Position cellPosition)
+    private readonly struct WallCandidate(Position wallPosition, Position cellPosition)
     {
         public Position WallPosition { get; } = wallPosition;
         public Position CellPosition { get; } = cellPosition;
@@ -159,14 +154,24 @@ public class ConcreteDungeonBuilder : DungeonBuilder
         return this;
     }
 
-    public override DungeonBuilder AddUnusableItems(double probability = 0.07, int maxEffects = 0) =>
-        AddItems(_itemConstructors, _itemEffectConstructors, probability, maxEffects);
+    public override DungeonBuilder AddUnusableItems(double probability = 0.07, int maxEffects = 0)
+    {
+        Instructions.AddItems();
+        return AddItems(_itemConstructors, _itemEffectConstructors, probability, maxEffects);
+    }
 
-    public override DungeonBuilder AddWeapons(double probability = 0.15, int maxEffects = 0) =>
-        AddItems(_weaponConstructors, _weaponEffectConstructors, probability, maxEffects);
+    public override DungeonBuilder AddWeapons(double probability = 0.15, int maxEffects = 0)
+    {
+        Instructions.AddWeapons();
+        return AddItems(_weaponConstructors, _weaponEffectConstructors, probability, maxEffects);
+    }
 
-    public override DungeonBuilder AddMoney(double probability = 0.15) =>
-        AddItems(_moneyConstructors, _itemEffectConstructors, probability, 0);
+    public override DungeonBuilder AddMoney(double probability = 0.15)
+    {
+        Instructions.AddMoney();
+        return AddItems(_moneyConstructors, _itemEffectConstructors, probability, 0);
+    }
 
-    public override Dungeon Build() => Dungeon;
+    public override Dungeon BuildDungeon() => Dungeon;
+    public override Instructions BuildInstructions() => Instructions;
 }

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using POrpg.Dungeon;
 
 namespace POrpg.ConsoleHelpers;
 
@@ -12,6 +13,7 @@ public partial class ConsoleHelper
     private int _column;
     private int _columnIndex;
     private readonly List<StringBuilder> _lines = new(60);
+    public bool IsShowingInstructions { get; private set; }
 
     public ConsoleHelper((int start, int width)[] columns)
     {
@@ -25,6 +27,27 @@ public partial class ConsoleHelper
         _currentColumnHeights[_columnIndex] = _line;
         _columnIndex = newColumnIndex;
         SetCursorPosition(_columns[_columnIndex].start, _currentColumnHeights[_columnIndex]);
+    }
+
+    public void ShowInstructions(Instructions instructions)
+    {
+        IsShowingInstructions = true;
+        
+        Reset();
+        Console.Clear();
+        var text = instructions.Build();
+
+        var divider = new StyledText(new string('=', 10), Style.Faint).Text;
+        Console.WriteLine($"{divider} {new StyledText("Instructions", Style.Underline).Text} {divider}\n");
+        Console.WriteLine(text);
+        Console.WriteLine(InputHint("?", "Hide instructions"));
+    }
+
+    public void HideInstructions()
+    {
+        IsShowingInstructions = false;
+        Reset();
+        Console.Clear();
     }
 
     public void Write(IConsoleText text)
@@ -93,6 +116,13 @@ public partial class ConsoleHelper
         _currentColumnHeights = new int[_columns.Length];
         SetCursorPosition(_columns[_columnIndex].start, _line);
         Console.SetCursorPosition(_columns[_columnIndex].start, _line);
+    }
+    
+    public static string InputHint(string keys, string? description = null)
+    {
+        return description == null
+            ? new StyledText(new StyledText(keys, Style.Magenta), Style.Faint).Text
+            : new StyledText($"{description} ({new StyledText(keys, Style.Magenta).Text})", Style.Faint).Text;
     }
     
     private void SetCursorPosition(int column, int line)

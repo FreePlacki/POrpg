@@ -78,7 +78,7 @@ As part of the task, you need to create a dungeon building system that will allo
 List of available building procedures:
  - [x] empty dungeon - each element is an empty element,
  - [x] filled dungeon - each element is a wall,
- - [ ] adding paths - adds random paths through the dungeon,
+ - [x] adding paths - adds random paths through the dungeon,
  - [x] adding chambers - adds random empty fields in the dungeon,
  - [x] adding a central room - adds a large central room to the dungeon,
  - [x] adding items - distributes random items on non-wall fields,

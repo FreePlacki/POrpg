@@ -13,7 +13,7 @@ class Program
         var builder =
             new ConcreteDungeonBuilder(InitialDungeonState.Filled, roomWidth, roomHeight, playerInitialPosition)
                 .AddCentralRoom()
-                .AddRandomChambers(2)
+                // .AddRandomChambers(2)
                 .AddRandomPaths()
                 .AddMoney()
                 .AddUnusableItems(maxEffects: 3)
@@ -26,7 +26,7 @@ class Program
         Console.Clear();
 
         (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 100)];
-        var console = new ConsoleHelper(columns);
+        var console = ConsoleHelper.Initialize(columns);
 
         while (true)
         {
@@ -37,7 +37,7 @@ class Program
                 else continue;
             }
 
-            dungeon.Draw(console);
+            dungeon.Draw();
             console.Reset();
 
             var input = Console.ReadKey(true);

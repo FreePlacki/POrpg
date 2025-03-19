@@ -101,10 +101,10 @@ This step should be implemented using the Builder pattern.
 ### Presentation of the game state
 The task should create a centralized system to present the state of the game.
 The game system should present:
- - [ ] dungeon,
- - [ ] information about objects on the player's field,
- - [ ] information about the surrounding opponents,
- - [ ] the status of the player - his equipped items, statistics and equipment,
+ - [x] dungeon,
+ - [x] information about objects on the player's field,
+ - [x] information about the surrounding opponents,
+ - [x] the status of the player - his equipped items, statistics and equipment,
  - [ ] information about the actions taken by the player.
    
 The system is the only object in the program that can write to the console.

@@ -1,5 +1,11 @@
 namespace POrpg.Dungeon;
 
+public enum InitialDungeonState
+{
+    Empty,
+    Filled,
+}
+
 public abstract class DungeonBuilder
 {
     protected readonly Dungeon Dungeon;

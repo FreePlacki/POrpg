@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using POrpg.Dungeon;
@@ -6,7 +7,9 @@ namespace POrpg.ConsoleHelpers;
 
 public partial class ConsoleHelper
 {
-    private readonly (int start, int width)[] _columns;
+    private static ConsoleHelper? _instance;
+    
+    private (int start, int width)[] _columns;
     private int[] _currentColumnHeights;
     private int[] _previousColumnHeights;
     private int _line;
@@ -15,11 +18,25 @@ public partial class ConsoleHelper
     private readonly List<StringBuilder> _lines = new(60);
     public bool IsShowingInstructions { get; private set; }
 
-    public ConsoleHelper((int start, int width)[] columns)
+    private ConsoleHelper((int start, int width)[] columns)
     {
+        Debug.Assert(_instance == null);
+        
         _columns = columns;
         _currentColumnHeights = new int[_columns.Length];
         _previousColumnHeights = new int[_columns.Length];
+    }
+
+    public static ConsoleHelper Initialize((int start, int width)[] columns)
+    {
+        _instance = new ConsoleHelper(columns);
+        return _instance;
+    }
+
+    public static ConsoleHelper GetInstance()
+    {
+        Debug.Assert(_instance != null);
+        return _instance;
     }
 
     public void ChangeColumn(int newColumnIndex)

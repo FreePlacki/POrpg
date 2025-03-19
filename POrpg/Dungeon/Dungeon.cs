@@ -11,12 +11,6 @@ public record struct Position(int X, int Y)
     public static implicit operator Position((int x, int y) p) => new() { X = p.x, Y = p.y };
 }
 
-public enum InitialDungeonState
-{
-    Empty,
-    Filled,
-}
-
 public class Dungeon : IEnumerable<Tile>
 {
     public int Width { get; }
@@ -53,9 +47,10 @@ public class Dungeon : IEnumerable<Tile>
         this[playerInitialPosition] = new FloorTile();
     }
 
-    public void Draw(ConsoleHelper console)
+    public void Draw()
     {
         var sw = Stopwatch.StartNew();
+        var console = ConsoleHelper.GetInstance();
 
         for (var y = 0; y < Height; y++)
         {
@@ -280,7 +275,6 @@ public class Dungeon : IEnumerable<Tile>
             Direction.Down => (_player.Position.X, _player.Position.Y + 1),
             Direction.Left => (_player.Position.X - 1, _player.Position.Y),
             Direction.Right => (_player.Position.X + 1, _player.Position.Y),
-            // TODO
             _ => throw new UnreachableException()
         };
         if (CanMoveTo(newPos))

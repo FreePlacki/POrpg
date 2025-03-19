@@ -1,4 +1,5 @@
 using POrpg.Inventory;
+using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Effects.WeaponEffects;
 

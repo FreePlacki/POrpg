@@ -7,11 +7,13 @@ public class Instructions
 {
     private bool _hasWeapons;
     private bool _hasItems;
+    private bool _hasPotions;
     private bool _hasMoney;
     private bool _hasWalls;
 
     public void AddWeapons() => _hasWeapons = true;
     public void AddItems() => _hasItems = true;
+    public void AddPotions() => _hasPotions = true;
     public void AddMoney() => _hasMoney = true;
     public void AddWalls() => _hasWalls = true;
 
@@ -21,6 +23,7 @@ public class Instructions
 
         if (_hasWeapons) buffer.AppendLine($"There are {new StyledText("Weapons", Style.Cyan).Text}!");
         if (_hasItems) buffer.AppendLine($"There are  {new StyledText("Items", Style.Blue).Text}!");
+        if (_hasItems) buffer.AppendLine($"There are  {new StyledText("Potions", Style.Blue).Text}!");
         if (_hasMoney)
             buffer.AppendLine($"There are two kinds of money: " +
                               $"{new StyledText("Gold", Style.Yellow).Text} " +

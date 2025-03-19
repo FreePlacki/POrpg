@@ -1,6 +1,8 @@
 using POrpg.Items;
 using POrpg.Items.Effects;
 using POrpg.Items.Effects.WeaponEffects;
+using POrpg.Items.Potions;
+using POrpg.Items.Weapons;
 
 namespace POrpg.Dungeon;
 
@@ -21,6 +23,11 @@ public class ConcreteDungeonBuilder : DungeonBuilder
     private readonly Func<Weapon>[] _weaponConstructors =
     [
         () => new Sword(), () => new Bow(), () => new Dagger()
+    ];
+
+    private readonly Func<Potion>[] _potionConstructors =
+    [
+        () => new HealthPotion(), () => new StrengthPotion()
     ];
 
     private readonly Func<Item, Item>[] _itemEffectConstructors =
@@ -138,16 +145,17 @@ public class ConcreteDungeonBuilder : DungeonBuilder
         return this;
     }
 
-    private ConcreteDungeonBuilder AddItems<T>(Func<T>[] constructors, Func<T, T>[] effects, double probability,
-        int maxEffects) where T : Item
+    private ConcreteDungeonBuilder AddItems<T>(Func<T>[] constructors, double probability, Func<T, T>[]? effects = null,
+        int maxEffects = 0) where T : Item
     {
         foreach (var tile in Dungeon)
         {
             if (!tile.IsPassable || !(Rng.NextDouble() < probability)) continue;
 
             var item = constructors[Rng.Next(constructors.Length)]();
-            for (var i = 0; i < Rng.Next(maxEffects); i++)
-                item = effects[Rng.Next(effects.Length)](item);
+            if (effects != null)
+                for (var i = 0; i < Rng.Next(maxEffects); i++)
+                    item = effects[Rng.Next(effects.Length)](item);
             tile.Add(item);
         }
 
@@ -157,19 +165,25 @@ public class ConcreteDungeonBuilder : DungeonBuilder
     public override DungeonBuilder AddUnusableItems(double probability = 0.07, int maxEffects = 0)
     {
         Instructions.AddItems();
-        return AddItems(_itemConstructors, _itemEffectConstructors, probability, maxEffects);
+        return AddItems(_itemConstructors, probability, _itemEffectConstructors, maxEffects);
     }
 
     public override DungeonBuilder AddWeapons(double probability = 0.15, int maxEffects = 0)
     {
         Instructions.AddWeapons();
-        return AddItems(_weaponConstructors, _weaponEffectConstructors, probability, maxEffects);
+        return AddItems(_weaponConstructors, probability, _weaponEffectConstructors, maxEffects);
+    }
+
+    public override DungeonBuilder AddPotions(double probability = 0.15)
+    {
+        Instructions.AddPotions();
+        return AddItems(_potionConstructors, probability);
     }
 
     public override DungeonBuilder AddMoney(double probability = 0.15)
     {
         Instructions.AddMoney();
-        return AddItems(_moneyConstructors, _itemEffectConstructors, probability, 0);
+        return AddItems(_moneyConstructors, probability);
     }
 
     public override Dungeon BuildDungeon() => Dungeon;

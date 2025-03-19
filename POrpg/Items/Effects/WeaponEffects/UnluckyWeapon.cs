@@ -1,3 +1,5 @@
+using POrpg.Items.Weapons;
+
 namespace POrpg.Items.Effects.WeaponEffects;
 
 public class UnluckyWeapon : WeaponEffect

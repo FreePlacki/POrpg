@@ -1,4 +1,4 @@
-namespace POrpg.Items;
+namespace POrpg.Items.Weapons;
 
 public class Bow : Weapon
 {

@@ -2,7 +2,7 @@ using System.Text;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 
-namespace POrpg.Items;
+namespace POrpg.Items.Weapons;
 
 public abstract class Weapon : Item
 {

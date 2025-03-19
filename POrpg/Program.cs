@@ -17,7 +17,9 @@ class Program
                 .AddRandomPaths()
                 .AddMoney()
                 .AddUnusableItems(maxEffects: 3)
-                .AddWeapons(maxEffects: 4);
+                .AddWeapons(maxEffects: 4)
+                .AddPotions();
+        
         var dungeon = builder.BuildDungeon();
         var instructions = builder.BuildInstructions();
 

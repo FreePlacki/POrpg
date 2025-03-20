@@ -23,16 +23,16 @@ public class Instructions
     {
         var buffer = new StringBuilder();
 
-        if (_hasWeapons) buffer.AppendLine($"There are {new StyledText("Weapons", Style.Cyan).Text}!");
-        if (_hasItems) buffer.AppendLine($"There are  {new StyledText("Items", Style.Blue).Text}!");
-        if (_hasPotions) buffer.AppendLine($"There are  {new StyledText("Potions", Style.Blue).Text}!");
-        if (_hasEnemies) buffer.AppendLine($"There are  {new StyledText("Enemies", Style.Red).Text}!");
+        if (_hasWeapons) buffer.AppendLine($"There are {new StyledText("Weapons", Styles.Weapon).Text}!");
+        if (_hasItems) buffer.AppendLine($"There are  {new StyledText("Items", Styles.Item).Text}!");
+        if (_hasPotions) buffer.AppendLine($"There are  {new StyledText("Potions", Styles.Potion).Text}!");
+        if (_hasEnemies) buffer.AppendLine($"There are  {new StyledText("Enemies", Styles.Enemy).Text}!");
         if (_hasMoney)
             buffer.AppendLine($"There are two kinds of money: " +
-                              $"{new StyledText("Gold", Style.Yellow).Text} " +
-                              $"and {new StyledText("Coin", Style.Yellow).Text}" +
+                              $"{new StyledText("Gold", Styles.Money).Text} " +
+                              $"and {new StyledText("Coin", Styles.Money).Text}" +
                               $"\nThey don't take up space in your inventory.");
-        if (_hasWalls) buffer.AppendLine($"You can't go through Walls (\u2588).");
+        if (_hasWalls) buffer.AppendLine("You can't go through Walls (\u2588).");
 
         return buffer.ToString();
     }

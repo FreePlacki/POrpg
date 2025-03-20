@@ -6,7 +6,7 @@ namespace POrpg.Items.Weapons;
 
 public abstract class Weapon : Item
 {
-    public override string Symbol => new StyledText("W", Style.Cyan).Text;
+    public override string Symbol => new StyledText("W", Styles.Weapon).Text;
     public override EquipmentSlotType EquipmentSlotType => EquipmentSlotType.LeftHand | EquipmentSlotType.RightHand;
     public abstract int Damage { get; }
 

@@ -23,7 +23,17 @@ public enum Style : byte
     Rainbow,
 }
 
-// TODO: Add constants like enemyColor = Red
+static class Styles
+{
+    public const Style Player = Style.Magenta;
+    public const Style Item = Style.White;
+    public const Style Weapon = Style.Cyan;
+    public const Style Potion = Style.Blue;
+    public const Style Enemy = Style.Red;
+    public const Style Money = Style.Yellow;
+    public const Style Stacked = Style.Underline;
+    public const Style Effect = Style.Bold;
+}
 
 public class StyledText : TextDecorator
 {

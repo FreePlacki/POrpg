@@ -24,6 +24,6 @@ public abstract class Item : IDrawable
         }
     }
 
-    public virtual string Symbol => new StyledText("I", Style.Blue).Text;
+    public virtual string Symbol => new StyledText("I", Styles.Item).Text;
     public abstract string Name { get; }
 }

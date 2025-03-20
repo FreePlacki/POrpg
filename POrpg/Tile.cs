@@ -1,4 +1,5 @@
 using POrpg.ConsoleHelpers;
+using POrpg.Enemies;
 using POrpg.Items;
 
 namespace POrpg;
@@ -7,10 +8,11 @@ public abstract class Tile : IDrawable
 {
     public abstract string Symbol { get; }
     public abstract string Name { get; }
-    public virtual bool IsPassable => true;
+    public abstract bool IsPassable { get; }
 
     public virtual IEnumerable<Item> Items => [];
     public virtual void Add(Item item) => throw new InvalidOperationException();
+    public virtual void Add(Enemy enemy) => throw new InvalidOperationException();
     public virtual Item? CurrentItem => throw new InvalidOperationException();
     public virtual void RemoveCurrentItem() => throw new InvalidOperationException();
     public virtual bool HasManyItems => throw new InvalidOperationException();
@@ -20,14 +22,18 @@ public abstract class Tile : IDrawable
 public class FloorTile : Tile
 {
     private readonly List<Item> _items;
+    private Enemy? _enemy;
     private bool IsEmpty => _items.Count == 0;
 
     private int _currentItemIndex;
+    public override bool IsPassable => _enemy == null;
     public override bool HasManyItems => _items.Count > 1;
     public override Item? CurrentItem => _items.ElementAtOrDefault(_currentItemIndex);
     public override IEnumerable<Item> Items => _items;
 
-    public override string Symbol => IsEmpty ? " " :
+    public override string Symbol =>
+        _enemy != null ? !IsEmpty ? new StyledText(_enemy.Symbol, Style.Underline).Text : _enemy.Symbol :
+        IsEmpty ? " " :
         HasManyItems ? new StyledText(CurrentItem!.Symbol, Style.Underline).Text : CurrentItem!.Symbol;
 
     public override string Name => IsEmpty ? "Empty Tile" : _items[0].Name;
@@ -49,6 +55,11 @@ public class FloorTile : Tile
     {
         _items.Add(item);
         _currentItemIndex = _items.Count - 1;
+    }
+    
+    public override void Add(Enemy enemy)
+    {
+        _enemy = enemy;
     }
 
     public override void RemoveCurrentItem()

@@ -84,8 +84,8 @@ List of available building procedures:
  - [x] adding items - distributes random items on non-wall fields,
  - [x] adding weapons - distributes random weapons on non-wall fields,
  - [x] adding modified weapons - distributes random weapons with modifiers on non-wall fields,
- - [ ] adding potions - distributes random potions on non-wall fields,
- - [ ] adding enemies - distributes random enemies on non-wall fields.
+ - [x] adding potions - distributes random potions on non-wall fields,
+ - [x] adding enemies - distributes random enemies on non-wall fields.
 
 Procedures:
  - empty dungeon,
@@ -103,7 +103,7 @@ The task should create a centralized system to present the state of the game.
 The game system should present:
  - [x] dungeon,
  - [x] information about objects on the player's field,
- - [x] information about the surrounding opponents,
+ - [ ] information about the surrounding opponents,
  - [x] the status of the player - his equipped items, statistics and equipment,
  - [ ] information about the actions taken by the player.
    

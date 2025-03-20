@@ -26,6 +26,7 @@ public abstract class DungeonBuilder
     public abstract DungeonBuilder AddUnusableItems(double probability = 0.07, int maxEffects = 0);
     public abstract DungeonBuilder AddWeapons(double probability = 0.15, int maxEffects = 0);
     public abstract DungeonBuilder AddPotions(double probability = 0.15);
+    public abstract DungeonBuilder AddEnemies(double probability = 0.15);
     public abstract DungeonBuilder AddMoney(double probability = 0.15);
     public abstract Dungeon BuildDungeon();
     public abstract Instructions BuildInstructions();

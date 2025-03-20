@@ -1,3 +1,4 @@
+using POrpg.Enemies;
 using POrpg.Items;
 using POrpg.Items.Effects;
 using POrpg.Items.Effects.WeaponEffects;
@@ -28,6 +29,11 @@ public class ConcreteDungeonBuilder : DungeonBuilder
     private readonly Func<Potion>[] _potionConstructors =
     [
         () => new HealthPotion(), () => new StrengthPotion()
+    ];
+    
+    private readonly Func<Enemy>[] _enemyConstructors =
+    [
+        () => new Orc(), () => new Skeleton()
     ];
 
     private readonly Func<Item, Item>[] _itemEffectConstructors =
@@ -178,6 +184,20 @@ public class ConcreteDungeonBuilder : DungeonBuilder
     {
         Instructions.AddPotions();
         return AddItems(_potionConstructors, probability);
+    }
+
+    public override DungeonBuilder AddEnemies(double probability = 0.15)
+    {
+        Instructions.AddEnemies();
+        foreach (var tile in Dungeon)
+        {
+            if (!tile.IsPassable || !(Rng.NextDouble() < probability)) continue;
+
+            var enemy = _enemyConstructors[Rng.Next(_enemyConstructors.Length)]();
+            tile.Add(enemy);
+        }
+
+        return this;
     }
 
     public override DungeonBuilder AddMoney(double probability = 0.15)

@@ -23,6 +23,8 @@ public enum Style : byte
     Rainbow,
 }
 
+// TODO: Add constants like enemyColor = Red
+
 public class StyledText : TextDecorator
 {
     private readonly Style _style;

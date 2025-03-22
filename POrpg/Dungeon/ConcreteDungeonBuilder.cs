@@ -206,6 +206,11 @@ public class ConcreteDungeonBuilder : DungeonBuilder
         return AddItems(_moneyConstructors, probability);
     }
 
-    public override Dungeon BuildDungeon() => Dungeon;
+    public override Dungeon BuildDungeon()
+    {
+        Dungeon[PlayerInitialPosition] = new FloorTile();
+        return Dungeon;
+    }
+
     public override Instructions BuildInstructions() => Instructions;
 }

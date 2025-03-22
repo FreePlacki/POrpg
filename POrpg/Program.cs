@@ -10,19 +10,12 @@ class Program
         const int roomWidth = 41;
         const int roomHeight = 21;
         Position playerInitialPosition = (0, 0);
-        var builder =
-            new ConcreteDungeonBuilder(InitialDungeonState.Filled, roomWidth, roomHeight, playerInitialPosition)
-                .AddCentralRoom()
-                // .AddRandomChambers(2)
-                .AddRandomPaths()
-                .AddMoney()
-                .AddUnusableItems(maxEffects: 3)
-                .AddWeapons(maxEffects: 4)
-                .AddPotions()
-                .AddEnemies(probability: 0.05);
+        var dungeonBuilder =
+            new DungeonBuilder(InitialDungeonState.Filled, roomWidth, roomHeight, playerInitialPosition);
 
-        var dungeon = builder.BuildDungeon();
-        var instructions = builder.BuildInstructions();
+        var director = new DungeonDirector();
+        var dungeon = director.Build(dungeonBuilder);
+        var instructions = director.Build(new InstructionsBuilder());
 
         Console.CursorVisible = false;
         Console.CancelKeyPress += (_, _) => Console.CursorVisible = true;

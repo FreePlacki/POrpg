@@ -55,17 +55,16 @@ public class ConsoleHelper
         SetCursorPosition(ColumnStart(_columnIndex), _currentColumnHeights[_columnIndex]);
     }
 
-    public void ShowInstructions(Instructions instructions)
+    public void ShowInstructions(string instructions)
     {
         IsShowingInstructions = true;
 
         Reset();
         Console.Clear();
-        var text = instructions.Build();
 
         var divider = new StyledText(new string('=', 10), Style.Faint).Text;
         Console.WriteLine($"{divider} {new StyledText("Instructions", Style.Underline).Text} {divider}\n");
-        Console.WriteLine(text);
+        Console.WriteLine(instructions);
         Console.WriteLine(InputHint("?", "Hide instructions"));
     }
 

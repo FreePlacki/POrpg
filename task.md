@@ -103,7 +103,7 @@ The task should create a centralized system to present the state of the game.
 The game system should present:
  - [x] dungeon,
  - [x] information about objects on the player's field,
- - [ ] information about the surrounding opponents,
+ - [x] information about the surrounding opponents,
  - [x] the status of the player - his equipped items, statistics and equipment,
  - [ ] information about the actions taken by the player.
    

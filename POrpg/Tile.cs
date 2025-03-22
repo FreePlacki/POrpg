@@ -8,6 +8,7 @@ public abstract class Tile : IDrawable
 {
     public abstract string Symbol { get; }
     public abstract string Name { get; }
+    public virtual string? Description => null;
     public abstract bool IsPassable { get; }
 
     public virtual IEnumerable<Item> Items => [];
@@ -36,7 +37,12 @@ public class FloorTile : Tile
         IsEmpty ? " " :
         HasManyItems ? new StyledText(CurrentItem!.Symbol, Style.Underline).Text : CurrentItem!.Symbol;
 
-    public override string Name => IsEmpty ? "Empty Tile" : _items[0].Name;
+    public override string Name =>
+        _enemy?.Name ?? CurrentItem?.Name ?? "Empty Tile";
+
+    public override string? Description =>
+        _enemy?.Description ?? CurrentItem?.Description ?? null;
+
 
     public FloorTile(params Item[] items)
     {
@@ -56,7 +62,7 @@ public class FloorTile : Tile
         _items.Add(item);
         _currentItemIndex = _items.Count - 1;
     }
-    
+
     public override void Add(Enemy enemy)
     {
         _enemy = enemy;

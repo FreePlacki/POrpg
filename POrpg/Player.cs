@@ -9,6 +9,7 @@ public class Player : IDrawable
 {
     public string Symbol => new StyledText("¶", Style.Magenta).Text;
     public string Name => "Player";
+    public string? Description => null;
 
     public Position Position;
     public int Coins { get; set; }

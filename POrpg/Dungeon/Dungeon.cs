@@ -9,6 +9,7 @@ namespace POrpg.Dungeon;
 public record struct Position(int X, int Y)
 {
     public static implicit operator Position((int x, int y) p) => new() { X = p.x, Y = p.y };
+    public static Position operator +(Position a, Position b) => new(a.X + b.X, a.Y + b.Y);
 }
 
 public class Dungeon : IEnumerable<Tile>
@@ -74,8 +75,8 @@ public class Dungeon : IEnumerable<Tile>
         DrawStats(console);
         console.HorizontalDivider();
         DrawInventory(console);
-        console.HorizontalDivider();
         DrawStandingOn(console);
+        DrawLookingAt(console);
 
         console.ChangeColumn(0);
         console.WriteLine();
@@ -201,23 +202,26 @@ public class Dungeon : IEnumerable<Tile>
     private void DrawStandingOn(ConsoleHelper console)
     {
         if (CurrentItem == null) return;
+        console.HorizontalDivider();
 
         console.WriteLine(new StyledText("Standing on:", Style.Underline));
-        console.WriteLine(CurrentItem.Name);
-        console.WriteLine(CurrentItem.Description);
+        console.WriteLine(CurrentTile.Name);
+        console.WriteLine(CurrentTile.Description);
         console.WriteLine(ConsoleHelper.InputHint("E", $"Pick up{(_player.Inventory.Backpack.IsFull ? "[backpack full]" : "")}"));
         if (CurrentTile.HasManyItems)
         {
             console.WriteLine(ConsoleHelper.InputHint(",.", "Cycle items"));
         }
     }
-
-    private enum Direction
+    
+    private void DrawLookingAt(ConsoleHelper console)
     {
-        Up,
-        Down,
-        Left,
-        Right
+        if (LookingAt == null) return;
+        console.HorizontalDivider();
+
+        console.WriteLine(new StyledText("Looking at:", Style.Underline));
+        console.WriteLine(LookingAt.Name);
+        console.WriteLine(LookingAt.Description);
     }
 
     public void ProcessInput(ConsoleKeyInfo input)
@@ -225,16 +229,16 @@ public class Dungeon : IEnumerable<Tile>
         switch (input.Key)
         {
             case ConsoleKey.W or ConsoleKey.UpArrow:
-                TryMovePlayer(Direction.Up);
+                TryMovePlayer((0, -1));
                 break;
             case ConsoleKey.S or ConsoleKey.DownArrow:
-                TryMovePlayer(Direction.Down);
+                TryMovePlayer((0, 1));
                 break;
             case ConsoleKey.A or ConsoleKey.LeftArrow:
-                TryMovePlayer(Direction.Left);
+                TryMovePlayer((-1, 0));
                 break;
             case ConsoleKey.D or ConsoleKey.RightArrow:
-                TryMovePlayer(Direction.Right);
+                TryMovePlayer((1, 0));
                 break;
             case ConsoleKey.E:
                 TryPickUpItem();
@@ -267,24 +271,23 @@ public class Dungeon : IEnumerable<Tile>
         }
     }
 
-    private void TryMovePlayer(Direction direction)
+    private void TryMovePlayer(Position direction)
     {
-        var newPos = direction switch
-        {
-            Direction.Up => (_player.Position.X, _player.Position.Y - 1),
-            Direction.Down => (_player.Position.X, _player.Position.Y + 1),
-            Direction.Left => (_player.Position.X - 1, _player.Position.Y),
-            Direction.Right => (_player.Position.X + 1, _player.Position.Y),
-            _ => throw new UnreachableException()
-        };
+        LookingAt = null;
+        var newPos = _player.Position + direction;
         if (CanMoveTo(newPos))
         {
             _player.Position = newPos;
+        }
+        else if (IsInBounds(newPos))
+        {
+            LookingAt = this[newPos];
         }
     }
 
     private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
+    private Tile? LookingAt { get; set; }
 
     private InventorySlot? _selectedSlot;
 

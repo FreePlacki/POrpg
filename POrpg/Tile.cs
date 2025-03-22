@@ -33,9 +33,9 @@ public class FloorTile : Tile
     public override IEnumerable<Item> Items => _items;
 
     public override string Symbol =>
-        _enemy != null ? !IsEmpty ? new StyledText(_enemy.Symbol, Style.Underline).Text : _enemy.Symbol :
+        _enemy != null ? !IsEmpty ? new StyledText(_enemy.Symbol, Styles.Stacked).Text : _enemy.Symbol :
         IsEmpty ? " " :
-        HasManyItems ? new StyledText(CurrentItem!.Symbol, Style.Underline).Text : CurrentItem!.Symbol;
+        HasManyItems ? new StyledText(CurrentItem!.Symbol, Styles.Stacked).Text : CurrentItem!.Symbol;
 
     public override string Name =>
         _enemy?.Name ?? CurrentItem?.Name ?? "Empty Tile";

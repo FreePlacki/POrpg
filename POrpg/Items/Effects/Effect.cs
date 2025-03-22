@@ -11,7 +11,7 @@ public abstract class Effect : Item
     {
         Item = item;
     }
-    public override string Symbol => new StyledText(Item.Symbol, Style.Bold).Text;
+    public override string Symbol => new StyledText(Item.Symbol, Styles.Effect).Text;
     
     public override Attributes? Attributes => Item.Attributes;
     public override EquipmentSlotType EquipmentSlotType => Item.EquipmentSlotType;

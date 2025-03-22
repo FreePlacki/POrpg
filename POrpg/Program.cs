@@ -28,7 +28,7 @@ class Program
         Console.CancelKeyPress += (_, _) => Console.CursorVisible = true;
         Console.Clear();
 
-        (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 100)];
+        (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 38)];
         var console = ConsoleHelper.Initialize(columns);
 
         while (true)

@@ -7,6 +7,7 @@ public enum Style : byte
     Reset = 0,
     Bold = 1,
     Faint = 2,
+    Italic = 3,
     Underline = 4,
     Black = 30,
     Red = 31,
@@ -32,7 +33,7 @@ static class Styles
     public const Style Enemy = Style.Red;
     public const Style Money = Style.Yellow;
     public const Style Stacked = Style.Underline;
-    public const Style Effect = Style.Bold;
+    public const Style Effect = Style.Italic;
 }
 
 public class StyledText : TextDecorator
@@ -54,7 +55,7 @@ public class StyledText : TextDecorator
             Style.GoodBad => text.InitialText.StartsWith('-') ? Style.Red : Style.Green,
             _ => style
         };
-        if (_style != Style.Faint && _style != Style.Underline) _reset = (byte)Style.Normal;
+        if (_style >= Style.Black) _reset = (byte)Style.Normal;
     }
 
     public StyledText(string text, Style style) : this(new PlainText(text), style)

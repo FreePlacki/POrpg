@@ -5,7 +5,7 @@ using POrpg.Dungeon;
 
 namespace POrpg.ConsoleHelpers;
 
-public partial class ConsoleHelper
+public class ConsoleHelper
 {
     private static ConsoleHelper? _instance;
     
@@ -69,7 +69,7 @@ public partial class ConsoleHelper
 
     public void Write(IConsoleText text)
     {
-        var lines = text.Text.Split('\n');
+        var lines = text.Text.Split('\n').SelectMany(l => WrapAnsiString(l).Split('\n'));
         var i = 0;
         foreach (var l in lines)
         {
@@ -172,12 +172,68 @@ public partial class ConsoleHelper
         }
     }
 
-    [GeneratedRegex(@"\u001b\[[0-9;]+m", RegexOptions.Compiled)]
-    private static partial Regex AnsiRegex();
-
     private static int GetVisibleLength(string text)
     {
-        var cleanedText = AnsiRegex().Replace(text, "");
+        var cleanedText = AnsiRegex.Replace(text, "");
         return cleanedText.Length;
+    }
+    
+    private static readonly Regex AnsiRegex = new(@"\u001b\[[0-9;]*m", RegexOptions.Compiled);
+
+    private string WrapAnsiString(string input)
+    {
+        var output = new StringBuilder();
+        var activeSequences = new List<string>();
+        int currentWidth = 0;
+        int maxWidth = _columns[_columnIndex].width;
+
+        var matches = AnsiRegex.Matches(input);
+        int nextMatchIndex = 0;
+        int inputIndex = 0;
+
+        while (inputIndex < input.Length)
+        {
+            if (nextMatchIndex < matches.Count && matches[nextMatchIndex].Index == inputIndex)
+            {
+                string ansiCode = matches[nextMatchIndex].Value;
+                output.Append(ansiCode);
+
+                if (ansiCode == "\u001b[0m" || ansiCode == "\u001b[39m")
+                    activeSequences.Clear();
+                else
+                    activeSequences.Add(ansiCode);
+
+                inputIndex += ansiCode.Length;
+                nextMatchIndex++;
+                continue;
+            }
+
+            char c = input[inputIndex];
+            if (c == '\n')
+            {
+                output.Append(c);
+                currentWidth = 0;
+                foreach (var seq in activeSequences)
+                    output.Append(seq);
+            }
+            else
+            {
+                if (currentWidth >= maxWidth)
+                {
+                    output.Append('\n');
+                    currentWidth = 0;
+                    foreach (var seq in activeSequences)
+                    {
+                        output.Append(seq);
+                    }
+                }
+
+                output.Append(c);
+                currentWidth++;
+            }
+            inputIndex++;
+        }
+
+        return output.ToString();
     }
 }

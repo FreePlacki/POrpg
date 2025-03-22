@@ -1,3 +1,4 @@
+using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 using POrpg.Items.Weapons;
 
@@ -11,6 +12,8 @@ public abstract class WeaponEffect : Weapon
     {
         Weapon = weapon;
     }
+    
+    public override string Symbol => new StyledText(Weapon.Symbol, Styles.Effect).Text;
     
     public override Attributes? Attributes => Weapon.Attributes;
     public override EquipmentSlotType EquipmentSlotType => Weapon.EquipmentSlotType;

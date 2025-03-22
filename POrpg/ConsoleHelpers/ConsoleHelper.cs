@@ -8,8 +8,17 @@ namespace POrpg.ConsoleHelpers;
 public class ConsoleHelper
 {
     private static ConsoleHelper? _instance;
-    
-    private (int start, int width)[] _columns;
+
+    private (int margin, int width)[] _columns;
+
+    private int ColumnStart(int columnIndex)
+    {
+        var result = _columns[0].margin;
+        for (int i = 0; i < columnIndex; i++)
+            result += _columns[i].width + _columns[i + 1].margin;
+        return result;
+    }
+
     private int[] _currentColumnHeights;
     private int[] _previousColumnHeights;
     private int _line;
@@ -18,16 +27,16 @@ public class ConsoleHelper
     private readonly List<StringBuilder> _lines = new(60);
     public bool IsShowingInstructions { get; private set; }
 
-    private ConsoleHelper((int start, int width)[] columns)
+    private ConsoleHelper((int margin, int width)[] columns)
     {
         Debug.Assert(_instance == null);
-        
+
         _columns = columns;
         _currentColumnHeights = new int[_columns.Length];
         _previousColumnHeights = new int[_columns.Length];
     }
 
-    public static ConsoleHelper Initialize((int start, int width)[] columns)
+    public static ConsoleHelper Initialize((int margin, int width)[] columns)
     {
         _instance = new ConsoleHelper(columns);
         return _instance;
@@ -43,13 +52,13 @@ public class ConsoleHelper
     {
         _currentColumnHeights[_columnIndex] = _line;
         _columnIndex = newColumnIndex;
-        SetCursorPosition(_columns[_columnIndex].start, _currentColumnHeights[_columnIndex]);
+        SetCursorPosition(ColumnStart(_columnIndex), _currentColumnHeights[_columnIndex]);
     }
 
     public void ShowInstructions(Instructions instructions)
     {
         IsShowingInstructions = true;
-        
+
         Reset();
         Console.Clear();
         var text = instructions.Build();
@@ -84,10 +93,10 @@ public class ConsoleHelper
     public void WriteLine(IConsoleText text)
     {
         Write(text);
-        var padding = _columns[_columnIndex].start + _columns[_columnIndex].width - _column;
+        var padding = ColumnStart(_columnIndex) + _columns[_columnIndex].width - _column;
         if (padding > 0)
             WriteToBuffer(new string(' ', padding));
-        SetCursorPosition(_columns[_columnIndex].start, _line + 1);
+        SetCursorPosition(ColumnStart(_columnIndex), _line + 1);
     }
 
     public void Write(string? text)
@@ -104,7 +113,7 @@ public class ConsoleHelper
 
     public void HorizontalDivider(int width = 30)
     {
-        WriteLine(new StyledText(new string('=', width), Style.Faint));
+        WriteLine(new StyledText(new string('\u2550', width), Style.Faint));
     }
 
     public void Reset()
@@ -114,7 +123,7 @@ public class ConsoleHelper
             var s = new string(' ', _columns[i].width);
             for (var j = _currentColumnHeights[i]; j < _previousColumnHeights[i]; j++)
             {
-                SetCursorPosition(_columns[i].start, j);
+                SetCursorPosition(ColumnStart(i), j);
                 WriteToBuffer(s);
             }
         }
@@ -128,26 +137,26 @@ public class ConsoleHelper
 
         _line = 0;
         _columnIndex = 0;
-        _column = _columns[_columnIndex].start;
+        _column = ColumnStart(_columnIndex);
         _previousColumnHeights = _currentColumnHeights;
         _currentColumnHeights = new int[_columns.Length];
-        SetCursorPosition(_columns[_columnIndex].start, _line);
-        Console.SetCursorPosition(_columns[_columnIndex].start, _line);
+        SetCursorPosition(ColumnStart(_columnIndex), _line);
+        Console.SetCursorPosition(ColumnStart(_columnIndex), _line);
     }
-    
+
     public static string InputHint(string keys, string? description = null)
     {
         return description == null
-            ? new StyledText(new StyledText(keys, Style.Magenta), Style.Faint).Text
-            : new StyledText($"{description} ({new StyledText(keys, Style.Magenta).Text})", Style.Faint).Text;
+            ? new StyledText(new StyledText(keys, Styles.Player), Style.Faint).Text
+            : new StyledText($"{description} ({new StyledText(keys, Styles.Player).Text})", Style.Faint).Text;
     }
-    
+
     private void SetCursorPosition(int column, int line)
     {
         _column = column;
         _line = line;
     }
-    
+
     private void WriteToBuffer(string s)
     {
         if (string.IsNullOrEmpty(s)) return;
@@ -177,7 +186,7 @@ public class ConsoleHelper
         var cleanedText = AnsiRegex.Replace(text, "");
         return cleanedText.Length;
     }
-    
+
     private static readonly Regex AnsiRegex = new(@"\u001b\[[0-9;]*m", RegexOptions.Compiled);
 
     private string WrapAnsiString(string input)
@@ -231,6 +240,7 @@ public class ConsoleHelper
                 output.Append(c);
                 currentWidth++;
             }
+
             inputIndex++;
         }
 

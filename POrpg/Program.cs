@@ -20,7 +20,7 @@ class Program
                 .AddWeapons(maxEffects: 4)
                 .AddPotions()
                 .AddEnemies(probability: 0.05);
-        
+
         var dungeon = builder.BuildDungeon();
         var instructions = builder.BuildInstructions();
 
@@ -28,7 +28,7 @@ class Program
         Console.CancelKeyPress += (_, _) => Console.CursorVisible = true;
         Console.Clear();
 
-        (int start, int width)[] columns = [(0, roomWidth), (roomWidth + 5, 38)];
+        (int margin, int width)[] columns = [(0, roomWidth), (5, 38), (5, 38)];
         var console = ConsoleHelper.Initialize(columns);
 
         while (true)

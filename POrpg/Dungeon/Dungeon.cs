@@ -60,7 +60,7 @@ public class Dungeon : IEnumerable<Tile>
                 Position pos = (x, y);
                 if (pos == _player.Position)
                 {
-                    console.Write(new StyledText(_player.Symbol, Style.Magenta));
+                    console.Write(new StyledText(_player.Symbol, Styles.Player));
                     continue;
                 }
 
@@ -71,23 +71,27 @@ public class Dungeon : IEnumerable<Tile>
         }
 
         console.ChangeColumn(1);
-
-        DrawStats(console);
+        DrawStats();
         console.HorizontalDivider();
-        DrawInventory(console);
-        DrawStandingOn(console);
-        DrawLookingAt(console);
+        DrawInventory();
+        console.HorizontalDivider();
+        console.ChangeColumn(2);
+        if (DrawStandingOn())
+            console.HorizontalDivider();
+        if (DrawLookingAt())
+            console.HorizontalDivider();
 
         console.ChangeColumn(0);
         console.WriteLine();
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
                           $"{ConsoleHelper.InputHint("C", "Redraw")}");
         sw.Stop();
-        console.Write(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
+        console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
     }
 
-    private void DrawStats(ConsoleHelper console)
+    private void DrawStats()
     {
+        var console = ConsoleHelper.GetInstance();
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
         foreach (var attribute in _player.Attributes)
         {
@@ -96,17 +100,18 @@ public class Dungeon : IEnumerable<Tile>
         }
 
         console.WriteLine();
-        console.WriteLine($"{"Coins",-15} {new StyledText(_player.Coins.ToString(), Style.Yellow).Text}");
-        console.WriteLine($"{"Gold",-15} {new StyledText(_player.Gold.ToString(), Style.Yellow).Text}");
+        console.WriteLine($"{"Coins",-15} {new StyledText(_player.Coins.ToString(), Styles.Money).Text}");
+        console.WriteLine($"{"Gold",-15} {new StyledText(_player.Gold.ToString(), Styles.Money).Text}");
     }
 
-    private void DrawInventory(ConsoleHelper console)
+    private void DrawInventory()
     {
+        var console = ConsoleHelper.GetInstance();
         console.WriteLine(new StyledText("Inventory:", Style.Underline));
 
         if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
         {
-            console.Write($"{new StyledText("L", Style.Magenta).Text}. ");
+            console.Write($"{new StyledText("L", Styles.Player).Text}. ");
             var leftHand = _player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
             if (leftHand != null)
             {
@@ -114,7 +119,8 @@ public class Dungeon : IEnumerable<Tile>
                 console.WriteLine(leftHand.Description);
                 console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
                 console.WriteLine(
-                    ConsoleHelper.InputHint("B", $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
+                    ConsoleHelper.InputHint("B",
+                        $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
             }
             else
             {
@@ -131,7 +137,7 @@ public class Dungeon : IEnumerable<Tile>
             var leftHand = _player.Inventory.Equipment.LeftHand;
             console.WriteLine(leftHand != null ? leftHand.Name : "Empty");
 
-            console.Write($"{new StyledText("R", Style.Magenta).Text}. ");
+            console.Write($"{new StyledText("R", Styles.Player).Text}. ");
             var rightHand = _player.Inventory.Equipment.RightHand;
             if (rightHand != null)
             {
@@ -139,7 +145,8 @@ public class Dungeon : IEnumerable<Tile>
                 console.WriteLine(rightHand.Description);
                 console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
                 console.WriteLine(
-                    ConsoleHelper.InputHint("B", $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
+                    ConsoleHelper.InputHint("B",
+                        $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
             }
             else
             {
@@ -154,11 +161,12 @@ public class Dungeon : IEnumerable<Tile>
                 if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
                 {
                     console.WriteLine(
-                        $"{new StyledText("LR", Style.Magenta).Text}. {item.Name}");
+                        $"{new StyledText("LR", Styles.Player).Text}. {item.Name}");
                     console.WriteLine(item.Description);
                     console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
                     console.WriteLine(
-                        ConsoleHelper.InputHint("B", $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
+                        ConsoleHelper.InputHint("B",
+                            $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
                 }
                 else
                 {
@@ -186,7 +194,7 @@ public class Dungeon : IEnumerable<Tile>
         {
             if (_selectedSlot == new BackpackSlot(i))
             {
-                console.WriteLine($"{new StyledText((i + 1).ToString(), Style.Magenta).Text}. {item.Name}");
+                console.WriteLine($"{new StyledText((i + 1).ToString(), Styles.Player).Text}. {item.Name}");
                 console.WriteLine(item.Description);
                 console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
             }
@@ -199,29 +207,31 @@ public class Dungeon : IEnumerable<Tile>
         }
     }
 
-    private void DrawStandingOn(ConsoleHelper console)
+    private bool DrawStandingOn()
     {
-        if (CurrentItem == null) return;
-        console.HorizontalDivider();
+        if (CurrentItem == null) return false;
+        var console = ConsoleHelper.GetInstance();
 
         console.WriteLine(new StyledText("Standing on:", Style.Underline));
         console.WriteLine(CurrentTile.Name);
         console.WriteLine(CurrentTile.Description);
-        console.WriteLine(ConsoleHelper.InputHint("E", $"Pick up{(_player.Inventory.Backpack.IsFull ? "[backpack full]" : "")}"));
+        console.WriteLine(ConsoleHelper.InputHint("E",
+            $"Pick up{(_player.Inventory.Backpack.IsFull ? "[backpack full]" : "")}"));
         if (CurrentTile.HasManyItems)
-        {
             console.WriteLine(ConsoleHelper.InputHint(",.", "Cycle items"));
-        }
+
+        return true;
     }
-    
-    private void DrawLookingAt(ConsoleHelper console)
+
+    private bool DrawLookingAt()
     {
-        if (LookingAt == null) return;
-        console.HorizontalDivider();
+        if (LookingAt == null) return false;
+        var console = ConsoleHelper.GetInstance();
 
         console.WriteLine(new StyledText("Looking at:", Style.Underline));
         console.WriteLine(LookingAt.Name);
         console.WriteLine(LookingAt.Description);
+        return true;
     }
 
     public void ProcessInput(ConsoleKeyInfo input)
@@ -267,6 +277,7 @@ public class Dungeon : IEnumerable<Tile>
                 {
                     TrySelectItem(new BackpackSlot(slot - 1));
                 }
+
                 break;
         }
     }

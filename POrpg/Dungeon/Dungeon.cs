@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
+using POrpg.Commands;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 using POrpg.Items;
@@ -240,16 +241,16 @@ public class Dungeon : IEnumerable<Tile>
         switch (input.Key)
         {
             case ConsoleKey.W or ConsoleKey.UpArrow:
-                TryMovePlayer((0, -1));
+                _lastCommand = new MovePlayerCommand(this, (0, -1));
                 break;
             case ConsoleKey.S or ConsoleKey.DownArrow:
-                TryMovePlayer((0, 1));
+                _lastCommand = new MovePlayerCommand(this, (0, 1));
                 break;
             case ConsoleKey.A or ConsoleKey.LeftArrow:
-                TryMovePlayer((-1, 0));
+                _lastCommand = new MovePlayerCommand(this, (-1, 0));
                 break;
             case ConsoleKey.D or ConsoleKey.RightArrow:
-                TryMovePlayer((1, 0));
+                _lastCommand = new MovePlayerCommand(this, (1, 0));
                 break;
             case ConsoleKey.E:
                 TryPickUpItem();
@@ -281,25 +282,31 @@ public class Dungeon : IEnumerable<Tile>
 
                 break;
         }
+        
+        _lastCommand?.Execute();
     }
 
-    private void TryMovePlayer(Position direction)
+    public bool TryMovePlayer(Position direction)
     {
         LookingAt = null;
         var newPos = _player.Position + direction;
         if (CanMoveTo(newPos))
         {
             _player.Position = newPos;
+            return true;
         }
-        else if (IsInBounds(newPos))
+        if (IsInBounds(newPos))
         {
             LookingAt = this[newPos];
         }
+
+        return false;
     }
 
     private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
     private Tile? LookingAt { get; set; }
+    private ICommand? _lastCommand = null;
 
     private InventorySlot? _selectedSlot;
 

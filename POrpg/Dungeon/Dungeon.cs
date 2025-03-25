@@ -84,6 +84,8 @@ public class Dungeon : IEnumerable<Tile>
 
         console.ChangeColumn(0);
         console.WriteLine();
+        if (_lastCommand?.Description != null)
+            console.WriteLine(_lastCommand.Description);
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
                           $"{ConsoleHelper.InputHint("C", "Redraw")}  " +
                           $"{ConsoleHelper.InputHint("?", "Help")}");
@@ -253,32 +255,30 @@ public class Dungeon : IEnumerable<Tile>
                 _lastCommand = new MovePlayerCommand(this, (1, 0));
                 break;
             case ConsoleKey.E:
-                TryPickUpItem();
+                _lastCommand = new PickUpItemCommand(this);
                 break;
             case ConsoleKey.Q:
-                TryDropItem();
+                _lastCommand = new DropItemCommand(this);
                 break;
             case ConsoleKey.L:
-                TrySelectItem(new EquipmentSlot(EquipmentSlotType.LeftHand));
+                _lastCommand = new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.LeftHand));
                 break;
             case ConsoleKey.R:
-                TrySelectItem(new EquipmentSlot(EquipmentSlotType.RightHand));
+                _lastCommand = new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.RightHand));
                 break;
             case ConsoleKey.B:
-                TryMoveToBackpack();
+                _lastCommand = new MoveToBackpackCommand(this);
                 break;
             case ConsoleKey.OemPeriod:
-                CurrentTile.CycleItems();
+                _lastCommand = new CycleItemsCommand(this);
                 break;
             case ConsoleKey.OemComma:
-                CurrentTile.CycleItems(reverse: true);
+                _lastCommand = new CycleItemsCommand(this, reverse: true);
                 break;
             case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
                 or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
                 if (int.TryParse(input.KeyChar.ToString(), out var slot))
-                {
-                    TrySelectItem(new BackpackSlot(slot - 1));
-                }
+                    _lastCommand = new SelectItemCommand(this, new BackpackSlot(slot - 1));
 
                 break;
         }
@@ -306,27 +306,31 @@ public class Dungeon : IEnumerable<Tile>
     private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
     private Tile? LookingAt { get; set; }
-    private ICommand? _lastCommand = null;
+    private ICommand? _lastCommand;
 
     private InventorySlot? _selectedSlot;
 
-    private void TryPickUpItem()
+    public Item? TryPickUpItem()
     {
-        if (CurrentItem == null || _player.Inventory.Backpack.IsFull) return;
+        if (CurrentItem == null || _player.Inventory.Backpack.IsFull) return null;
+        var item = CurrentItem;
         _player.PickUp(CurrentItem);
         CurrentTile.RemoveCurrentItem();
+        return item;
     }
 
-    private void TryDropItem()
+    public Item? TryDropItem()
     {
-        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return;
-        CurrentTile.Add(_player.Drop(_selectedSlot));
+        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return null;
+        var item = _player.Drop(_selectedSlot);
+        CurrentTile.Add(item);
         _selectedSlot = null;
+        return item;
     }
 
-    private void TrySelectItem(InventorySlot slot)
+    public bool TrySelectItem(InventorySlot slot)
     {
-        if (!slot.IsValid(_player.Inventory)) return;
+        if (!slot.IsValid(_player.Inventory)) return false;
 
         var normSlot = slot.Normalize(_player.Inventory, _selectedSlot);
 
@@ -334,27 +338,33 @@ public class Dungeon : IEnumerable<Tile>
         if (_selectedSlot == normSlot)
         {
             _selectedSlot = null;
-            return;
+            return true;
         }
 
         if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null)
         {
             _selectedSlot = normSlot;
-            return;
+            return true;
         }
 
         _player.Inventory.Swap(_selectedSlot, slot);
         slot = slot.Normalize(_player.Inventory, _selectedSlot);
         _selectedSlot = slot;
+        
+        return true;
     }
 
-    private void TryMoveToBackpack()
+    public bool TryMoveToBackpack()
     {
         if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null ||
-            !_selectedSlot.CanMoveToBackpack || _player.Inventory.Backpack.IsFull) return;
+            !_selectedSlot.CanMoveToBackpack || _player.Inventory.Backpack.IsFull) return false;
         _selectedSlot.MoveToBackpack(_player.Inventory);
         _selectedSlot = null;
+        
+        return true;
     }
+    
+    public void CycleItems(bool reverse) => CurrentTile.CycleItems(reverse);
 
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 

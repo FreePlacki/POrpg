@@ -84,8 +84,8 @@ public class Dungeon : IEnumerable<Tile>
 
         console.ChangeColumn(0);
         console.WriteLine();
-        if (_lastCommand?.Description != null)
-            console.WriteLine(_lastCommand.Description);
+        DrawPastCommands();
+
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
                           $"{ConsoleHelper.InputHint("C", "Redraw")}  " +
                           $"{ConsoleHelper.InputHint("?", "Help")}");
@@ -238,52 +238,85 @@ public class Dungeon : IEnumerable<Tile>
         return true;
     }
 
+    private void DrawPastCommands()
+    {
+        var console = ConsoleHelper.GetInstance();
+        const int logSize = 3;
+        if (_pastCommands.Count >= logSize)
+        {
+            var past = _pastCommands.Dequeue();
+            if (past?.Description != null)
+                console.WriteLine(new StyledText(past.Description, Style.Faint));
+            else
+                console.WriteLine();
+            foreach (var cmd in _pastCommands.Take(logSize - 1))
+            {
+                if (cmd?.Description != null)
+                    console.WriteLine(cmd.Description);
+                else
+                    console.WriteLine();
+            }
+
+            return;
+        }
+
+        if (LastCommand?.Description != null)
+        {
+            console.WriteLine();
+            console.WriteLine(LastCommand.Description);
+            return;
+        }
+
+        console.WriteLine();
+        console.WriteLine();
+    }
+
     public void ProcessInput(ConsoleKeyInfo input)
     {
         switch (input.Key)
         {
             case ConsoleKey.W or ConsoleKey.UpArrow:
-                _lastCommand = new MovePlayerCommand(this, (0, -1));
+                _pastCommands.Enqueue(new MovePlayerCommand(this, (0, -1)));
                 break;
             case ConsoleKey.S or ConsoleKey.DownArrow:
-                _lastCommand = new MovePlayerCommand(this, (0, 1));
+                _pastCommands.Enqueue(new MovePlayerCommand(this, (0, 1)));
                 break;
             case ConsoleKey.A or ConsoleKey.LeftArrow:
-                _lastCommand = new MovePlayerCommand(this, (-1, 0));
+                _pastCommands.Enqueue(new MovePlayerCommand(this, (-1, 0)));
                 break;
             case ConsoleKey.D or ConsoleKey.RightArrow:
-                _lastCommand = new MovePlayerCommand(this, (1, 0));
+                _pastCommands.Enqueue(new MovePlayerCommand(this, (1, 0)));
                 break;
             case ConsoleKey.E:
-                _lastCommand = new PickUpItemCommand(this);
+                _pastCommands.Enqueue(new PickUpItemCommand(this));
                 break;
             case ConsoleKey.Q:
-                _lastCommand = new DropItemCommand(this);
+                _pastCommands.Enqueue(new DropItemCommand(this));
                 break;
             case ConsoleKey.L:
-                _lastCommand = new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.LeftHand));
+                _pastCommands.Enqueue(new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.LeftHand)));
                 break;
             case ConsoleKey.R:
-                _lastCommand = new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.RightHand));
+                _pastCommands.Enqueue(new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.RightHand)));
                 break;
             case ConsoleKey.B:
-                _lastCommand = new MoveToBackpackCommand(this);
+                _pastCommands.Enqueue(new MoveToBackpackCommand(this));
                 break;
             case ConsoleKey.OemPeriod:
-                _lastCommand = new CycleItemsCommand(this);
+                _pastCommands.Enqueue(new CycleItemsCommand(this));
                 break;
             case ConsoleKey.OemComma:
-                _lastCommand = new CycleItemsCommand(this, reverse: true);
+                _pastCommands.Enqueue(new CycleItemsCommand(this, reverse: true));
                 break;
             case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
                 or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
                 if (int.TryParse(input.KeyChar.ToString(), out var slot))
-                    _lastCommand = new SelectItemCommand(this, new BackpackSlot(slot - 1));
+                    _pastCommands.Enqueue(new SelectItemCommand(this, new BackpackSlot(slot - 1)));
 
                 break;
         }
-        
-        _lastCommand?.Execute();
+
+        LastCommand?.Execute();
     }
 
     public bool TryMovePlayer(Position direction)
@@ -295,6 +328,7 @@ public class Dungeon : IEnumerable<Tile>
             _player.Position = newPos;
             return true;
         }
+
         if (IsInBounds(newPos))
         {
             LookingAt = this[newPos];
@@ -306,7 +340,8 @@ public class Dungeon : IEnumerable<Tile>
     private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
     private Tile? LookingAt { get; set; }
-    private ICommand? _lastCommand;
+    private ICommand? LastCommand => _pastCommands.LastOrDefault();
+    private Queue<ICommand?> _pastCommands = [];
 
     private InventorySlot? _selectedSlot;
 
@@ -350,7 +385,7 @@ public class Dungeon : IEnumerable<Tile>
         _player.Inventory.Swap(_selectedSlot, slot);
         slot = slot.Normalize(_player.Inventory, _selectedSlot);
         _selectedSlot = slot;
-        
+
         return true;
     }
 
@@ -360,10 +395,10 @@ public class Dungeon : IEnumerable<Tile>
             !_selectedSlot.CanMoveToBackpack || _player.Inventory.Backpack.IsFull) return false;
         _selectedSlot.MoveToBackpack(_player.Inventory);
         _selectedSlot = null;
-        
+
         return true;
     }
-    
+
     public void CycleItems(bool reverse) => CurrentTile.CycleItems(reverse);
 
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;

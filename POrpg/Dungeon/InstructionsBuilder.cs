@@ -65,7 +65,7 @@ public class InstructionsBuilder : IDungeonBuilder<string>
         var buffer = new StringBuilder();
 
         if (_hasWeapons) buffer.AppendLine($"There are {new StyledText("Weapons", Styles.Weapon).Text}!");
-        if (_hasItems) buffer.AppendLine($"There are  {new StyledText("Items", Styles.Item).Text}!");
+        if (_hasItems) buffer.AppendLine($"There are {new StyledText("Items", Styles.Item).Text}!");
         if (_hasModifiedItems && _hasModifiedWeapons)
             buffer.AppendLine($"{new StyledText("Weapons", Styles.Weapon).Text}" +
                               $" and {new StyledText("Items", Styles.Item).Text}" +
@@ -76,8 +76,8 @@ public class InstructionsBuilder : IDungeonBuilder<string>
         else if (_hasModifiedWeapons)
             buffer.AppendLine($"{new StyledText("Weapons", Styles.Weapon).Text}" +
                               $" can have {new StyledText("special effects", Styles.Effect).Text}!");
-        if (_hasPotions) buffer.AppendLine($"There are  {new StyledText("Potions", Styles.Potion).Text}!");
-        if (_hasEnemies) buffer.AppendLine($"There are  {new StyledText("Enemies", Styles.Enemy).Text}!");
+        if (_hasPotions) buffer.AppendLine($"There are {new StyledText("Potions", Styles.Potion).Text}!");
+        if (_hasEnemies) buffer.AppendLine($"There are {new StyledText("Enemies", Styles.Enemy).Text}!");
         if (_hasMoney)
             buffer.AppendLine($"There are two kinds of money: " +
                               $"{new StyledText("Gold", Styles.Money).Text} " +

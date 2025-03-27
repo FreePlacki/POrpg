@@ -105,7 +105,7 @@ The game system should present:
  - [x] information about objects on the player's field,
  - [x] information about the surrounding opponents,
  - [x] the status of the player - his equipped items, statistics and equipment,
- - [ ] information about the actions taken by the player.
+ - [x] information about the actions taken by the player.
    
 The system is the only object in the program that can write to the console.
 
@@ -117,3 +117,54 @@ This step should be implemented using the Singleton pattern.
 A system that explains how to play should display instructions based on the elements present in the dungeon. This means that, for example, if there are no items in the maze, there should be no information about picking them up.
 
 This step should be done using the Builder pattern and the system implemented in the previous section with the appropriate building procedures.
+
+# Stage 3: Keyboard control, potions
+
+## Task Objective
+
+Implementation of:
+
+- keyboard control (extension/refactor of Stage 1 functionality),
+- application of temporal effects (duration measured in turns) via drinkng potions.
+
+New code fragments can (and mostly should), if possible, use and extend functionality from previous stages (e.g. writing out to the console).
+
+## Requirements
+
+### Keyboard control
+
+The user should be able to control the game using the keyboard. Possible actions to perform are:
+
+- [ ] moving in four directions (keys: `W`, `S`, `A`, `D`),
+- [ ] picking up an item (`E`),
+- [ ] dropping a selected item from the inventory or a hand,
+- [ ] dropping all items,
+- [ ] drinking a selected potion from the inventory,
+- [ ] placing an item in a hand or hiding it in the inventory,
+- [ ] exiting the game.
+
+Implement the individual actions and their processing using the *Chain Of Responsibility* pattern. Adding new actions, if necessary, should be easy to implement (additional actions may be required in the future stages).
+
+It will be a good practice to dynamically change the list of supported keys according to what is possible in the given dungeon configuration. There is no point in handling e.g. lifting of items unless they were initially generated.
+
+All available actions should be displayed in the game view. When an additional action is required (e.g. selecting an item to drop), the game should ask for additional information in a concise and understandable way.
+
+If the user presses a key not associated with any action, a message should be displayed.
+Invalid input handling should be also implemented within the *Chain Of Responsibility* pattern (hint: guard action).
+
+### Effects
+
+Each potion has a certain effect which, when player drinks the potion, modifies a certain attribute of the player for a certain period of time.
+
+**NOTE**: The effect after drinking a potion is a different and acts independently from the 'effect' created by taking the item in a hand!
+
+Examples:
+
+- a "power potion" can increase a player's strength by `2` for `5` consecutive turns.
+- a "luck potion" can last for `n` turns; in the `i`-th turn of effect causes the luck attribute to be multiplied by `n-i+1`.
+
+An information should be displayed for each effect acting on the player. After a given number of turns, the effect expires and should not be displayed.
+
+Implement the operation of effects (in particular its temporality) using the *Observer* pattern. The effect should update its state after each turn and, if necessary, report its expiration.
+
+At least two potions should be created with a temporal effect and one with an 'eternal' effect. The ability to remove effects before the effect ends (e.g. drinking an antidote) is highly acceptable.

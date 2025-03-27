@@ -83,8 +83,8 @@ public class Dungeon : IEnumerable<Tile>
             console.HorizontalDivider();
 
         console.ChangeColumn(0);
-        console.WriteLine();
         _pastCommands.Print();
+        console.WriteLine();
 
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
                           $"{ConsoleHelper.InputHint("C", "Redraw")}  " +

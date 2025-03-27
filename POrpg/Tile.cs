@@ -78,7 +78,7 @@ public class FloorTile : Tile
 
 public class WallTile : Tile
 {
-    public override string Symbol => "\u2588";
+    public override string Symbol => new StyledText("\u2588", Style.Faint).Text;
     public override string Name => "Wall";
     public override bool IsPassable => false;
 }

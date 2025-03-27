@@ -84,7 +84,7 @@ public class Dungeon : IEnumerable<Tile>
 
         console.ChangeColumn(0);
         console.WriteLine();
-        DrawPastCommands();
+        _pastCommands.Print();
 
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
                           $"{ConsoleHelper.InputHint("C", "Redraw")}  " +
@@ -238,39 +238,6 @@ public class Dungeon : IEnumerable<Tile>
         return true;
     }
 
-    private void DrawPastCommands()
-    {
-        var console = ConsoleHelper.GetInstance();
-        const int logSize = 3;
-        if (_pastCommands.Count >= logSize)
-        {
-            var past = _pastCommands.Dequeue();
-            if (past?.Description != null)
-                console.WriteLine(new StyledText(past.Description, Style.Faint));
-            else
-                console.WriteLine();
-            foreach (var cmd in _pastCommands.Take(logSize - 1))
-            {
-                if (cmd?.Description != null)
-                    console.WriteLine(cmd.Description);
-                else
-                    console.WriteLine();
-            }
-
-            return;
-        }
-
-        if (LastCommand?.Description != null)
-        {
-            console.WriteLine();
-            console.WriteLine(LastCommand.Description);
-            return;
-        }
-
-        console.WriteLine();
-        console.WriteLine();
-    }
-
     public void ProcessInput(ConsoleKeyInfo input)
     {
         switch (input.Key)
@@ -316,7 +283,7 @@ public class Dungeon : IEnumerable<Tile>
                 break;
         }
 
-        LastCommand?.Execute();
+        _pastCommands.ExecuteLast();
     }
 
     public bool TryMovePlayer(Position direction)
@@ -340,8 +307,7 @@ public class Dungeon : IEnumerable<Tile>
     private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
     private Tile? LookingAt { get; set; }
-    private ICommand? LastCommand => _pastCommands.LastOrDefault();
-    private Queue<ICommand?> _pastCommands = [];
+    private readonly CommandQueue _pastCommands = new(3);
 
     private InventorySlot? _selectedSlot;
 

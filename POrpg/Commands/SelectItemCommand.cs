@@ -13,8 +13,6 @@ public class SelectItemCommand : ICommand
         _selectedSlot = selectedSlot;
     }
 
-    public bool IncreasesCounter => false;
-
     public void Execute()
     {
         _dungeon.TrySelectItem(_selectedSlot);

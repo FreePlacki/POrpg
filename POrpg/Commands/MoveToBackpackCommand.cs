@@ -9,8 +9,6 @@ public class MoveToBackpackCommand : ICommand
         _dungeon = dungeon;
     }
 
-    public bool IncreasesCounter => false;
-
     public void Execute()
     {
         _dungeon.TryMoveToBackpack();

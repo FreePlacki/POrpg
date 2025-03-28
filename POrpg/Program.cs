@@ -11,12 +11,13 @@ class Program
         const int roomWidth = 41;
         const int roomHeight = 21;
         Position playerInitialPosition = (0, 0);
+        
         var dungeonBuilder =
             new DungeonBuilder(InitialDungeonState.Filled, roomWidth, roomHeight, playerInitialPosition);
-
         var director = new DungeonDirector();
         var dungeon = director.Build(dungeonBuilder);
         var instructions = director.Build(new InstructionsBuilder());
+        var inputHandler = director.Build(new InputHandlerBuilder());
 
         Console.CursorVisible = false;
         Console.CancelKeyPress += (_, _) => Console.CursorVisible = true;
@@ -24,8 +25,6 @@ class Program
 
         (int margin, int width)[] columns = [(0, roomWidth), (2, 38), (2, 38)];
         var console = ConsoleHelper.Initialize(columns);
-        var inputHandler =
-            new MovementInputHandler(new CycleItemsHandler(new InventoryInputHandler(new GuardInputHandler())));
 
         while (true)
         {

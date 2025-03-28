@@ -4,12 +4,9 @@ namespace POrpg.InputHandlers;
 
 public abstract class InputHandler
 {
-    protected readonly InputHandler? NextHandler;
+    protected InputHandler? NextHandler;
 
-    protected InputHandler(InputHandler? nextHandler)
-    {
-        NextHandler = nextHandler;
-    }
-    
+    public void SetNext(InputHandler? handler) => NextHandler = handler;
+
     public abstract ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo);
 }

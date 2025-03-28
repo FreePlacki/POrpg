@@ -2,7 +2,7 @@ using POrpg.Commands;
 
 namespace POrpg.InputHandlers;
 
-public class CycleItemsHandler(InputHandler nextHandler) : InputHandler(nextHandler)
+public class CycleItemsHandler : InputHandler
 {
     public override ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
     {

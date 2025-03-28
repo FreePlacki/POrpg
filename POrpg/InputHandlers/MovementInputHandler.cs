@@ -2,7 +2,7 @@ using POrpg.Commands;
 
 namespace POrpg.InputHandlers;
 
-public class MovementInputHandler(InputHandler nextHandler) : InputHandler(nextHandler)
+public class MovementInputHandler : InputHandler
 {
     public override ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
     {

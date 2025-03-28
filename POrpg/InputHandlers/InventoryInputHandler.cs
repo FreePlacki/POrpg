@@ -3,7 +3,7 @@ using POrpg.Inventory;
 
 namespace POrpg.InputHandlers;
 
-public class InventoryInputHandler(InputHandler nextHandler) : InputHandler(nextHandler)
+public class InventoryInputHandler : InputHandler
 {
     public override ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
     {

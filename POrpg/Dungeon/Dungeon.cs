@@ -18,8 +18,9 @@ public class Dungeon : IEnumerable<Tile>
 {
     public int Width { get; }
     public int Height { get; }
+    public bool ShouldQuit { get; set; }
+    
     private readonly Tile[,] _tiles;
-
     private readonly Player _player;
 
     public Tile this[Position p]
@@ -89,7 +90,8 @@ public class Dungeon : IEnumerable<Tile>
 
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
                           $"{ConsoleHelper.InputHint("C", "Redraw")}  " +
-                          $"{ConsoleHelper.InputHint("?", "Help")}");
+                          $"{ConsoleHelper.InputHint("?", "Help")}  " +
+                          $"{ConsoleHelper.InputHint("`", "Quit")}");
         sw.Stop();
         console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
     }

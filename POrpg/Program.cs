@@ -49,7 +49,8 @@ class Program
             }
 
             dungeon.ProcessInput(inputHandler, input);
+            if (dungeon.ShouldQuit)
+                break;
         }
-        // ReSharper disable once FunctionNeverReturns
     }
 }

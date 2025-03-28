@@ -2,6 +2,7 @@ using System.Collections;
 using System.Diagnostics;
 using POrpg.Commands;
 using POrpg.ConsoleHelpers;
+using POrpg.InputHandlers;
 using POrpg.Inventory;
 using POrpg.Items;
 
@@ -238,51 +239,9 @@ public class Dungeon : IEnumerable<Tile>
         return true;
     }
 
-    public void ProcessInput(ConsoleKeyInfo input)
+    public void ProcessInput(InputHandler inputHandler, ConsoleKeyInfo keyInfo)
     {
-        switch (input.Key)
-        {
-            case ConsoleKey.W or ConsoleKey.UpArrow:
-                _pastCommands.Enqueue(new MovePlayerCommand(this, (0, -1)));
-                break;
-            case ConsoleKey.S or ConsoleKey.DownArrow:
-                _pastCommands.Enqueue(new MovePlayerCommand(this, (0, 1)));
-                break;
-            case ConsoleKey.A or ConsoleKey.LeftArrow:
-                _pastCommands.Enqueue(new MovePlayerCommand(this, (-1, 0)));
-                break;
-            case ConsoleKey.D or ConsoleKey.RightArrow:
-                _pastCommands.Enqueue(new MovePlayerCommand(this, (1, 0)));
-                break;
-            case ConsoleKey.E:
-                _pastCommands.Enqueue(new PickUpItemCommand(this));
-                break;
-            case ConsoleKey.Q:
-                _pastCommands.Enqueue(new DropItemCommand(this));
-                break;
-            case ConsoleKey.L:
-                _pastCommands.Enqueue(new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.LeftHand)));
-                break;
-            case ConsoleKey.R:
-                _pastCommands.Enqueue(new SelectItemCommand(this, new EquipmentSlot(EquipmentSlotType.RightHand)));
-                break;
-            case ConsoleKey.B:
-                _pastCommands.Enqueue(new MoveToBackpackCommand(this));
-                break;
-            case ConsoleKey.OemPeriod:
-                _pastCommands.Enqueue(new CycleItemsCommand(this));
-                break;
-            case ConsoleKey.OemComma:
-                _pastCommands.Enqueue(new CycleItemsCommand(this, reverse: true));
-                break;
-            case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.D4 or ConsoleKey.D5 or ConsoleKey.D6
-                or ConsoleKey.D7 or ConsoleKey.D8 or ConsoleKey.D9:
-                if (int.TryParse(input.KeyChar.ToString(), out var slot))
-                    _pastCommands.Enqueue(new SelectItemCommand(this, new BackpackSlot(slot - 1)));
-
-                break;
-        }
-
+        _pastCommands.Enqueue(inputHandler.HandleInput(this, keyInfo));
         _pastCommands.ExecuteLast();
     }
 

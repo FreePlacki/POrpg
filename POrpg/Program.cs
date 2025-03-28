@@ -1,5 +1,6 @@
 ﻿using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
+using POrpg.InputHandlers;
 
 namespace POrpg;
 
@@ -23,6 +24,8 @@ class Program
 
         (int margin, int width)[] columns = [(0, roomWidth), (2, 38), (2, 38)];
         var console = ConsoleHelper.Initialize(columns);
+        var inputHandler =
+            new MovementInputHandler(new CycleItemsHandler(new InventoryInputHandler(new GuardInputHandler())));
 
         while (true)
         {
@@ -45,7 +48,7 @@ class Program
                 continue;
             }
 
-            dungeon.ProcessInput(input);
+            dungeon.ProcessInput(inputHandler, input);
         }
         // ReSharper disable once FunctionNeverReturns
     }

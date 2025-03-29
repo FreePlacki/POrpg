@@ -12,11 +12,11 @@ public class MovePlayerCommand : ICommand
         _direction = direction;
     }
 
-    public bool IncreasesCounter { get; private set; }
+    public bool AdvancesTurn { get; private set; }
 
     public void Execute()
     {
         if (_dungeon.TryMovePlayer(_direction))
-            IncreasesCounter = true;
+            AdvancesTurn = true;
     }
 }

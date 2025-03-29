@@ -2,7 +2,7 @@ using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Effects.WeaponEffects;
 
-public class Powerful : WeaponEffect
+public class Powerful : WeaponModifier
 {
     public Powerful(Weapon weapon) : base(weapon)
     {

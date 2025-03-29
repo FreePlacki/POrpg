@@ -3,7 +3,7 @@ using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Effects.WeaponEffects;
 
-public class TwoHandedWeapon : WeaponEffect
+public class TwoHandedWeapon : WeaponModifier
 {
     public TwoHandedWeapon(Weapon weapon) : base(weapon)
     {

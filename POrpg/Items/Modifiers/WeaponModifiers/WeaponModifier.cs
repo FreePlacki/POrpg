@@ -4,11 +4,11 @@ using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Effects.WeaponEffects;
 
-public abstract class WeaponEffect : Weapon
+public abstract class WeaponModifier : Weapon
 {
     protected readonly Weapon Weapon;
 
-    protected WeaponEffect(Weapon weapon)
+    protected WeaponModifier(Weapon weapon)
     {
         Weapon = weapon;
     }

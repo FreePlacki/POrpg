@@ -2,7 +2,7 @@ using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Effects.WeaponEffects;
 
-public class UnluckyWeapon : WeaponEffect
+public class UnluckyWeapon : WeaponModifier
 {
     public UnluckyWeapon(Weapon weapon) : base(weapon)
     {

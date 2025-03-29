@@ -1,5 +1,6 @@
 using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
+using POrpg.Effects;
 using POrpg.Inventory;
 using POrpg.Items;
 
@@ -16,18 +17,23 @@ public class Player : IDrawable
     public int Gold { get; set; }
     public Inventory.Inventory Inventory { get; } = new();
 
-    private readonly Attributes _attributes = new(
+    private Attributes _attributes = new(
         new()
         {
-            { Attribute.Strength, 15 },
-            { Attribute.Dexterity, 8 },
-            { Attribute.Health, 3 },
-            { Attribute.Luck, -13 },
+            { Attribute.Strength, 10 },
+            { Attribute.Dexterity, 10 },
+            { Attribute.Health, 10 },
+            { Attribute.Luck, 10 },
             { Attribute.Aggression, 10 },
-            { Attribute.Wisdom, 42 }
+            { Attribute.Wisdom, 10 }
         });
 
-    public Attributes Attributes => _attributes + Inventory.TotalAttributes;
+    private readonly List<Effect> _effects = [];
+
+    public Attributes Attributes =>
+        _attributes +
+        Inventory.TotalAttributes +
+        _effects.Aggregate(new Attributes(new()), (acc, e) => acc + e.Attributes);
 
     public Player(Position position) => Position = position;
 
@@ -43,4 +49,14 @@ public class Player : IDrawable
         var item = Inventory.RemoveAt(slot)!;
         return item;
     }
+
+    public void AddEffect(Effect effect)
+    {
+        if (effect.IsPermanent)
+            _attributes += effect.Attributes;
+        else
+            _effects.Add(effect);
+    }
+
+    public void RemoveEffect(Effect effect) => _effects.Remove(effect);
 }

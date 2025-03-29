@@ -29,6 +29,7 @@ public class CommandQueue
             _commandLog.Dequeue();
     }
 
+    // TODO: move to consoleHelper as PrintNotifications and AddNotification
     public void Print()
     {
         var console = ConsoleHelper.GetInstance();

@@ -12,7 +12,7 @@ public class DungeonDirector
             .AddWeapons()
             .AddModifiedWeapons()
             .AddModifiedUnusableItems()
-            .AddPotions()
+            .AddPotions(probability: 0.5)
             .AddEnemies(probability: 0.05)
             .Build();
     }

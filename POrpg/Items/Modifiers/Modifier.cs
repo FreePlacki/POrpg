@@ -3,11 +3,11 @@ using POrpg.Inventory;
 
 namespace POrpg.Items.Effects;
 
-public abstract class Effect : Item
+public abstract class Modifier : Item
 {
     protected readonly Item Item;
 
-    protected Effect(Item item)
+    protected Modifier(Item item)
     {
         Item = item;
     }

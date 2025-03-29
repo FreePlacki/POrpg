@@ -2,7 +2,7 @@ using POrpg.ConsoleHelpers;
 
 namespace POrpg.Items.Effects;
 
-public class Legendary : Effect
+public class Legendary : Modifier
 {
     public Legendary(Item item) : base(item)
     {

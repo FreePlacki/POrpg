@@ -3,7 +3,7 @@ using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Effects.WeaponEffects;
 
-public class LegendaryWeapon : WeaponEffect
+public class LegendaryWeapon : WeaponModifier
 {
     public LegendaryWeapon(Weapon weapon) : base(weapon)
     {

@@ -11,7 +11,7 @@ public class CycleItemsCommand : ICommand
         _reverse = reverse;
     }
 
-    public bool IncreasesCounter => false;
+    public bool AdvancesTurn => false;
 
     public void Execute()
     {

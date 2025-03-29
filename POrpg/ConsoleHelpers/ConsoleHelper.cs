@@ -9,7 +9,7 @@ public class ConsoleHelper
 {
     private static ConsoleHelper? _instance;
 
-    private (int margin, int width)[] _columns;
+    private readonly (int margin, int width)[] _columns;
 
     private int ColumnStart(int columnIndex)
     {
@@ -26,7 +26,7 @@ public class ConsoleHelper
     private int _columnIndex;
     private readonly List<StringBuilder> _lines = new(60);
     public bool IsShowingInstructions { get; private set; }
-    private string _instructions;
+    private readonly string _instructions;
 
     private ConsoleHelper(string instructions, (int margin, int width)[] columns)
     {

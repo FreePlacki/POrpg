@@ -1,6 +1,6 @@
 namespace POrpg.Items.Effects;
 
-public class Unlucky : Effect
+public class Unlucky : Modifier
 {
     public Unlucky(Item item) : base(item)
     {

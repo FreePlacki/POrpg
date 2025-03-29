@@ -2,7 +2,7 @@ using POrpg.Inventory;
 
 namespace POrpg.Items.Effects;
 
-public class Unequippable : Effect
+public class Unequippable : Modifier
 {
     public Unequippable(Item item) : base(item)
     {

@@ -22,6 +22,11 @@ public class Dungeon : IEnumerable<Tile>
 
     private readonly Tile[,] _tiles;
     private readonly Player _player;
+    private Tile CurrentTile => this[_player.Position];
+    private Item? CurrentItem => CurrentTile.CurrentItem;
+    private Tile? LookingAt { get; set; }
+    private readonly CommandQueue _pastCommands = new(3);
+    private InventorySlot? _selectedSlot;
 
     public Tile this[Position p]
     {
@@ -74,6 +79,8 @@ public class Dungeon : IEnumerable<Tile>
         }
 
         console.ChangeColumn(1);
+        console.WriteLine($"{new StyledText("Turn:", Style.Underline).Text} {TurnManager.GetInstance().Turn}");
+        console.WriteLine();
         DrawStats();
         console.HorizontalDivider();
         DrawInventory();
@@ -125,6 +132,8 @@ public class Dungeon : IEnumerable<Tile>
                 console.WriteLine(leftHand.Name);
                 console.WriteLine(leftHand.Description);
                 console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
+                if (leftHand is IUsable)
+                    console.WriteLine(ConsoleHelper.InputHint("F", "Use"));
                 console.WriteLine(
                     ConsoleHelper.InputHint("B",
                         $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
@@ -151,6 +160,8 @@ public class Dungeon : IEnumerable<Tile>
                 console.WriteLine(rightHand.Name);
                 console.WriteLine(rightHand.Description);
                 console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
+                if (rightHand is IUsable)
+                    console.WriteLine(ConsoleHelper.InputHint("F", "Use"));
                 console.WriteLine(
                     ConsoleHelper.InputHint("B",
                         $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
@@ -243,8 +254,11 @@ public class Dungeon : IEnumerable<Tile>
 
     public void ProcessInput(InputHandler inputHandler, ConsoleKeyInfo keyInfo)
     {
-        _pastCommands.Enqueue(inputHandler.HandleInput(this, keyInfo));
+        var command = inputHandler.HandleInput(this, keyInfo);
+        _pastCommands.Enqueue(command);
         _pastCommands.ExecuteLast();
+        if (command.AdvancesTurn)
+            TurnManager.GetInstance().NextTurn();
     }
 
     public bool TryMovePlayer(Position direction)
@@ -264,13 +278,6 @@ public class Dungeon : IEnumerable<Tile>
 
         return false;
     }
-
-    private Tile CurrentTile => this[_player.Position];
-    private Item? CurrentItem => CurrentTile.CurrentItem;
-    private Tile? LookingAt { get; set; }
-    private readonly CommandQueue _pastCommands = new(3);
-
-    private InventorySlot? _selectedSlot;
 
     public Item? TryPickUpItem()
     {
@@ -348,6 +355,16 @@ public class Dungeon : IEnumerable<Tile>
         _selectedSlot = null;
 
         return true;
+    }
+
+    public Item? TryUseItem()
+    {
+        if (_selectedSlot == null) return null;
+        if (_player.Inventory[_selectedSlot] is not IUsable item) return null;
+
+        item.Use(_player);
+        var res = _player.Drop(_selectedSlot);
+        return res;
     }
 
     public void CycleItems(bool reverse) => CurrentTile.CycleItems(reverse);

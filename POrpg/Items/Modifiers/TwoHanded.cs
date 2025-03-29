@@ -2,7 +2,7 @@ using POrpg.Inventory;
 
 namespace POrpg.Items.Effects;
 
-public class TwoHanded : Effect
+public class TwoHanded : Modifier
 {
     public TwoHanded(Item item) : base(item)
     {

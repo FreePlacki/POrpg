@@ -139,7 +139,7 @@ The user should be able to control the game using the keyboard. Possible actions
 - [x] picking up an item (`E`),
 - [x] dropping a selected item from the inventory or a hand,
 - [x] dropping all items,
-- [ ] drinking a selected potion from the inventory,
+- [x] drinking a selected potion from the inventory,
 - [x] placing an item in a hand or hiding it in the inventory,
 - [x] exiting the game.
 
@@ -160,7 +160,7 @@ Each potion has a certain effect which, when player drinks the potion, modifies 
 
 Examples:
 
-- [ ] a "power potion" can increase a player's strength by `2` for `5` consecutive turns.
+- [x] a "power potion" can increase a player's strength by `2` for `5` consecutive turns.
 - [ ] a "luck potion" can last for `n` turns; in the `i`-th turn of effect causes the luck attribute to be multiplied by `n-i+1`.
 
 - [ ] An information should be displayed for each effect acting on the player. After a given number of turns, the effect expires and should not be displayed.

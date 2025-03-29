@@ -59,7 +59,7 @@ public class InputHandlerBuilder : IDungeonBuilder<InputHandler>
     {
         var handlers = new List<InputHandler>
         {
-            new UIInputHandler(),
+            new UiInputHandler(),
             new MovementInputHandler()
         };
 

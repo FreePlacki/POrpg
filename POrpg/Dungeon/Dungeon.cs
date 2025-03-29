@@ -19,7 +19,7 @@ public class Dungeon : IEnumerable<Tile>
     public int Width { get; }
     public int Height { get; }
     public bool ShouldQuit { get; set; }
-    
+
     private readonly Tile[,] _tiles;
     private readonly Player _player;
 
@@ -281,13 +281,37 @@ public class Dungeon : IEnumerable<Tile>
         return item;
     }
 
+    private Item? TryDropItem(InventorySlot slot)
+    {
+        if (_player.Inventory[slot] == null) return null;
+
+        var item = _player.Drop(slot);
+        CurrentTile.Add(item);
+        return item;
+    }
+
     public Item? TryDropItem()
     {
-        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null) return null;
-        var item = _player.Drop(_selectedSlot);
-        CurrentTile.Add(item);
+        if (_selectedSlot == null) return null;
+        var item = TryDropItem(_selectedSlot);
         _selectedSlot = null;
         return item;
+    }
+
+    public bool TryDropAllItems()
+    {
+        var dropped = false;
+
+        while (TryDropItem(new BackpackSlot(0)) != null)
+            dropped = true;
+        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.LeftHand)) != null)
+            dropped = true;
+        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.RightHand)) != null)
+            dropped = true;
+        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.BothHands)) != null)
+            dropped = true;
+
+        return dropped;
     }
 
     public bool TrySelectItem(InventorySlot slot)

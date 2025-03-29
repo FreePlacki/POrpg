@@ -138,7 +138,7 @@ The user should be able to control the game using the keyboard. Possible actions
 - [x] moving in four directions (keys: `W`, `S`, `A`, `D`),
 - [x] picking up an item (`E`),
 - [x] dropping a selected item from the inventory or a hand,
-- [ ] dropping all items,
+- [x] dropping all items,
 - [ ] drinking a selected potion from the inventory,
 - [x] placing an item in a hand or hiding it in the inventory,
 - [x] exiting the game.

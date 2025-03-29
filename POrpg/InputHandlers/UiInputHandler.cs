@@ -2,7 +2,7 @@ using POrpg.Commands;
 
 namespace POrpg.InputHandlers;
 
-public class UIInputHandler : InputHandler
+public class UiInputHandler : InputHandler
 {
     public override ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
     {

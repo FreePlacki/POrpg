@@ -38,7 +38,8 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
     private readonly Func<Potion>[] _potionConstructors =
     [
-        () => new HealthPotion(), () => new StrengthPotion(Rng.Next(3, 10)), () => new LuckPotion(Rng.Next(5, 15))
+        () => new HealthPotion(), () => new StrengthPotion(Rng.Next(3, 10)), () => new LuckPotion(Rng.Next(5, 15)),
+        () => new Milk()
     ];
 
     private readonly Func<Enemy>[] _enemyConstructors =

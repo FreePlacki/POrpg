@@ -14,5 +14,5 @@ public abstract class Potion : Item, IUsable
     public override string Symbol => new StyledText(Name.First().ToString(), Styles.Potion).Text;
     public abstract void Use(Player player);
 
-    public override string Description => $"Duration: {Duration?.ToString() ?? "Permanent"}";
+    public override string? Description => Duration != null ? $"Duration: {Duration}" : null;
 }

@@ -167,4 +167,4 @@ Examples:
 
 Implement the operation of effects (in particular its temporality) using the *Observer* pattern. The effect should update its state after each turn and, if necessary, report its expiration.
 
-- [ ] At least two potions should be created with a temporal effect and one with an 'eternal' effect. The ability to remove effects before the effect ends (e.g. drinking an antidote) is highly acceptable.
+- [x] At least two potions should be created with a temporal effect and one with an 'eternal' effect. The ability to remove effects before the effect ends (e.g. drinking an antidote) is highly acceptable.

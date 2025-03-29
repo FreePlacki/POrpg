@@ -25,7 +25,6 @@ public class Dungeon : IEnumerable<Tile>
     private Tile CurrentTile => this[_player.Position];
     private Item? CurrentItem => CurrentTile.CurrentItem;
     private Tile? LookingAt { get; set; }
-    private readonly CommandQueue _pastCommands = new(3);
     private InventorySlot? _selectedSlot;
 
     public Tile this[Position p]
@@ -92,7 +91,7 @@ public class Dungeon : IEnumerable<Tile>
             console.HorizontalDivider();
 
         console.ChangeColumn(0);
-        _pastCommands.Print();
+        console.PrintNotifications();
         console.WriteLine();
 
         console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")} " +
@@ -255,8 +254,9 @@ public class Dungeon : IEnumerable<Tile>
     public void ProcessInput(InputHandler inputHandler, ConsoleKeyInfo keyInfo)
     {
         var command = inputHandler.HandleInput(this, keyInfo);
-        _pastCommands.Enqueue(command);
-        _pastCommands.ExecuteLast();
+        command.Execute();
+        if (command.Description != null)
+            ConsoleHelper.GetInstance().AddNotification(command.Description);
         if (command.AdvancesTurn)
             TurnManager.GetInstance().NextTurn();
     }

@@ -16,6 +16,6 @@ public class PickUpItemCommand : ICommand
     {
         var item = _dungeon.TryPickUpItem();
         if (item != null)
-            Description = $"Picked up {item.Name}.";
+            Description = $"Picked up {item.Name}";
     }
 }

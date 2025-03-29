@@ -27,7 +27,7 @@ class Program
         Console.Clear();
 
         (int margin, int width)[] columns = [(0, roomWidth), (2, 38), (2, 38)];
-        var console = ConsoleHelper.Initialize(instructions, columns);
+        var console = ConsoleHelper.Initialize(instructions, columns, 3);
 
         while (true)
         {

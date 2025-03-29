@@ -10,14 +10,7 @@ public class ConsoleHelper
     private static ConsoleHelper? _instance;
 
     private readonly (int margin, int width)[] _columns;
-
-    private int ColumnStart(int columnIndex)
-    {
-        var result = _columns[0].margin;
-        for (int i = 0; i < columnIndex; i++)
-            result += _columns[i].width + _columns[i + 1].margin;
-        return result;
-    }
+    private int _logSize;
 
     private int[] _currentColumnHeights;
     private int[] _previousColumnHeights;
@@ -27,8 +20,9 @@ public class ConsoleHelper
     private readonly List<StringBuilder> _lines = new(60);
     public bool IsShowingInstructions { get; private set; }
     private readonly string _instructions;
+    private readonly Queue<string> _notifications = new();
 
-    private ConsoleHelper(string instructions, (int margin, int width)[] columns)
+    private ConsoleHelper(string instructions, (int margin, int width)[] columns, int logSize)
     {
         Debug.Assert(_instance == null);
 
@@ -36,11 +30,12 @@ public class ConsoleHelper
         _columns = columns;
         _currentColumnHeights = new int[_columns.Length];
         _previousColumnHeights = new int[_columns.Length];
+        _logSize = logSize;
     }
 
-    public static ConsoleHelper Initialize(string instructions, (int margin, int width)[] columns)
+    public static ConsoleHelper Initialize(string instructions, (int margin, int width)[] columns, int logSize)
     {
-        _instance = new ConsoleHelper(instructions, columns);
+        _instance = new ConsoleHelper(instructions, columns, logSize);
         return _instance;
     }
 
@@ -50,11 +45,40 @@ public class ConsoleHelper
         return _instance;
     }
 
+    private int ColumnStart(int columnIndex)
+    {
+        var result = _columns[0].margin;
+        for (int i = 0; i < columnIndex; i++)
+            result += _columns[i].width + _columns[i + 1].margin;
+        return result;
+    }
+
     public void ChangeColumn(int newColumnIndex)
     {
         _currentColumnHeights[_columnIndex] = _line;
         _columnIndex = newColumnIndex;
         SetCursorPosition(ColumnStart(_columnIndex), _currentColumnHeights[_columnIndex]);
+    }
+
+    public void AddNotification(string notification)
+    {
+        _notifications.Enqueue(notification);
+        if (_notifications.Count > _logSize)
+            _notifications.Dequeue();
+    }
+
+    public void PrintNotifications()
+    {
+        for (var i = 0; i < _logSize - _notifications.Count; i++)
+            WriteLine();
+        var j = 0;
+        foreach (var msg in _notifications)
+        {
+            if (j++ == _notifications.Count - 1)
+                WriteLine(msg);
+            else
+                WriteLine(new StyledText(msg, Style.Faint));
+        }
     }
 
     public void ShowInstructions()

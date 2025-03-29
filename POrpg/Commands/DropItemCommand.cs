@@ -14,6 +14,6 @@ public class DropItemCommand : ICommand
     {
         var item = _dungeon.TryDropItem();
         if (item != null)
-            Description = $"Dropped {item.Name}.";
+            Description = $"Dropped {item.Name}";
     }
 }

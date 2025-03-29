@@ -14,6 +14,6 @@ public class UseItemCommand : ICommand
     {
         var item = _dungeon.TryUseItem();
         if (item != null)
-            Description = $"Used {item.Name}.";
+            Description = $"Used {item.Name}";
     }
 }

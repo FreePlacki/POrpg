@@ -2,7 +2,7 @@ namespace POrpg.Effects;
 
 public class PowerEffect : Effect
 {
-    public PowerEffect(Player player, int? duration, string name = "Strength Effect")
+    public PowerEffect(Player player, int? duration, string name = "Strength")
         : base(player, duration ?? 0, name, duration == null)
     {
     }

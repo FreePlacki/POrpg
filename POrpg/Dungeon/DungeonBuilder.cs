@@ -16,7 +16,7 @@ public enum InitialDungeonState
 public class DungeonBuilder : IDungeonBuilder<Dungeon>
 {
     private readonly Dungeon _dungeon;
-    private readonly Random _rng = new();
+    private static readonly Random Rng = new();
     private readonly Position _playerInitialPosition;
 
     private readonly Func<Item>[] _itemConstructors =
@@ -38,7 +38,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
     private readonly Func<Potion>[] _potionConstructors =
     [
-        () => new HealthPotion(), () => new StrengthPotion()
+        () => new HealthPotion(), () => new StrengthPotion(Rng.Next(3, 10)), () => new LuckPotion(Rng.Next(5, 15))
     ];
 
     private readonly Func<Enemy>[] _enemyConstructors =
@@ -88,7 +88,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
         const int minHeight = 3;
         for (var i = 0; i < numChambers; i++)
         {
-            var position = new Position(_rng.Next(_dungeon.Width), _rng.Next(_dungeon.Height));
+            var position = new Position(Rng.Next(_dungeon.Width), Rng.Next(_dungeon.Height));
             var maxWidth = _dungeon.Width - position.X;
             var maxHeight = _dungeon.Height - position.Y;
             if (maxWidth < minWidth || maxHeight < minHeight)
@@ -97,8 +97,8 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
                 continue;
             }
 
-            var width = _rng.Next(minWidth, maxWidth);
-            var height = _rng.Next(minHeight, maxHeight);
+            var width = Rng.Next(minWidth, maxWidth);
+            var height = Rng.Next(minHeight, maxHeight);
             AddRoom(position, width, height);
         }
 
@@ -139,7 +139,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
         while (candidates.Count > 0)
         {
-            var index = _rng.Next(candidates.Count);
+            var index = Rng.Next(candidates.Count);
             var candidate = candidates[index];
             // move to last for faster removal
             candidates[index] = candidates[^1];
@@ -167,12 +167,12 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
     {
         foreach (var tile in _dungeon)
         {
-            if (!tile.IsPassable || !(_rng.NextDouble() < probability)) continue;
+            if (!tile.IsPassable || !(Rng.NextDouble() < probability)) continue;
 
-            var item = constructors[_rng.Next(constructors.Length)]();
+            var item = constructors[Rng.Next(constructors.Length)]();
             if (effects != null)
-                for (var i = 0; i < _rng.Next(maxEffects); i++)
-                    item = effects[_rng.Next(effects.Length)](item);
+                for (var i = 0; i < Rng.Next(maxEffects); i++)
+                    item = effects[Rng.Next(effects.Length)](item);
             tile.Add(item);
         }
 
@@ -198,9 +198,9 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
     {
         foreach (var tile in _dungeon)
         {
-            if (!tile.IsPassable || !(_rng.NextDouble() < probability)) continue;
+            if (!tile.IsPassable || !(Rng.NextDouble() < probability)) continue;
 
-            var enemy = _enemyConstructors[_rng.Next(_enemyConstructors.Length)]();
+            var enemy = _enemyConstructors[Rng.Next(_enemyConstructors.Length)]();
             tile.Add(enemy);
         }
 

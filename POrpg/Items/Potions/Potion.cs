@@ -4,15 +4,15 @@ namespace POrpg.Items.Potions;
 
 public abstract class Potion : Item, IUsable
 {
-    private readonly int? _duration;
+    protected readonly int? Duration;
 
     protected Potion(int? duration)
     {
-        _duration = duration;
+        Duration = duration;
     }
 
-    public override string Symbol => new StyledText("P", Styles.Potion).Text;
+    public override string Symbol => new StyledText(Name.First().ToString(), Styles.Potion).Text;
     public abstract void Use(Player player);
 
-    public override string Description => $"Duration: {_duration?.ToString() ?? "Permanent"}";
+    public override string Description => $"Duration: {Duration?.ToString() ?? "Permanent"}";
 }

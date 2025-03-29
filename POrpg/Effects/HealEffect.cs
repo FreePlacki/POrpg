@@ -2,7 +2,7 @@ namespace POrpg.Effects;
 
 public class HealEffect : Effect
 {
-    public HealEffect(Player player, int? duration = null, string name = "Strength Effect")
+    public HealEffect(Player player, int? duration = null, string name = "Heal")
         : base(player, duration ?? 0, name, duration == null)
     {
     }

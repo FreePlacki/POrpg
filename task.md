@@ -161,7 +161,7 @@ Each potion has a certain effect which, when player drinks the potion, modifies 
 Examples:
 
 - [x] a "power potion" can increase a player's strength by `2` for `5` consecutive turns.
-- [ ] a "luck potion" can last for `n` turns; in the `i`-th turn of effect causes the luck attribute to be multiplied by `n-i+1`.
+- [x] a "luck potion" can last for `n` turns; in the `i`-th turn of effect causes the luck attribute to be multiplied by `n-i+1`.
 
 - [x] An information should be displayed for each effect acting on the player. After a given number of turns, the effect expires and should not be displayed.
 

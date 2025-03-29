@@ -8,9 +8,9 @@ public class StrengthPotion : Potion
     {
     }
 
-    public override string Name => "Potion of Strength";
+    public override string Name => "Strength Potion";
     public override void Use(Player player)
     {
-        _ = new PowerEffect(player, 5);
+        _ = new PowerEffect(player, Duration);
     }
 }

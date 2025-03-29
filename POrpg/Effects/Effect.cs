@@ -16,10 +16,10 @@ public abstract class Effect : ITurnObserver
 
     public readonly bool IsPermanent;
 
-    public Effect(Player player, int duration, string name, bool isPermanent)
+    public Effect(Player player, int? duration, string name, bool isPermanent)
     {
         var tm = TurnManager.GetInstance();
-        EndTurn = tm.Turn + duration;
+        EndTurn = tm.Turn + duration ?? -1;
         Player = player;
         Name = name;
         IsPermanent = isPermanent;
@@ -36,7 +36,7 @@ public abstract class Effect : ITurnObserver
         {
             tm.UnregisterObserver(this);
             Player.RemoveEffect(this);
-            ConsoleHelper.GetInstance().AddNotification($"{Name} expired");
+            ConsoleHelper.GetInstance().AddNotification($"{Name} effect expired");
         }
     }
 }

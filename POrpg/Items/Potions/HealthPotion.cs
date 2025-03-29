@@ -8,7 +8,7 @@ public class HealthPotion : Potion
     {
     }
 
-    public override string Name => "Potion of Health";
+    public override string Name => "Health Potion";
     public override void Use(Player player)
     {
         _ = new HealEffect(player);

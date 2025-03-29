@@ -1,12 +1,19 @@
+using POrpg.ConsoleHelpers;
+
 namespace POrpg.Effects;
 
 public abstract class Effect : ITurnObserver
 {
     public abstract Attributes Attributes { get; }
-    
+
     protected readonly int EndTurn;
     protected readonly Player Player;
-    protected string _name;
+    public string Name { get; }
+    public int TurnsLeft => EndTurn - TurnManager.GetInstance().Turn + 1;
+
+    public string Description =>
+        $"Turns left: {TurnsLeft}\n{Attributes.EffectDescription()}";
+
     public readonly bool IsPermanent;
 
     public Effect(Player player, int duration, string name, bool isPermanent)
@@ -14,13 +21,13 @@ public abstract class Effect : ITurnObserver
         var tm = TurnManager.GetInstance();
         EndTurn = tm.Turn + duration;
         Player = player;
-        _name = name;
+        Name = name;
         IsPermanent = isPermanent;
 
         player.AddEffect(this);
         tm.RegisterObserver(this);
     }
-    
+
     public void Update()
     {
         var tm = TurnManager.GetInstance();
@@ -29,6 +36,7 @@ public abstract class Effect : ITurnObserver
         {
             tm.UnregisterObserver(this);
             Player.RemoveEffect(this);
+            ConsoleHelper.GetInstance().AddNotification($"{Name} expired");
         }
     }
 }

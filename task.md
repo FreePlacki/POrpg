@@ -163,7 +163,7 @@ Examples:
 - [x] a "power potion" can increase a player's strength by `2` for `5` consecutive turns.
 - [ ] a "luck potion" can last for `n` turns; in the `i`-th turn of effect causes the luck attribute to be multiplied by `n-i+1`.
 
-- [ ] An information should be displayed for each effect acting on the player. After a given number of turns, the effect expires and should not be displayed.
+- [x] An information should be displayed for each effect acting on the player. After a given number of turns, the effect expires and should not be displayed.
 
 Implement the operation of effects (in particular its temporality) using the *Observer* pattern. The effect should update its state after each turn and, if necessary, report its expiration.
 

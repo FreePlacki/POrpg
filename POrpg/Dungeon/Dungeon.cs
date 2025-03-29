@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Diagnostics;
-using POrpg.Commands;
 using POrpg.ConsoleHelpers;
 using POrpg.InputHandlers;
 using POrpg.Inventory;
@@ -85,6 +84,8 @@ public class Dungeon : IEnumerable<Tile>
         DrawInventory();
         console.HorizontalDivider();
         console.ChangeColumn(2);
+        if (DrawActiveEffects())
+            console.HorizontalDivider();
         if (DrawStandingOn())
             console.HorizontalDivider();
         if (DrawLookingAt())
@@ -222,6 +223,20 @@ public class Dungeon : IEnumerable<Tile>
 
             i++;
         }
+    }
+
+    private bool DrawActiveEffects()
+    {
+        if (_player.Effects.Count == 0) return false;
+        var console = ConsoleHelper.GetInstance();
+        console.WriteLine($"{new StyledText("Effects:", Style.Underline).Text}");
+        foreach (var effect in _player.Effects.OrderByDescending(e => e.TurnsLeft))
+        {
+            console.WriteLine(effect.Name);
+            console.WriteLine(effect.Description);
+        }
+
+        return true;
     }
 
     private bool DrawStandingOn()

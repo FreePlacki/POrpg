@@ -28,12 +28,12 @@ public class Player : IDrawable
             { Attribute.Wisdom, 10 }
         });
 
-    private readonly List<Effect> _effects = [];
+    public List<Effect> Effects { get; } = [];
 
     public Attributes Attributes =>
         _attributes +
         Inventory.TotalAttributes +
-        _effects.Aggregate(new Attributes(new()), (acc, e) => acc + e.Attributes);
+        Effects.Aggregate(new Attributes(new()), (acc, e) => acc + e.Attributes);
 
     public Player(Position position) => Position = position;
 
@@ -55,8 +55,8 @@ public class Player : IDrawable
         if (effect.IsPermanent)
             _attributes += effect.Attributes;
         else
-            _effects.Add(effect);
+            Effects.Add(effect);
     }
 
-    public void RemoveEffect(Effect effect) => _effects.Remove(effect);
+    public void RemoveEffect(Effect effect) => Effects.Remove(effect);
 }

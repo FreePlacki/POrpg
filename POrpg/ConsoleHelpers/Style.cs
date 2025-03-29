@@ -72,7 +72,7 @@ public class StyledText : TextDecorator
                 int i = (byte)Style.Red;
                 foreach (var c in InnerText.Text)
                 {
-                    sb.Append($"\u001b[{i}m{c}\u001b[0m");
+                    sb.Append($"\u001b[{i}m{c}\u001b[{_reset}m");
                     i++;
                     if (i > (byte)Style.Cyan) i = (byte)Style.Red;
                 }

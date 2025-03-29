@@ -26,19 +26,21 @@ public class ConsoleHelper
     private int _columnIndex;
     private readonly List<StringBuilder> _lines = new(60);
     public bool IsShowingInstructions { get; private set; }
+    private string _instructions;
 
-    private ConsoleHelper((int margin, int width)[] columns)
+    private ConsoleHelper(string instructions, (int margin, int width)[] columns)
     {
         Debug.Assert(_instance == null);
 
+        _instructions = instructions;
         _columns = columns;
         _currentColumnHeights = new int[_columns.Length];
         _previousColumnHeights = new int[_columns.Length];
     }
 
-    public static ConsoleHelper Initialize((int margin, int width)[] columns)
+    public static ConsoleHelper Initialize(string instructions, (int margin, int width)[] columns)
     {
-        _instance = new ConsoleHelper(columns);
+        _instance = new ConsoleHelper(instructions, columns);
         return _instance;
     }
 
@@ -55,7 +57,7 @@ public class ConsoleHelper
         SetCursorPosition(ColumnStart(_columnIndex), _currentColumnHeights[_columnIndex]);
     }
 
-    public void ShowInstructions(string instructions)
+    public void ShowInstructions()
     {
         IsShowingInstructions = true;
 
@@ -64,7 +66,7 @@ public class ConsoleHelper
 
         var divider = new StyledText(new string('=', 10), Style.Faint).Text;
         Console.WriteLine($"{divider} {new StyledText("Instructions", Style.Underline).Text} {divider}\n");
-        Console.WriteLine(instructions);
+        Console.WriteLine(_instructions);
         Console.WriteLine(InputHint("?", "Hide instructions"));
     }
 

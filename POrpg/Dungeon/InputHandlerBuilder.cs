@@ -6,7 +6,7 @@ public class InputHandlerBuilder : IDungeonBuilder<InputHandler>
 {
     private bool _hasItems;
     private bool _hasEnemies;
-    
+
     public IDungeonBuilder<InputHandler> AddRandomChambers(int numChambers) => this;
 
     public IDungeonBuilder<InputHandler> AddCentralRoom() => this;
@@ -57,13 +57,21 @@ public class InputHandlerBuilder : IDungeonBuilder<InputHandler>
 
     public InputHandler Build()
     {
-        var inputHandler = new MovementInputHandler();
+        var handlers = new List<InputHandler>
+        {
+            new UIInputHandler(),
+            new MovementInputHandler()
+        };
+
         if (_hasItems || _hasEnemies)
-            inputHandler.SetNext(new CycleItemsHandler());
+            handlers.Add(new CycleItemsHandler());
         if (_hasItems)
-            inputHandler.SetNext(new InventoryInputHandler());
-        inputHandler.SetNext(new GuardInputHandler());
+            handlers.Add(new InventoryInputHandler());
+        handlers.Add(new GuardInputHandler());
+
+        for (var i = 0; i < handlers.Count - 1; i++)
+            handlers[i].SetNext(handlers[i + 1]);
         
-        return inputHandler;
+        return handlers[0];
     }
 }

@@ -141,11 +141,11 @@ The user should be able to control the game using the keyboard. Possible actions
 - [ ] dropping all items,
 - [ ] drinking a selected potion from the inventory,
 - [x] placing an item in a hand or hiding it in the inventory,
-- [ ] exiting the game.
+- [x] exiting the game.
 
 Implement the individual actions and their processing using the *Chain Of Responsibility* pattern. Adding new actions, if necessary, should be easy to implement (additional actions may be required in the future stages).
 
-- [ ] It will be a good practice to dynamically change the list of supported keys according to what is possible in the given dungeon configuration. There is no point in handling e.g. lifting of items unless they were initially generated.
+- [x] It will be a good practice to dynamically change the list of supported keys according to what is possible in the given dungeon configuration. There is no point in handling e.g. lifting of items unless they were initially generated.
 
 All available actions should be displayed in the game view. When an additional action is required (e.g. selecting an item to drop), the game should ask for additional information in a concise and understandable way.
 

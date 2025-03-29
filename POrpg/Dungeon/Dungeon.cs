@@ -88,10 +88,10 @@ public class Dungeon : IEnumerable<Tile>
         _pastCommands.Print();
         console.WriteLine();
 
-        console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")}  " +
-                          $"{ConsoleHelper.InputHint("C", "Redraw")}  " +
-                          $"{ConsoleHelper.InputHint("?", "Help")}  " +
-                          $"{ConsoleHelper.InputHint("`", "Quit")}");
+        console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")} " +
+                          $"{ConsoleHelper.InputHint("C", "Redraw")} " +
+                          $"{ConsoleHelper.InputHint("?", "Help")} " +
+                          $"{ConsoleHelper.InputHint("X", "Exit")}");
         sw.Stop();
         console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
     }

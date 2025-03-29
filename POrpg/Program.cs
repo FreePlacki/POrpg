@@ -1,6 +1,5 @@
 ﻿using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
-using POrpg.InputHandlers;
 
 namespace POrpg;
 
@@ -20,11 +19,15 @@ class Program
         var inputHandler = director.Build(new InputHandlerBuilder());
 
         Console.CursorVisible = false;
-        Console.CancelKeyPress += (_, _) => Console.CursorVisible = true;
+        Console.CancelKeyPress += (_, _) =>
+        {
+            Console.CursorVisible = true;
+            Console.Clear();
+        };
         Console.Clear();
 
         (int margin, int width)[] columns = [(0, roomWidth), (2, 38), (2, 38)];
-        var console = ConsoleHelper.Initialize(columns);
+        var console = ConsoleHelper.Initialize(instructions, columns);
 
         while (true)
         {
@@ -39,17 +42,11 @@ class Program
             console.Reset();
 
             var input = Console.ReadKey(true);
-            if (input.Key == ConsoleKey.C)
-                Console.Clear();
-            if (input.KeyChar == '?')
-            {
-                console.ShowInstructions(instructions);
-                continue;
-            }
 
             dungeon.ProcessInput(inputHandler, input);
             if (dungeon.ShouldQuit)
                 break;
         }
+        Console.Clear();
     }
 }

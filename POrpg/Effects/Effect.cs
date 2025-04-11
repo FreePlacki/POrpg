@@ -16,7 +16,7 @@ public abstract class Effect : ITurnObserver
 
     public readonly bool IsPermanent;
 
-    public Effect(Player player, int? duration, string name, bool isPermanent)
+    protected Effect(Player player, int? duration, string name, bool isPermanent)
     {
         var tm = TurnManager.GetInstance();
         EndTurn = tm.Turn + duration ?? -1;

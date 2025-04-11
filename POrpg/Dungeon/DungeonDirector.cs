@@ -6,13 +6,13 @@ public class DungeonDirector
     {
         return builder.AddCentralRoom()
             // .AddRandomChambers(2)
-            .AddRandomPaths()
-            .AddMoney()
-            .AddUnusableItems()
-            .AddWeapons()
-            .AddModifiedWeapons()
-            .AddModifiedUnusableItems()
-            .AddPotions(probability: 0.5)
+            // .AddRandomPaths()
+            // .AddMoney()
+            // .AddUnusableItems()
+            // .AddWeapons()
+            // .AddModifiedWeapons()
+            // .AddModifiedUnusableItems()
+            .AddPotions(probability: 0.1)
             .AddEnemies(probability: 0.05)
             .Build();
     }

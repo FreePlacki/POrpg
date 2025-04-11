@@ -12,7 +12,7 @@ class Program
         Position playerInitialPosition = (0, 0);
         
         var dungeonBuilder =
-            new DungeonBuilder(InitialDungeonState.Filled, roomWidth, roomHeight, playerInitialPosition);
+            new DungeonBuilder(InitialDungeonState.Empty, roomWidth, roomHeight, playerInitialPosition);
         var director = new DungeonDirector();
         var dungeon = director.Build(dungeonBuilder);
         var instructions = director.Build(new InstructionsBuilder());

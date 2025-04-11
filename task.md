@@ -168,3 +168,75 @@ Examples:
 Implement the operation of effects (in particular its temporality) using the *Observer* pattern. The effect should update its state after each turn and, if necessary, report its expiration.
 
 - [x] At least two potions should be created with a temporal effect and one with an 'eternal' effect. The ability to remove effects before the effect ends (e.g. drinking an antidote) is highly acceptable.
+
+---
+
+Stage 4: Fighting enemies
+
+## Task Objective
+Create a mechanism that allows for fighting enemies in the dungeon.
+
+## Requirements
+- [ ] fighting enemies
+
+### IMPORTANT!!!
+You must use visitor pattern to implement your solution.
+Casting objects isn't forbidden, but it can't be used instead of visitor pattern. You can cast objects to more generic ones or in situations where the exact type of the object is known.
+Solutions that use fields that identify the type of object (enums, class names, etc.) will not be accepted.
+We do not want to extend the weapon classes with additional methods.
+It should be easy to extend the game with additional attack/defense methods and new weapon types.
+The solution should not use many if or switch statements.
+
+### Fighting enemies
+
+There are enemies in the maze that the player can fight. During the fight, the player performs a selected attack with a weapon held in one hand or in both hands or with two weapons in two hands, and is then attacked by the opponent. 
+
+Each opponent has the following statistics: 
+- [ ] life points, 
+- [ ] attack value, 
+- [ ] armor points. 
+
+Damage received by the opponent is reduced by the value of their armor. For simplicity, the attack value of a given opponent is always constant but can also be partially random in different game variants. 
+The damage received by the player depends on the value of the opponent's attack and the strength of the player's defense. 
+The value of the player's defense is based on their own skills and the defensive values ​​of the weapons they are holding in their hands.
+
+If an opponent's life points are reduced to 0, they are removed from the board.
+If a player's life points are reduced to 0, they lose the game. An appropriate message should then be displayed.
+
+Each weapon used by the player should belong to one of 3 categories:
+- [ ] heavy weapons (damage depends on strength and aggression),
+- [ ] light weapons (damage depends on dexterity and luck),
+- [ ] magic weapons (damage depends on wisdom),
+
+During combat, the player has the following 3 attacks to choose from (regardless of the weapon held):
+- [ ] Normal attack,
+- [ ] Stealth attack,
+- [ ] Magic attack.
+
+In the case of a normal attack, the damage for heavy and light weapons remains unchanged, and for magic weapons it is 1.
+In the case of a stealth attack, the damage for light weapons is doubled, for heavy weapons it is reduced to half, and for magic weapons it is 1.
+In the case of a magic attack, the damage for magic weapons remains unchanged, and for other types of weapons it is 1.
+If the player is holding an item that is not a weapon, the damage is always 0.
+
+The player's defense depends on the attack used and the equipped weapon.
+
+For a regular attack, the defense is:
+- [ ] for heavy weapons: strength + luck,
+- [ ] for light weapons: dexterity + luck,
+- [ ] for magic weapons: dexterity + luck.
+- [ ] for other items: dexterity
+
+For a stealth attack:
+- [ ] for heavy weapons: strength,
+- [ ] for light weapons: dexterity,
+- [ ] for magic weapons: 0
+- [ ] for other items: 0
+
+For a magic attack:
+- [ ] for heavy weapons: luck,
+- [ ] for light weapons: luck,
+- [ ] for magic weapons: wisdom * 2
+- [ ] for other items: luck
+
+- attacks should be separate from the player (should be easily modified to
+allow enemy attacks)

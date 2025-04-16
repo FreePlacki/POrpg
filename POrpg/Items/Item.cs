@@ -1,4 +1,5 @@
 using System.Text;
+using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 
@@ -10,6 +11,8 @@ public abstract class Item : IDrawable
     public virtual EquipmentSlotType EquipmentSlotType => EquipmentSlotType.LeftHand | EquipmentSlotType.RightHand;
 
     public virtual bool OnPickUp(Player player) => false;
+    
+    public virtual int Accept(IAttackVisitor visitor) => 0;
 
     public virtual string? Description
     {

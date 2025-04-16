@@ -7,4 +7,6 @@ public abstract class Enemy : IDrawable
     public string Description => $"Damage: {Damage}";
 
     public abstract int Damage { get; }
+    public abstract int Health { get; }
+    public abstract int Armor { get; }
 }

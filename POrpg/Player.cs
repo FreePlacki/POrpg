@@ -3,6 +3,7 @@ using POrpg.Dungeon;
 using POrpg.Effects;
 using POrpg.Inventory;
 using POrpg.Items;
+using POrpg.Items.Weapons;
 
 namespace POrpg;
 

@@ -1,4 +1,5 @@
 using System.Text;
+using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 

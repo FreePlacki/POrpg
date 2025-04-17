@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
+using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.InputHandlers;
 using POrpg.Inventory;
@@ -19,12 +20,13 @@ public class Dungeon : IEnumerable<Tile>
     public int Height { get; }
     public bool ShouldQuit { get; set; }
     public Item? CurrentItem => CurrentTile.CurrentItem;
-    public Item? SelectedItem => _selectedSlot != null ? _player.Inventory[_selectedSlot] : null;
-    public Tile CurrentTile => this[_player.Position];
+    public Item? SelectedItem => _selectedSlot != null ? Player.Inventory[_selectedSlot] : null;
+    public Tile CurrentTile => this[Player.Position];
+    public Tile? LookingAt { get; private set; }
+    public bool IsChoosingAttack { get; set; }
 
     private readonly Tile[,] _tiles;
-    private readonly Player _player;
-    private Tile? LookingAt { get; set; }
+    public Player Player { get; }
     private InventorySlot? _selectedSlot;
     private InputHandler _inputHandler;
 
@@ -37,8 +39,8 @@ public class Dungeon : IEnumerable<Tile>
     public Dungeon(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
     {
         (Width, Height) = (width, height);
-        _tiles = new Tile[height, width];
-        _player = new Player(playerInitialPosition);
+        _tiles          = new Tile[height, width];
+        Player          = new Player(playerInitialPosition);
 
         for (var y = 0; y < Height; y++)
         {
@@ -67,9 +69,9 @@ public class Dungeon : IEnumerable<Tile>
             for (var x = 0; x < Width; x++)
             {
                 Position pos = (x, y);
-                if (pos == _player.Position)
+                if (pos == Player.Position)
                 {
-                    console.Write(new StyledText(_player.Symbol, Styles.Player));
+                    console.Write(new StyledText(Player.Symbol, Styles.Player));
                     continue;
                 }
 
@@ -114,15 +116,15 @@ public class Dungeon : IEnumerable<Tile>
     {
         var console = ConsoleHelper.GetInstance();
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
-        foreach (var attribute in _player.Attributes)
+        foreach (var attribute in Player.Attributes)
         {
             console.Write($"{attribute.Key,-15} ");
             console.WriteLine(new StyledText(attribute.Value.ToString(), Style.Gradient));
         }
 
         console.WriteLine();
-        console.WriteLine($"{"Coins",-15} {new StyledText(_player.Coins.ToString(), Styles.Money).Text}");
-        console.WriteLine($"{"Gold",-15} {new StyledText(_player.Gold.ToString(), Styles.Money).Text}");
+        console.WriteLine($"{"Coins",-15} {new StyledText(Player.Coins.ToString(), Styles.Money).Text}");
+        console.WriteLine($"{"Gold",-15} {new StyledText(Player.Gold.ToString(), Styles.Money).Text}");
     }
 
     private void DrawInventory()
@@ -133,7 +135,7 @@ public class Dungeon : IEnumerable<Tile>
         if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
         {
             console.Write($"{new StyledText("L", Styles.Player).Text}. ");
-            var leftHand = _player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
+            var leftHand = Player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
             if (leftHand != null)
             {
                 console.WriteLine(leftHand.Name);
@@ -147,17 +149,17 @@ public class Dungeon : IEnumerable<Tile>
             }
 
             console.Write($"{new StyledText(new StyledText("R", Styles.Player), Style.Faint).Text}. ");
-            var rightHand = _player.Inventory.Equipment.RightHand;
+            var rightHand = Player.Inventory.Equipment.RightHand;
             console.WriteLine(rightHand != null ? rightHand.Name : "Empty");
         }
         else if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.RightHand))
         {
             console.Write($"{new StyledText(new StyledText("L", Styles.Player), Style.Faint).Text}. ");
-            var leftHand = _player.Inventory.Equipment.LeftHand;
+            var leftHand = Player.Inventory.Equipment.LeftHand;
             console.WriteLine(leftHand != null ? leftHand.Name : "Empty");
 
             console.Write($"{new StyledText("R", Styles.Player).Text}. ");
-            var rightHand = _player.Inventory.Equipment.RightHand;
+            var rightHand = Player.Inventory.Equipment.RightHand;
             if (rightHand != null)
             {
                 console.WriteLine(rightHand.Name);
@@ -172,9 +174,9 @@ public class Dungeon : IEnumerable<Tile>
         }
         else
         {
-            if (_player.Inventory.Equipment.BothHands != null)
+            if (Player.Inventory.Equipment.BothHands != null)
             {
-                var item = _player.Inventory.Equipment.BothHands;
+                var item = Player.Inventory.Equipment.BothHands;
                 if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
                 {
                     console.WriteLine(
@@ -192,21 +194,21 @@ public class Dungeon : IEnumerable<Tile>
             else
             {
                 console.Write($"{new StyledText(new StyledText("L", Styles.Player), Style.Faint).Text}. ");
-                console.WriteLine(_player.Inventory.Equipment.LeftHand != null
-                    ? _player.Inventory.Equipment.LeftHand.Name
+                console.WriteLine(Player.Inventory.Equipment.LeftHand != null
+                    ? Player.Inventory.Equipment.LeftHand.Name
                     : "Empty");
                 console.Write($"{new StyledText(new StyledText("R", Styles.Player), Style.Faint).Text}. ");
-                console.WriteLine(_player.Inventory.Equipment.RightHand != null
-                    ? _player.Inventory.Equipment.RightHand.Name
+                console.WriteLine(Player.Inventory.Equipment.RightHand != null
+                    ? Player.Inventory.Equipment.RightHand.Name
                     : "Empty");
             }
         }
 
-        if (!_player.Inventory.Backpack.IsEmpty)
+        if (!Player.Inventory.Backpack.IsEmpty)
             console.WriteLine();
 
         var i = 0;
-        foreach (var item in _player.Inventory.Backpack.Items)
+        foreach (var item in Player.Inventory.Backpack.Items)
         {
             if (_selectedSlot == new BackpackSlot(i))
             {
@@ -227,10 +229,10 @@ public class Dungeon : IEnumerable<Tile>
 
     private bool DrawActiveEffects()
     {
-        if (_player.Effects.Count == 0) return false;
+        if (Player.Effects.Count == 0) return false;
         var console = ConsoleHelper.GetInstance();
         console.WriteLine($"{new StyledText("Effects:", Style.Underline).Text}");
-        foreach (var effect in _player.Effects.OrderByDescending(e => e.TurnsLeft))
+        foreach (var effect in Player.Effects.OrderByDescending(e => e.TurnsLeft))
         {
             console.WriteLine(effect.Name);
             console.WriteLine(effect.Description);
@@ -261,6 +263,9 @@ public class Dungeon : IEnumerable<Tile>
         console.WriteLine(new StyledText("Looking at:", Style.Underline));
         console.WriteLine(LookingAt.Name);
         console.WriteLine(LookingAt.Description);
+        foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.LookingAt) != 0))
+            console.WriteHintLine(hint);
+
         return true;
     }
 
@@ -277,10 +282,10 @@ public class Dungeon : IEnumerable<Tile>
     public bool TryMovePlayer(Position direction)
     {
         LookingAt = null;
-        var newPos = _player.Position + direction;
+        var newPos = Player.Position + direction;
         if (CanMoveTo(newPos))
         {
-            _player.Position = newPos;
+            Player.Position = newPos;
             return true;
         }
 
@@ -294,18 +299,18 @@ public class Dungeon : IEnumerable<Tile>
 
     public Item? TryPickUpItem()
     {
-        if (CurrentItem == null || _player.Inventory.Backpack.IsFull) return null;
+        if (CurrentItem == null || Player.Inventory.Backpack.IsFull) return null;
         var item = CurrentItem;
-        _player.PickUp(CurrentItem);
+        Player.PickUp(CurrentItem);
         CurrentTile.RemoveCurrentItem();
         return item;
     }
 
     private Item? TryDropItem(InventorySlot slot)
     {
-        if (_player.Inventory[slot] == null) return null;
+        if (Player.Inventory[slot] == null) return null;
 
-        var item = _player.Drop(slot);
+        var item = Player.Drop(slot);
         CurrentTile.Add(item);
         return item;
     }
@@ -336,9 +341,9 @@ public class Dungeon : IEnumerable<Tile>
 
     public bool TrySelectItem(InventorySlot slot)
     {
-        if (!slot.IsValid(_player.Inventory)) return false;
+        if (!slot.IsValid(Player.Inventory)) return false;
 
-        var normSlot = slot.Normalize(_player.Inventory, _selectedSlot);
+        var normSlot = slot.Normalize(Player.Inventory, _selectedSlot);
 
         // deselect when selecting the current active slot
         if (_selectedSlot == normSlot)
@@ -347,14 +352,14 @@ public class Dungeon : IEnumerable<Tile>
             return true;
         }
 
-        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null)
+        if (_selectedSlot == null || Player.Inventory[_selectedSlot] == null)
         {
             _selectedSlot = normSlot;
             return true;
         }
 
-        _player.Inventory.Swap(_selectedSlot, slot);
-        slot = slot.Normalize(_player.Inventory, _selectedSlot);
+        Player.Inventory.Swap(_selectedSlot, slot);
+        slot          = slot.Normalize(Player.Inventory, _selectedSlot);
         _selectedSlot = slot;
 
         return true;
@@ -362,9 +367,9 @@ public class Dungeon : IEnumerable<Tile>
 
     public bool TryMoveToBackpack()
     {
-        if (_selectedSlot == null || _player.Inventory[_selectedSlot] == null ||
-            !_selectedSlot.CanMoveToBackpack || _player.Inventory.Backpack.IsFull) return false;
-        _selectedSlot.MoveToBackpack(_player.Inventory);
+        if (_selectedSlot == null || Player.Inventory[_selectedSlot] == null ||
+            !_selectedSlot.CanMoveToBackpack || Player.Inventory.Backpack.IsFull) return false;
+        _selectedSlot.MoveToBackpack(Player.Inventory);
         _selectedSlot = null;
 
         return true;
@@ -373,11 +378,23 @@ public class Dungeon : IEnumerable<Tile>
     public Item? TryUseItem()
     {
         if (_selectedSlot == null) return null;
-        if (_player.Inventory[_selectedSlot] is not IUsable item) return null;
+        if (Player.Inventory[_selectedSlot] is not IUsable item) return null;
 
-        item.Use(_player);
-        var res = _player.Drop(_selectedSlot);
+        item.Use(Player);
+        var res = Player.Drop(_selectedSlot);
         return res;
+    }
+
+    public void PerformAttack(IAttackVisitor visitor)
+    {
+        var damage = 0;
+        if (_selectedSlot is EquipmentSlot)
+        {
+            damage = Player.Inventory[_selectedSlot]?.Accept(visitor) ?? 0;
+        }
+
+        LookingAt!.Enemy!.DealDamage(damage);
+        ConsoleHelper.GetInstance().AddNotification($"Dealt {damage} damage to {LookingAt.Name}");
     }
 
     public void CycleItems(bool reverse) => CurrentTile.CycleItems(reverse);

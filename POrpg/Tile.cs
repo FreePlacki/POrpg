@@ -10,6 +10,7 @@ public abstract class Tile : IDrawable
     public abstract string Name { get; }
     public virtual string? Description => null;
     public abstract bool IsPassable { get; }
+    public Enemy? Enemy { get; protected set; }
 
     public virtual IEnumerable<Item> Items => [];
     public virtual void Add(Item item) => throw new InvalidOperationException();
@@ -22,26 +23,25 @@ public abstract class Tile : IDrawable
 
 public class FloorTile : Tile
 {
-    private readonly List<Item> _items;
-    private Enemy? _enemy;
-    private bool IsEmpty => _items.Count == 0;
-
-    private int _currentItemIndex;
-    public override bool IsPassable => _enemy == null;
+    public override bool IsPassable => Enemy == null;
     public override bool HasManyItems => _items.Count > 1;
     public override Item? CurrentItem => _items.ElementAtOrDefault(_currentItemIndex);
     public override IEnumerable<Item> Items => _items;
+    
+    private readonly List<Item> _items;
+    private bool IsEmpty => _items.Count == 0;
+    private int _currentItemIndex;
 
     public override string Symbol =>
-        _enemy != null ? !IsEmpty ? new StyledText(_enemy.Symbol, Styles.Stacked).Text : _enemy.Symbol :
+        Enemy != null ? !IsEmpty ? new StyledText(Enemy.Symbol, Styles.Stacked).Text : Enemy.Symbol :
         IsEmpty ? " " :
         HasManyItems ? new StyledText(CurrentItem!.Symbol, Styles.Stacked).Text : CurrentItem!.Symbol;
 
     public override string Name =>
-        _enemy?.Name ?? CurrentItem?.Name ?? "Empty Tile";
+        Enemy?.Name ?? CurrentItem?.Name ?? "Empty Tile";
 
     public override string? Description =>
-        _enemy?.Description ?? CurrentItem?.Description ?? null;
+        Enemy?.Description ?? CurrentItem?.Description ?? null;
 
 
     public FloorTile(params Item[] items)
@@ -65,7 +65,7 @@ public class FloorTile : Tile
 
     public override void Add(Enemy enemy)
     {
-        _enemy = enemy;
+        Enemy = enemy;
     }
 
     public override void RemoveCurrentItem()

@@ -10,7 +10,7 @@ public class UiInputHandler : InputHandler
         return keyInfo.Key switch
         {
             ConsoleKey.C => new ClearConsoleCommand(),
-            ConsoleKey.X => new QuitCommand(dungeon),
+            _ when keyInfo.KeyChar == ']' => new QuitCommand(dungeon),
             _ when keyInfo.KeyChar == '?' => new ShowInstructionsCommand(),
             ConsoleKey.L => new SelectItemCommand(dungeon, new EquipmentSlot(EquipmentSlotType.LeftHand)),
             ConsoleKey.R => new SelectItemCommand(dungeon, new EquipmentSlot(EquipmentSlotType.RightHand)),
@@ -26,7 +26,7 @@ public class UiInputHandler : InputHandler
     public override IEnumerable<InputHint> GetHints()
     {
         yield return new InputHint("C", "Clear", UiLocation.Bottom);
-        yield return new InputHint("X", "Quit", UiLocation.Bottom);
+        yield return new InputHint("]", "Quit", UiLocation.Bottom);
         yield return new InputHint("?", "Help", UiLocation.Bottom);
         
         foreach (var hint in NextHandler!.GetHints())

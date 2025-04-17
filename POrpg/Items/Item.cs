@@ -11,7 +11,9 @@ public abstract class Item : IDrawable
     public virtual EquipmentSlotType EquipmentSlotType => EquipmentSlotType.LeftHand | EquipmentSlotType.RightHand;
 
     public virtual bool OnPickUp(Player player) => false;
-    
+
+    // TODO: why the following doesn't work?
+    // public virtual int Accept(IAttackVisitor visitor) => visitor.Visit(this);
     public virtual int Accept(IAttackVisitor visitor) => 0;
 
     public virtual string? Description

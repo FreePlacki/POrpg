@@ -194,9 +194,9 @@ The solution should not use many if or switch statements.
 There are enemies in the maze that the player can fight. During the fight, the player performs a selected attack with a weapon held in one hand or in both hands or with two weapons in two hands, and is then attacked by the opponent. 
 
 Each opponent has the following statistics: 
-- [ ] life points, 
-- [ ] attack value, 
-- [ ] armor points. 
+- [x] life points, 
+- [x] attack value, 
+- [x] armor points. 
 
 Damage received by the opponent is reduced by the value of their armor. For simplicity, the attack value of a given opponent is always constant but can also be partially random in different game variants. 
 The damage received by the player depends on the value of the opponent's attack and the strength of the player's defense. 

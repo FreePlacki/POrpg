@@ -1,0 +1,23 @@
+using POrpg.Commands;
+
+namespace POrpg.InputHandlers;
+
+public class ChooseAttackInputHandler : InputHandler
+{
+    public override ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
+    {
+        return keyInfo.Key switch
+        {
+            ConsoleKey.X => new ChooseAttackCommand(dungeon),
+            _ => NextHandler!.HandleInput(dungeon, keyInfo)
+        };
+    }
+
+    public override IEnumerable<InputHint> GetHints()
+    {
+        yield return new InputHint("X", "Attack", UiLocation.LookingAt);
+        
+        foreach (var hint in NextHandler!.GetHints())
+            yield return hint;
+    }
+}

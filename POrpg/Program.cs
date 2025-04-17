@@ -16,7 +16,6 @@ class Program
         var director = new DungeonDirector();
         var dungeon = director.Build(dungeonBuilder);
         var instructions = director.Build(new InstructionsBuilder());
-        var inputHandler = director.Build(new InputHandlerBuilder());
 
         Console.CursorVisible = false;
         Console.CancelKeyPress += (_, _) =>
@@ -38,7 +37,9 @@ class Program
                 else continue;
             }
 
-            dungeon.Draw();
+            var inputHandler = new InputHandlerBuilder().Build(dungeon);
+
+            dungeon.Draw(inputHandler);
             console.Reset();
 
             var input = Console.ReadKey(true);

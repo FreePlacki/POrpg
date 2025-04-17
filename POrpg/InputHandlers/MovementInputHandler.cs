@@ -15,4 +15,12 @@ public class MovementInputHandler : InputHandler
             _ => NextHandler!.HandleInput(dungeon, keyInfo)
         };
     }
+
+    public override IEnumerable<InputHint> GetHints()
+    {
+        yield return new InputHint("WSAD", "Move", UiLocation.Bottom);
+        
+        foreach (var hint in NextHandler!.GetHints())
+            yield return hint;
+    }
 }

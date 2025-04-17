@@ -18,13 +18,15 @@ public class Dungeon : IEnumerable<Tile>
     public int Width { get; }
     public int Height { get; }
     public bool ShouldQuit { get; set; }
+    public Item? CurrentItem => CurrentTile.CurrentItem;
+    public Item? SelectedItem => _selectedSlot != null ? _player.Inventory[_selectedSlot] : null;
+    public Tile CurrentTile => this[_player.Position];
 
     private readonly Tile[,] _tiles;
     private readonly Player _player;
-    private Tile CurrentTile => this[_player.Position];
-    private Item? CurrentItem => CurrentTile.CurrentItem;
     private Tile? LookingAt { get; set; }
     private InventorySlot? _selectedSlot;
+    private InputHandler _inputHandler;
 
     public Tile this[Position p]
     {
@@ -54,9 +56,10 @@ public class Dungeon : IEnumerable<Tile>
         this[playerInitialPosition] = new FloorTile();
     }
 
-    public void Draw()
+    public void Draw(InputHandler inputHandler)
     {
         var sw = Stopwatch.StartNew();
+        _inputHandler = inputHandler;
         var console = ConsoleHelper.GetInstance();
 
         for (var y = 0; y < Height; y++)
@@ -95,10 +98,14 @@ public class Dungeon : IEnumerable<Tile>
         console.PrintNotifications();
         console.WriteLine();
 
-        console.WriteLine($"{ConsoleHelper.InputHint("WSAD", "Move")} " +
-                          $"{ConsoleHelper.InputHint("C", "Redraw")} " +
-                          $"{ConsoleHelper.InputHint("?", "Help")} " +
-                          $"{ConsoleHelper.InputHint("X", "Exit")}");
+        foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Bottom) != 0))
+        {
+            console.WriteHint(hint);
+            console.Write(" ");
+        }
+
+        console.WriteLine();
+
         sw.Stop();
         console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
     }
@@ -131,25 +138,21 @@ public class Dungeon : IEnumerable<Tile>
             {
                 console.WriteLine(leftHand.Name);
                 console.WriteLine(leftHand.Description);
-                console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
-                if (leftHand is IUsable)
-                    console.WriteLine(ConsoleHelper.InputHint("F", "Use"));
-                console.WriteLine(
-                    ConsoleHelper.InputHint("B",
-                        $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
+                foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Inventory) != 0))
+                    console.WriteHintLine(hint);
             }
             else
             {
                 console.WriteLine("Empty");
             }
 
-            console.Write($"{ConsoleHelper.InputHint("R")}. ");
+            console.Write($"{new StyledText(new StyledText("R", Styles.Player), Style.Faint).Text}. ");
             var rightHand = _player.Inventory.Equipment.RightHand;
             console.WriteLine(rightHand != null ? rightHand.Name : "Empty");
         }
         else if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.RightHand))
         {
-            console.Write($"{ConsoleHelper.InputHint("L")}. ");
+            console.Write($"{new StyledText(new StyledText("L", Styles.Player), Style.Faint).Text}. ");
             var leftHand = _player.Inventory.Equipment.LeftHand;
             console.WriteLine(leftHand != null ? leftHand.Name : "Empty");
 
@@ -159,12 +162,8 @@ public class Dungeon : IEnumerable<Tile>
             {
                 console.WriteLine(rightHand.Name);
                 console.WriteLine(rightHand.Description);
-                console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
-                if (rightHand is IUsable)
-                    console.WriteLine(ConsoleHelper.InputHint("F", "Use"));
-                console.WriteLine(
-                    ConsoleHelper.InputHint("B",
-                        $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
+                foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Inventory) != 0))
+                    console.WriteHintLine(hint);
             }
             else
             {
@@ -181,23 +180,22 @@ public class Dungeon : IEnumerable<Tile>
                     console.WriteLine(
                         $"{new StyledText("LR", Styles.Player).Text}. {item.Name}");
                     console.WriteLine(item.Description);
-                    console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
-                    console.WriteLine(
-                        ConsoleHelper.InputHint("B",
-                            $"Move to backpack{(_player.Inventory.Backpack.IsFull ? "[full]" : "")}"));
+                    foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Inventory) != 0))
+                        console.WriteHintLine(hint);
                 }
                 else
                 {
-                    console.WriteLine($"{ConsoleHelper.InputHint("LR")}. {item.Name}");
+                    console.WriteLine(
+                        $"{new StyledText(new StyledText("LR", Styles.Player), Style.Faint).Text}. {item.Name}");
                 }
             }
             else
             {
-                console.Write($"{ConsoleHelper.InputHint("L")}. ");
+                console.Write($"{new StyledText(new StyledText("L", Styles.Player), Style.Faint).Text}. ");
                 console.WriteLine(_player.Inventory.Equipment.LeftHand != null
                     ? _player.Inventory.Equipment.LeftHand.Name
                     : "Empty");
-                console.Write($"{ConsoleHelper.InputHint("R")}. ");
+                console.Write($"{new StyledText(new StyledText("R", Styles.Player), Style.Faint).Text}. ");
                 console.WriteLine(_player.Inventory.Equipment.RightHand != null
                     ? _player.Inventory.Equipment.RightHand.Name
                     : "Empty");
@@ -214,11 +212,13 @@ public class Dungeon : IEnumerable<Tile>
             {
                 console.WriteLine($"{new StyledText((i + 1).ToString(), Styles.Player).Text}. {item.Name}");
                 console.WriteLine(item.Description);
-                console.WriteLine(ConsoleHelper.InputHint("Q", "Drop"));
+                foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Backpack) != 0))
+                    console.WriteHintLine(hint);
             }
             else
             {
-                console.WriteLine($"{ConsoleHelper.InputHint((i + 1).ToString())}. {item.Name}");
+                console.WriteLine(
+                    $"{new StyledText(new StyledText((i + 1).ToString(), Style.Faint), Styles.Player).Text}. {item.Name}");
             }
 
             i++;
@@ -247,10 +247,8 @@ public class Dungeon : IEnumerable<Tile>
         console.WriteLine(new StyledText("Standing on:", Style.Underline));
         console.WriteLine(CurrentTile.Name);
         console.WriteLine(CurrentTile.Description);
-        console.WriteLine(ConsoleHelper.InputHint("E",
-            $"Pick up{(_player.Inventory.Backpack.IsFull ? "[backpack full]" : "")}"));
-        if (CurrentTile.HasManyItems)
-            console.WriteLine(ConsoleHelper.InputHint(",.", "Cycle items"));
+        foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.StandingOn) != 0))
+            console.WriteHintLine(hint);
 
         return true;
     }

@@ -41,6 +41,7 @@ public class StyledText : TextDecorator
     private readonly Style _style;
     private readonly byte _reset;
 
+    // TODO: refactor to accept varargs styles
     public StyledText(IConsoleText text, Style style) : base(text)
     {
         _style = style switch

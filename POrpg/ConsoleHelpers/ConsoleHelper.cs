@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using POrpg.Dungeon;
+using POrpg.InputHandlers;
 
 namespace POrpg.ConsoleHelpers;
 
@@ -91,7 +92,7 @@ public class ConsoleHelper
         var divider = new StyledText(new string('=', 10), Style.Faint).Text;
         Console.WriteLine($"{divider} {new StyledText("Instructions", Style.Underline).Text} {divider}\n");
         Console.WriteLine(_instructions);
-        Console.WriteLine(InputHint("?", "Hide instructions"));
+        WriteHintLine(new InputHint("?", "Hide instructions", UiLocation.None));
     }
 
     public void HideInstructions()
@@ -169,11 +170,15 @@ public class ConsoleHelper
         Console.SetCursorPosition(ColumnStart(_columnIndex), _line);
     }
 
-    public static string InputHint(string keys, string? description = null)
+    public void WriteHint(InputHint hint)
     {
-        return description == null
-            ? new StyledText(new StyledText(keys, Styles.Player), Style.Faint).Text
-            : new StyledText($"{description} ({new StyledText(keys, Styles.Player).Text})", Style.Faint).Text;
+        Write(new StyledText($"{hint.Description} ({new StyledText(hint.Key, Styles.Player).Text})", Style.Faint));
+    }
+    
+    public void WriteHintLine(InputHint hint)
+    {
+        WriteHint(hint);
+        WriteLine();
     }
 
     private void SetCursorPosition(int column, int line)

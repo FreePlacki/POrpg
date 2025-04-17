@@ -13,4 +13,12 @@ public class CycleItemsHandler : InputHandler
             _ => NextHandler!.HandleInput(dungeon, keyInfo)
         };
     }
+
+    public override IEnumerable<InputHint> GetHints()
+    {
+        yield return new InputHint(",.", "Cycle items", UiLocation.StandingOn);
+        
+        foreach (var hint in NextHandler!.GetHints())
+            yield return hint;
+    }
 }

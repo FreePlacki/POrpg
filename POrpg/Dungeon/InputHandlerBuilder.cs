@@ -1,76 +1,26 @@
 using POrpg.InputHandlers;
+using POrpg.Items;
 
 namespace POrpg.Dungeon;
 
-public class InputHandlerBuilder : IDungeonBuilder<InputHandler>
+public class InputHandlerBuilder
 {
-    private bool _hasItems;
-    private bool _hasEnemies;
-    private bool _hasUsableItems;
-
-    public IDungeonBuilder<InputHandler> AddRandomChambers(int numChambers) => this;
-
-    public IDungeonBuilder<InputHandler> AddCentralRoom() => this;
-
-    public IDungeonBuilder<InputHandler> AddRandomPaths() => this;
-
-    public IDungeonBuilder<InputHandler> AddUnusableItems(double probability = 0.07)
-    {
-        _hasItems = true;
-        return this;
-    }
-
-    public IDungeonBuilder<InputHandler> AddModifiedUnusableItems(double probability = 0.07, int maxEffects = 3)
-    {
-        _hasItems = true;
-        return this;
-    }
-
-    public IDungeonBuilder<InputHandler> AddWeapons(double probability = 0.07)
-    {
-        _hasItems = true;
-        return this;
-    }
-
-    public IDungeonBuilder<InputHandler> AddModifiedWeapons(double probability = 0.1, int maxEffects = 3)
-    {
-        _hasItems = true;
-        return this;
-    }
-
-    public IDungeonBuilder<InputHandler> AddPotions(double probability = 0.15)
-    {
-        _hasItems = true;
-        _hasUsableItems = true;
-        return this;
-    }
-
-    public IDungeonBuilder<InputHandler> AddEnemies(double probability = 0.15)
-    {
-        _hasEnemies = true;
-        return this;
-    }
-
-    public IDungeonBuilder<InputHandler> AddMoney(double probability = 0.15)
-    {
-        _hasItems = true;
-        return this;
-    }
-
-    public InputHandler Build()
+    public InputHandler Build(Dungeon dungeon)
     {
         var handlers = new List<InputHandler>
         {
             new UiInputHandler(),
-            new MovementInputHandler()
+            new MovementInputHandler(),
+            new InventoryInputHandler()
         };
 
-        if (_hasItems || _hasEnemies)
+        if (dungeon.CurrentItem != null)
+            handlers.Add(new ItemsHandler());
+        if (dungeon.CurrentTile.HasManyItems)
             handlers.Add(new CycleItemsHandler());
-        if (_hasItems)
-            handlers.Add(new InventoryInputHandler());
-        if (_hasUsableItems)
+        if (dungeon.SelectedItem is IUsable)
             handlers.Add(new UsableItemInputHandler());
+        
         handlers.Add(new GuardInputHandler());
 
         for (var i = 0; i < handlers.Count - 1; i++)

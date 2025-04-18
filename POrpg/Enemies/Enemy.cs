@@ -10,8 +10,10 @@ public abstract class Enemy : IDrawable
     public abstract int Health { get; protected set; }
     public abstract int Armor { get; }
 
-    public void DealDamage(int damage)
+    public int DealDamage(int damage)
     {
-        Health -= Math.Max(0, damage - Armor);
+        var dmg = Math.Max(0, damage - Armor);
+        Health -= dmg;
+        return dmg;
     }
 }

@@ -41,7 +41,11 @@ public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
         _attributes = attributes;
     }
 
-    public int this[Attribute attribute] => _attributes[attribute];
+    public int this[Attribute attribute]
+    {
+        get => _attributes[attribute];
+        set => _attributes[attribute] = value;
+    }
     
     public bool IsEmpty => _attributes.Count == 0;
 

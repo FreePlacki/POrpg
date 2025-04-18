@@ -206,14 +206,14 @@ The value of the player's defense is based on their own skills and the defensive
 - [ ] If a player's life points are reduced to 0, they lose the game. An appropriate message should then be displayed.
 
 Each weapon used by the player should belong to one of 3 categories:
-- [ ] heavy weapons (damage depends on strength and aggression),
-- [ ] light weapons (damage depends on dexterity and luck),
-- [ ] magic weapons (damage depends on wisdom),
+- [x] heavy weapons (damage depends on strength and aggression),
+- [x] light weapons (damage depends on dexterity and luck),
+- [x] magic weapons (damage depends on wisdom),
 
 During combat, the player has the following 3 attacks to choose from (regardless of the weapon held):
-- [ ] Normal attack,
-- [ ] Stealth attack,
-- [ ] Magic attack.
+- [x] Normal attack,
+- [x] Stealth attack,
+- [x] Magic attack.
 
 In the case of a normal attack, the damage for heavy and light weapons remains unchanged, and for magic weapons it is 1.
 In the case of a stealth attack, the damage for light weapons is doubled, for heavy weapons it is reduced to half, and for magic weapons it is 1.
@@ -223,22 +223,22 @@ If the player is holding an item that is not a weapon, the damage is always 0.
 The player's defense depends on the attack used and the equipped weapon.
 
 For a regular attack, the defense is:
-- [ ] for heavy weapons: strength + luck,
-- [ ] for light weapons: dexterity + luck,
-- [ ] for magic weapons: dexterity + luck.
-- [ ] for other items: dexterity
+- [x] for heavy weapons: strength + luck,
+- [x] for light weapons: dexterity + luck,
+- [x] for magic weapons: dexterity + luck.
+- [x] for other items: dexterity
 
 For a stealth attack:
-- [ ] for heavy weapons: strength,
-- [ ] for light weapons: dexterity,
-- [ ] for magic weapons: 0
-- [ ] for other items: 0
+- [x] for heavy weapons: strength,
+- [x] for light weapons: dexterity,
+- [x] for magic weapons: 0
+- [x] for other items: 0
 
 For a magic attack:
-- [ ] for heavy weapons: luck,
-- [ ] for light weapons: luck,
-- [ ] for magic weapons: wisdom * 2
-- [ ] for other items: luck
+- [x] for heavy weapons: luck,
+- [x] for light weapons: luck,
+- [x] for magic weapons: wisdom * 2
+- [x] for other items: luck
 
 - attacks should be separate from the player (should be easily modified to
 allow enemy attacks)

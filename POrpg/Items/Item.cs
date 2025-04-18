@@ -14,7 +14,7 @@ public abstract class Item : IDrawable
 
     // TODO: why the following doesn't work?
     // public virtual int Accept(IAttackVisitor visitor) => visitor.Visit(this);
-    public virtual int Accept(IAttackVisitor visitor) => 0;
+    public virtual (int damage, int defense) Accept(IAttackVisitor visitor) => (0, 0);
 
     public virtual string? Description
     {

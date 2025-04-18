@@ -6,7 +6,7 @@ public interface ICombatant
 {
     public Item EquippedWeapon { get; }
 
-    public int PerformAttack(IAttackVisitor attackVisitor)
+    public (int damage, int defense) PerformAttack(IAttackVisitor attackVisitor)
     {
         return EquippedWeapon.Accept(attackVisitor);
     }

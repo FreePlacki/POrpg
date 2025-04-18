@@ -60,4 +60,11 @@ public class Player : IDrawable
     }
 
     public void RemoveEffect(Effect effect) => Effects.Remove(effect);
+
+    public int DealDamage(int damage, int defense)
+    {
+        int dmg = Math.Max(0, damage - defense);
+        _attributes[Attribute.Health] -= dmg;
+        return dmg;
+    }
 }

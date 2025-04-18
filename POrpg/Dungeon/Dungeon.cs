@@ -388,13 +388,16 @@ public class Dungeon : IEnumerable<Tile>
     public void PerformAttack(IAttackVisitor visitor)
     {
         var damage = 0;
+        var defense = 0;
         if (_selectedSlot is EquipmentSlot)
         {
-            damage = Player.Inventory[_selectedSlot]?.Accept(visitor) ?? 0;
+            (damage, defense) = Player.Inventory[_selectedSlot]?.Accept(visitor) ?? (0, 0);
         }
 
-        LookingAt!.Enemy!.DealDamage(damage);
+        damage = LookingAt!.Enemy!.DealDamage(damage);
         ConsoleHelper.GetInstance().AddNotification($"Dealt {damage} damage to {LookingAt.Name}");
+        damage = Player.DealDamage(LookingAt.Enemy.Damage, defense);
+        ConsoleHelper.GetInstance().AddNotification($"{LookingAt.Name} hits back for {damage}");
     }
 
     public void CycleItems(bool reverse) => CurrentTile.CycleItems(reverse);

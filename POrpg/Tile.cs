@@ -10,7 +10,7 @@ public abstract class Tile : IDrawable
     public abstract string Name { get; }
     public virtual string? Description => null;
     public abstract bool IsPassable { get; }
-    public Enemy? Enemy { get; protected set; }
+    public Enemy? Enemy { get; set; }
 
     public virtual IEnumerable<Item> Items => [];
     public virtual void Add(Item item) => throw new InvalidOperationException();

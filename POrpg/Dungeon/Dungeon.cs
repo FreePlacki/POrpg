@@ -396,6 +396,12 @@ public class Dungeon : IEnumerable<Tile>
 
         damage = LookingAt!.Enemy!.DealDamage(damage);
         ConsoleHelper.GetInstance().AddNotification($"Dealt {damage} damage to {LookingAt.Name}");
+        if (LookingAt.Enemy.Health <= 0)
+        {
+            ConsoleHelper.GetInstance().AddNotification($"{LookingAt.Enemy} has been slain");
+            LookingAt.Enemy = null;
+            return;
+        }
         damage = Player.DealDamage(LookingAt.Enemy.Damage, defense);
         ConsoleHelper.GetInstance().AddNotification($"{LookingAt.Name} hits back for {damage}");
     }

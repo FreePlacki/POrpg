@@ -179,7 +179,7 @@ Stage 4: Fighting enemies
 Create a mechanism that allows for fighting enemies in the dungeon.
 
 ## Requirements
-- [ ] fighting enemies
+- [x] fighting enemies
 
 ### IMPORTANT!!!
 You must use visitor pattern to implement your solution.
@@ -202,8 +202,8 @@ Damage received by the opponent is reduced by the value of their armor. For simp
 The damage received by the player depends on the value of the opponent's attack and the strength of the player's defense. 
 The value of the player's defense is based on their own skills and the defensive values ​​of the weapons they are holding in their hands.
 
-- [ ] If an opponent's life points are reduced to 0, they are removed from the board.
-- [ ] If a player's life points are reduced to 0, they lose the game. An appropriate message should then be displayed.
+- [x] If an opponent's life points are reduced to 0, they are removed from the board.
+- [x] If a player's life points are reduced to 0, they lose the game. An appropriate message should then be displayed.
 
 Each weapon used by the player should belong to one of 3 categories:
 - [x] heavy weapons (damage depends on strength and aggression),

@@ -24,4 +24,10 @@ public class TurnManager
         foreach (var observer in currentObservers)
             observer.Update();
     }
+
+    public void Reset()
+    {
+        Turn = 0;
+        _observers.Clear();
+    }
 }

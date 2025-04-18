@@ -5,17 +5,35 @@ namespace POrpg;
 
 class Program
 {
+    private const int RoomWidth = 41;
+    private const int RoomHeight = 21;
+    private static readonly Position PlayerInitialPosition = (0, 0);
+    
     static void Main(string[] _)
     {
-        const int roomWidth = 41;
-        const int roomHeight = 21;
-        Position playerInitialPosition = (0, 0);
-        
-        var dungeonBuilder =
-            new DungeonBuilder(InitialDungeonState.Empty, roomWidth, roomHeight, playerInitialPosition);
         var director = new DungeonDirector();
-        var dungeon = director.Build(dungeonBuilder);
         var instructions = director.Build(new InstructionsBuilder());
+        (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
+        ConsoleHelper.Initialize(instructions, columns, 3);
+        
+        bool playAgain = true;
+    
+        while (playAgain)
+        {
+            playAgain = RunGame(director);
+            TurnManager.GetInstance().Reset();
+        }
+    
+        Console.Clear();
+        Console.CursorVisible = true;
+    }
+
+    static bool RunGame(DungeonDirector director)
+    {
+        var dungeonBuilder =
+            new DungeonBuilder(InitialDungeonState.Empty, RoomWidth, RoomHeight, PlayerInitialPosition);
+        var dungeon = director.Build(dungeonBuilder);
+        var console = ConsoleHelper.GetInstance();
 
         Console.CursorVisible = false;
         Console.CancelKeyPress += (_, _) =>
@@ -24,9 +42,6 @@ class Program
             Console.Clear();
         };
         Console.Clear();
-
-        (int margin, int width)[] columns = [(0, roomWidth), (2, 38), (2, 38)];
-        var console = ConsoleHelper.Initialize(instructions, columns, 3);
 
         while (true)
         {
@@ -45,9 +60,16 @@ class Program
             var input = Console.ReadKey(true);
 
             dungeon.ProcessInput(inputHandler, input);
+        
+            if (dungeon.Player.Attributes[Attribute.Health] <= 0)
+            {
+                console.ShowDeathScreen();
+                Console.ReadKey(true);
+                return true;
+            }
+        
             if (dungeon.ShouldQuit)
-                break;
+                return false;
         }
-        Console.Clear();
     }
 }

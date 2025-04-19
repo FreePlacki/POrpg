@@ -36,14 +36,34 @@ static class Styles
     public const Style Effect = Style.Italic;
 }
 
-public class StyledText : TextDecorator
+public class StyledText
 {
-    private readonly Style _style;
+    private readonly Style? _style;
     private readonly byte _reset;
+    private StyledText? _innerText;
+    private string? _text;
+    public string InitialText => _innerText?.InitialText ?? _text!;
+
+    public StyledText(StyledText text, params Style[] styles)
+    {
+        var t = text;
+        foreach (var style in styles)
+            t = new StyledText(t, style);
+        _style     = t._style;
+        _reset     = t._reset;
+        _innerText = t._innerText;
+        _text      = t._text;
+    }
+
+    public StyledText(string text, params Style[] styles) : this(new StyledText(text), styles)
+    {
+    }
 
     // TODO: refactor to accept varargs styles
-    public StyledText(IConsoleText text, Style style) : base(text)
+    public StyledText(StyledText text, Style style)
     {
+        _innerText = text;
+
         _style = style switch
         {
             Style.Gradient =>
@@ -59,29 +79,35 @@ public class StyledText : TextDecorator
         if (_style >= Style.Black) _reset = (byte)Style.Normal;
     }
 
-    public StyledText(string text, Style style) : this(new PlainText(text), style)
+    public StyledText(string text)
+    {
+        _text = text;
+    }
+
+    public StyledText(string text, Style style) : this(new StyledText(text), style)
     {
     }
 
-    public override string Text
+    public override string ToString()
     {
-        get
-        {
-            if (_style == Style.Rainbow)
-            {
-                var sb = new StringBuilder();
-                int i = (byte)Style.Red;
-                foreach (var c in InnerText.Text)
-                {
-                    sb.Append($"\u001b[{i}m{c}\u001b[{_reset}m");
-                    i++;
-                    if (i > (byte)Style.Cyan) i = (byte)Style.Red;
-                }
+        var inner = _innerText?.ToString() ?? _text!;
+        if (_style == null)
+            return inner;
 
-                return sb.ToString();
+        if (_style == Style.Rainbow)
+        {
+            var sb = new StringBuilder();
+            int i = (byte)Style.Red;
+            foreach (var c in inner)
+            {
+                sb.Append($"\u001b[{i}m{c}\u001b[{_reset}m");
+                i++;
+                if (i > (byte)Style.Cyan) i = (byte)Style.Red;
             }
 
-            return $"\u001b[{(byte)_style}m{InnerText.Text}\u001b[{_reset}m";
+            return sb.ToString();
         }
+
+        return $"\u001b[{(byte)_style}m{inner}\u001b[{_reset}m";
     }
 }

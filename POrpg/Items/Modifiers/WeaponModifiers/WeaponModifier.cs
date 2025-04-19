@@ -2,7 +2,7 @@ using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 using POrpg.Items.Weapons;
 
-namespace POrpg.Items.Effects.WeaponEffects;
+namespace POrpg.Items.Modifiers.WeaponModifiers;
 
 public abstract class WeaponModifier : Weapon
 {
@@ -13,7 +13,7 @@ public abstract class WeaponModifier : Weapon
         Weapon = weapon;
     }
     
-    public override string Symbol => new StyledText(Weapon.Symbol, Styles.Effect).Text;
+    public override string Symbol => new StyledText(Weapon.Symbol, Styles.Effect).ToString();
     
     public override Attributes? Attributes => Weapon.Attributes;
     public override EquipmentSlotType EquipmentSlotType => Weapon.EquipmentSlotType;

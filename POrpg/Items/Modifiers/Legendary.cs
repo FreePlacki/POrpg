@@ -1,6 +1,6 @@
 using POrpg.ConsoleHelpers;
 
-namespace POrpg.Items.Effects;
+namespace POrpg.Items.Modifiers;
 
 public class Legendary : Modifier
 {
@@ -8,7 +8,7 @@ public class Legendary : Modifier
     {
     }
 
-    public override string Name => $"{Item.Name} ({new StyledText("Legendary", Style.Rainbow).Text})";
+    public override string Name => $"{Item.Name} ({new StyledText("Legendary", Style.Rainbow)})";
 
     public override Attributes Attributes =>
         new Attributes(new Dictionary<Attribute, int>

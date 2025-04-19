@@ -1,7 +1,7 @@
 using POrpg.Enemies;
 using POrpg.Items;
-using POrpg.Items.Effects;
-using POrpg.Items.Effects.WeaponEffects;
+using POrpg.Items.Modifiers;
+using POrpg.Items.Modifiers.WeaponModifiers;
 using POrpg.Items.Potions;
 using POrpg.Items.Weapons;
 

@@ -1,11 +1,11 @@
 namespace POrpg.ConsoleHelpers;
 
-public abstract class TextDecorator : IConsoleText
+public abstract class TextDecorator
 {
-    protected IConsoleText InnerText { get; }
+    protected TextDecorator InnerText { get; }
     public string InitialText => InnerText.InitialText;
 
-    protected TextDecorator(IConsoleText innerText) => InnerText = innerText;
+    protected TextDecorator(TextDecorator innerText) => InnerText = innerText;
     
     public abstract string Text { get; }
 }

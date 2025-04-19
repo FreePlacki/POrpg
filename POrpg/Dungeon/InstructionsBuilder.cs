@@ -64,27 +64,27 @@ public class InstructionsBuilder : IDungeonBuilder<string>
     {
         var buffer = new StringBuilder();
 
-        if (_hasWeapons) buffer.AppendLine($"There are {new StyledText("Weapons", Styles.Weapon).Text}!");
-        if (_hasItems) buffer.AppendLine($"There are {new StyledText("Items", Styles.Item).Text}!");
+        if (_hasWeapons) buffer.AppendLine($"There are {new StyledText("Weapons", Styles.Weapon)}!");
+        if (_hasItems) buffer.AppendLine($"There are {new StyledText("Items", Styles.Item)}!");
         if (_hasModifiedItems && _hasModifiedWeapons)
-            buffer.AppendLine($"{new StyledText("Weapons", Styles.Weapon).Text}" +
-                              $" and {new StyledText("Items", Styles.Item).Text}" +
-                              $" can have {new StyledText("special effects", Styles.Effect).Text}!");
+            buffer.AppendLine($"{new StyledText("Weapons", Styles.Weapon)}" +
+                              $" and {new StyledText("Items", Styles.Item)}" +
+                              $" can have {new StyledText("special effects", Styles.Effect)}!");
         else if (_hasModifiedItems)
-            buffer.AppendLine($"{new StyledText("Items", Styles.Item).Text}" +
-                              $" can have {new StyledText("special effects", Styles.Effect).Text}!");
+            buffer.AppendLine($"{new StyledText("Items", Styles.Item)}" +
+                              $" can have {new StyledText("special effects", Styles.Effect)}!");
         else if (_hasModifiedWeapons)
-            buffer.AppendLine($"{new StyledText("Weapons", Styles.Weapon).Text}" +
-                              $" can have {new StyledText("special effects", Styles.Effect).Text}!");
-        if (_hasPotions) buffer.AppendLine($"There are {new StyledText("Potions", Styles.Potion).Text}!");
-        if (_hasEnemies) buffer.AppendLine($"There are {new StyledText("Enemies", Styles.Enemy).Text}!");
+            buffer.AppendLine($"{new StyledText("Weapons", Styles.Weapon)}" +
+                              $" can have {new StyledText("special effects", Styles.Effect)}!");
+        if (_hasPotions) buffer.AppendLine($"There are {new StyledText("Potions", Styles.Potion)}!");
+        if (_hasEnemies) buffer.AppendLine($"There are {new StyledText("Enemies", Styles.Enemy)}!");
         if (_hasMoney)
             buffer.AppendLine($"There are two kinds of money: " +
-                              $"{new StyledText("Gold", Styles.Money).Text} " +
-                              $"and {new StyledText("Coin", Styles.Money).Text}," +
+                              $"{new StyledText("Gold", Styles.Money)} " +
+                              $"and {new StyledText("Coin", Styles.Money)}," +
                               $"\nthey don't take up space in your inventory.");
         if (_hasWalls) buffer.AppendLine("You can't go through Walls (\u2588).");
-        buffer.AppendLine($"There can be {new StyledText("many", Styles.Stacked).Text} things on a single tile.");
+        buffer.AppendLine($"There can be {new StyledText("many", Styles.Stacked)} things on a single tile.");
 
         return buffer.ToString();
     }

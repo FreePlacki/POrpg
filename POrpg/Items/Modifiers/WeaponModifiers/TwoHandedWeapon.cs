@@ -1,7 +1,7 @@
 using POrpg.Inventory;
 using POrpg.Items.Weapons;
 
-namespace POrpg.Items.Effects.WeaponEffects;
+namespace POrpg.Items.Modifiers.WeaponModifiers;
 
 public class TwoHandedWeapon : WeaponModifier
 {

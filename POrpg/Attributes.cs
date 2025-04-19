@@ -24,7 +24,7 @@ public static class EnumExtensions
         foreach (var attribute in attributes)
         {
             if (attribute.Value == 0) continue;
-            var value = new StyledText($"{attribute.Value:+#;-#}", Style.GoodBad).Text;
+            var value = new StyledText($"{attribute.Value:+#;-#}", Style.GoodBad);
             result.Append($"({value} {attribute.Key}) ");
         }
 

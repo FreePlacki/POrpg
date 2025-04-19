@@ -33,9 +33,9 @@ public class FloorTile : Tile
     private int _currentItemIndex;
 
     public override string Symbol =>
-        Enemy != null ? !IsEmpty ? new StyledText(Enemy.Symbol, Styles.Stacked).Text : Enemy.Symbol :
+        Enemy != null ? !IsEmpty ? new StyledText(Enemy.Symbol, Styles.Stacked).ToString() : Enemy.Symbol :
         IsEmpty ? " " :
-        HasManyItems ? new StyledText(CurrentItem!.Symbol, Styles.Stacked).Text : CurrentItem!.Symbol;
+        HasManyItems ? new StyledText(CurrentItem!.Symbol, Styles.Stacked).ToString() : CurrentItem!.Symbol;
 
     public override string Name =>
         Enemy?.Name ?? CurrentItem?.Name ?? "Empty Tile";
@@ -78,7 +78,7 @@ public class FloorTile : Tile
 
 public class WallTile : Tile
 {
-    public override string Symbol => new StyledText("\u2588", Style.Faint).Text;
+    public override string Symbol => new StyledText("\u2588", Style.Faint).ToString();
     public override string Name => "Wall";
     public override bool IsPassable => false;
 }

@@ -28,7 +28,7 @@ public class Dungeon : IEnumerable<Tile>
     private readonly Tile[,] _tiles;
     public Player Player { get; }
     private InventorySlot? _selectedSlot;
-    private InputHandler _inputHandler;
+    private InputHandler _inputHandler = null!;
 
     public Tile this[Position p]
     {
@@ -82,7 +82,7 @@ public class Dungeon : IEnumerable<Tile>
         }
 
         console.ChangeColumn(1);
-        console.WriteLine($"{new StyledText("Turn:", Style.Underline).Text} {TurnManager.GetInstance().Turn}");
+        console.WriteLine($"{new StyledText("Turn:", Style.Underline)} {TurnManager.GetInstance().Turn}");
         console.WriteLine();
         DrawStats();
         console.HorizontalDivider();
@@ -123,8 +123,8 @@ public class Dungeon : IEnumerable<Tile>
         }
 
         console.WriteLine();
-        console.WriteLine($"{"Coins",-15} {new StyledText(Player.Coins.ToString(), Styles.Money).Text}");
-        console.WriteLine($"{"Gold",-15} {new StyledText(Player.Gold.ToString(), Styles.Money).Text}");
+        console.WriteLine($"{"Coins",-15} {new StyledText(Player.Coins.ToString(), Styles.Money)}");
+        console.WriteLine($"{"Gold",-15} {new StyledText(Player.Gold.ToString(), Styles.Money)}");
     }
 
     private void DrawInventory()
@@ -134,7 +134,7 @@ public class Dungeon : IEnumerable<Tile>
 
         if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
         {
-            console.Write($"{new StyledText("L", Styles.Player).Text}. ");
+            console.Write($"{new StyledText("L", Styles.Player)}. ");
             var leftHand = Player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
             if (leftHand != null)
             {
@@ -148,17 +148,17 @@ public class Dungeon : IEnumerable<Tile>
                 console.WriteLine("Empty");
             }
 
-            console.Write($"{new StyledText(new StyledText("R", Styles.Player), Style.Faint).Text}. ");
+            console.Write($"{new StyledText("R", Styles.Player, Style.Faint)}. ");
             var rightHand = Player.Inventory.Equipment.RightHand;
             console.WriteLine(rightHand != null ? rightHand.Name : "Empty");
         }
         else if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.RightHand))
         {
-            console.Write($"{new StyledText(new StyledText("L", Styles.Player), Style.Faint).Text}. ");
+            console.Write($"{new StyledText("L", Styles.Player, Style.Faint)}. ");
             var leftHand = Player.Inventory.Equipment.LeftHand;
             console.WriteLine(leftHand != null ? leftHand.Name : "Empty");
 
-            console.Write($"{new StyledText("R", Styles.Player).Text}. ");
+            console.Write($"{new StyledText("R", Styles.Player)}. ");
             var rightHand = Player.Inventory.Equipment.RightHand;
             if (rightHand != null)
             {
@@ -180,7 +180,7 @@ public class Dungeon : IEnumerable<Tile>
                 if (_selectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
                 {
                     console.WriteLine(
-                        $"{new StyledText("LR", Styles.Player).Text}. {item.Name}");
+                        $"{new StyledText("LR", Styles.Player)}. {item.Name}");
                     console.WriteLine(item.Description);
                     foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Inventory) != 0))
                         console.WriteHintLine(hint);
@@ -188,16 +188,16 @@ public class Dungeon : IEnumerable<Tile>
                 else
                 {
                     console.WriteLine(
-                        $"{new StyledText(new StyledText("LR", Styles.Player), Style.Faint).Text}. {item.Name}");
+                        $"{new StyledText("LR", Styles.Player, Style.Faint)}. {item.Name}");
                 }
             }
             else
             {
-                console.Write($"{new StyledText(new StyledText("L", Styles.Player), Style.Faint).Text}. ");
+                console.Write($"{new StyledText("L", Styles.Player, Style.Faint)}. ");
                 console.WriteLine(Player.Inventory.Equipment.LeftHand != null
                     ? Player.Inventory.Equipment.LeftHand.Name
                     : "Empty");
-                console.Write($"{new StyledText(new StyledText("R", Styles.Player), Style.Faint).Text}. ");
+                console.Write($"{new StyledText("R", Styles.Player, Style.Faint)}. ");
                 console.WriteLine(Player.Inventory.Equipment.RightHand != null
                     ? Player.Inventory.Equipment.RightHand.Name
                     : "Empty");
@@ -212,7 +212,7 @@ public class Dungeon : IEnumerable<Tile>
         {
             if (_selectedSlot == new BackpackSlot(i))
             {
-                console.WriteLine($"{new StyledText((i + 1).ToString(), Styles.Player).Text}. {item.Name}");
+                console.WriteLine($"{new StyledText((i + 1).ToString(), Styles.Player)}. {item.Name}");
                 console.WriteLine(item.Description);
                 foreach (var hint in _inputHandler.GetHints().Where(h => (h.Location & UiLocation.Backpack) != 0))
                     console.WriteHintLine(hint);
@@ -220,7 +220,7 @@ public class Dungeon : IEnumerable<Tile>
             else
             {
                 console.WriteLine(
-                    $"{new StyledText(new StyledText((i + 1).ToString(), Style.Faint), Styles.Player).Text}. {item.Name}");
+                    $"{new StyledText((i + 1).ToString(), Style.Faint, Styles.Player)}. {item.Name}");
             }
 
             i++;
@@ -231,7 +231,7 @@ public class Dungeon : IEnumerable<Tile>
     {
         if (Player.Effects.Count == 0) return false;
         var console = ConsoleHelper.GetInstance();
-        console.WriteLine($"{new StyledText("Effects:", Style.Underline).Text}");
+        console.WriteLine($"{new StyledText("Effects:", Style.Underline)}");
         foreach (var effect in Player.Effects.OrderByDescending(e => e.TurnsLeft))
         {
             console.WriteLine(effect.Name);

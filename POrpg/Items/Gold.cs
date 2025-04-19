@@ -4,7 +4,7 @@ namespace POrpg.Items;
 
 public class Gold : Item
 {
-    public override string Symbol => new StyledText("G", Styles.Money).Text;
+    public override string Symbol => new StyledText("G", Styles.Money).ToString();
     public override string Name => "Gold";
 
     public override bool OnPickUp(Player player)

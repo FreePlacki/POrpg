@@ -1,4 +1,4 @@
-namespace POrpg.Items.Effects;
+namespace POrpg.Items.Modifiers;
 
 public class Unlucky : Modifier
 {

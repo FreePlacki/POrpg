@@ -9,7 +9,7 @@ namespace POrpg;
 
 public class Player : IDrawable
 {
-    public string Symbol => new StyledText("¶", Styles.Player).Text;
+    public string Symbol => new StyledText("¶", Styles.Player).ToString();
     public string Name => "Player";
     public string? Description => null;
 

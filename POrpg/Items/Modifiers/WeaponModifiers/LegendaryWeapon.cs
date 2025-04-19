@@ -1,7 +1,7 @@
 using POrpg.ConsoleHelpers;
 using POrpg.Items.Weapons;
 
-namespace POrpg.Items.Effects.WeaponEffects;
+namespace POrpg.Items.Modifiers.WeaponModifiers;
 
 public class LegendaryWeapon : WeaponModifier
 {
@@ -9,7 +9,7 @@ public class LegendaryWeapon : WeaponModifier
     {
     }
 
-    public override string Name => $"{Weapon.Name} ({new StyledText("Legendary", Style.Rainbow).Text})";
+    public override string Name => $"{Weapon.Name} ({new StyledText("Legendary", Style.Rainbow)})";
 
     public override Attributes Attributes =>
         new Attributes(new Dictionary<Attribute, int>

@@ -1,6 +1,6 @@
 using POrpg.Inventory;
 
-namespace POrpg.Items.Effects;
+namespace POrpg.Items.Modifiers;
 
 public class Unequippable : Modifier
 {

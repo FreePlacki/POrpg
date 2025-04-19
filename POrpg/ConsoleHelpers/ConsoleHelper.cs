@@ -89,8 +89,8 @@ public class ConsoleHelper
         Reset();
         Console.Clear();
 
-        var divider = new StyledText(new string('=', 10), Style.Faint).Text;
-        Console.WriteLine($"{divider} {new StyledText("Instructions", Style.Underline).Text} {divider}\n");
+        var divider = new StyledText(new string('=', 10), Style.Faint);
+        Console.WriteLine($"{divider} {new StyledText("Instructions", Style.Underline)} {divider}\n");
         Console.WriteLine(_instructions);
         WriteHintLine(new InputHint("?", "Hide instructions", UiLocation.None));
     }
@@ -112,9 +112,9 @@ public class ConsoleHelper
         Reset();
     }
 
-    public void Write(IConsoleText text)
+    public void Write(StyledText text)
     {
-        var lines = text.Text.Split('\n').SelectMany(l => WrapAnsiString(l).Split('\n'));
+        var lines = text.ToString().Split('\n').SelectMany(l => WrapAnsiString(l).Split('\n'));
         var i = 0;
         foreach (var l in lines)
         {
@@ -126,7 +126,7 @@ public class ConsoleHelper
         }
     }
 
-    public void WriteLine(IConsoleText text)
+    public void WriteLine(StyledText text)
     {
         Write(text);
         var padding = ColumnStart(_columnIndex) + _columns[_columnIndex].width - _column;
@@ -138,13 +138,13 @@ public class ConsoleHelper
     public void Write(string? text)
     {
         if (text == null) return;
-        Write(new PlainText(text));
+        Write(new StyledText(text));
     }
 
     public void WriteLine(string? text = "")
     {
         if (text == null) return;
-        WriteLine(new PlainText(text));
+        WriteLine(new StyledText(text));
     }
 
     public void HorizontalDivider(int width = 30)
@@ -182,7 +182,7 @@ public class ConsoleHelper
 
     public void WriteHint(InputHint hint)
     {
-        Write(new StyledText($"{hint.Description} ({new StyledText(hint.Key, Styles.Player).Text})", Style.Faint));
+        Write(new StyledText($"{hint.Description} ({new StyledText(hint.Key, Styles.Player)})", Style.Faint));
     }
     
     public void WriteHintLine(InputHint hint)

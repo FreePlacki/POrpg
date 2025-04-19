@@ -398,7 +398,7 @@ public class Dungeon : IEnumerable<Tile>
         ConsoleHelper.GetInstance().AddNotification($"Dealt {damage} damage to {LookingAt.Name}");
         if (LookingAt.Enemy.Health <= 0)
         {
-            ConsoleHelper.GetInstance().AddNotification($"{LookingAt.Enemy} has been slain");
+            ConsoleHelper.GetInstance().AddNotification($"{LookingAt.Name} has been slain");
             LookingAt.Enemy = null;
             return;
         }

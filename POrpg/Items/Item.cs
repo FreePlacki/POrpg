@@ -12,9 +12,7 @@ public abstract class Item : IDrawable
 
     public virtual bool OnPickUp(Player player) => false;
 
-    // TODO: why the following doesn't work?
-    // public virtual int Accept(IAttackVisitor visitor) => visitor.Visit(this);
-    public virtual (int damage, int defense) Accept(IAttackVisitor visitor) => (0, 0);
+    public virtual (int damage, int defense) Accept(IAttackVisitor visitor) => visitor.Visit(this);
 
     public virtual string? Description
     {

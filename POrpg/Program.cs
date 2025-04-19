@@ -31,7 +31,7 @@ class Program
     static bool RunGame(DungeonDirector director)
     {
         var dungeonBuilder =
-            new DungeonBuilder(InitialDungeonState.Empty, RoomWidth, RoomHeight, PlayerInitialPosition);
+            new DungeonBuilder(InitialDungeonState.Filled, RoomWidth, RoomHeight, PlayerInitialPosition);
         var dungeon = director.Build(dungeonBuilder);
         var console = ConsoleHelper.GetInstance();
 

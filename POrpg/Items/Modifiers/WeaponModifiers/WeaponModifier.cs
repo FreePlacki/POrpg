@@ -1,4 +1,3 @@
-using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 using POrpg.Items.Weapons;

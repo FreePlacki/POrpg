@@ -33,7 +33,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
     private readonly Func<Weapon>[] _weaponConstructors =
     [
-        () => new Sword(), () => new Bow(), () => new Dagger()
+        () => new Sword(), () => new Bow(), () => new Dagger(), () => new MagicWand()
     ];
 
     private readonly Func<Potion>[] _potionConstructors =
@@ -188,7 +188,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
     public IDungeonBuilder<Dungeon> AddWeapons(double probability = 0.15) =>
         AddItems(_weaponConstructors, probability, _weaponEffectConstructors);
-    
+
     public IDungeonBuilder<Dungeon> AddModifiedWeapons(double probability = 0.07, int maxEffects = 3) =>
         AddItems(_weaponConstructors, probability, _weaponEffectConstructors, maxEffects);
 

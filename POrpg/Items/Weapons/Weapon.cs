@@ -1,5 +1,4 @@
 using System.Text;
-using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
 
@@ -7,11 +6,11 @@ namespace POrpg.Items.Weapons;
 
 public abstract class Weapon : Item
 {
-    public override string Symbol => new StyledText("W", Styles.Weapon).ToString();
     public override EquipmentSlotType EquipmentSlotType => EquipmentSlotType.LeftHand | EquipmentSlotType.RightHand;
     public abstract int Damage { get; }
 
-    public override string? Description
+    public override string Symbol => new StyledText(Name.First().ToString(), Styles.Weapon).ToString();
+    public override string Description
     {
         get
         {

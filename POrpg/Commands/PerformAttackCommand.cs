@@ -1,4 +1,4 @@
-using POrpg.Combat;
+using POrpg.Items.Weapons;
 
 namespace POrpg.Commands;
 

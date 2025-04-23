@@ -1,7 +1,7 @@
 using System.Text;
-using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.Inventory;
+using POrpg.Items.Weapons;
 
 namespace POrpg.Items;
 
@@ -27,6 +27,6 @@ public abstract class Item : IDrawable
         }
     }
 
-    public virtual string Symbol => new StyledText("I", Styles.Item).ToString();
+    public virtual string Symbol => new StyledText(Name.First().ToString(), Styles.Item).ToString();
     public abstract string Name { get; }
 }

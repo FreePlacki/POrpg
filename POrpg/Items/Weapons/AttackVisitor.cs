@@ -1,7 +1,4 @@
-using POrpg.Items;
-using POrpg.Items.Weapons;
-
-namespace POrpg.Combat;
+namespace POrpg.Items.Weapons;
 
 public interface IAttackVisitor
 {

@@ -1,5 +1,5 @@
-using POrpg.Combat;
 using POrpg.Commands;
+using POrpg.Items.Weapons;
 
 namespace POrpg.InputHandlers;
 

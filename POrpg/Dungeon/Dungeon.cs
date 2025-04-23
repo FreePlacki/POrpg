@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Diagnostics;
-using POrpg.Combat;
 using POrpg.ConsoleHelpers;
 using POrpg.InputHandlers;
 using POrpg.Inventory;
 using POrpg.Items;
+using POrpg.Items.Weapons;
 
 namespace POrpg.Dungeon;
 

@@ -250,7 +250,7 @@ allow enemy attacks)
 ## Cel zadania  
 Rozszerz istniejącą konsolową grę RPG o wsparcie dla sieciowego trybu wieloosobowego. Wszyscy gracze będą dzielić ten sam labirynt, przedmioty i wrogów. W tym etapie wykonasz następujące kroki:
 
-- [ ] Refaktoryzacja kodu zgodnie ze wzorcem **Model–Widok–Kontroler (MVC)**  
+- [x] Refaktoryzacja kodu zgodnie ze wzorcem **Model–Widok–Kontroler (MVC)**  
 - [ ] Komunikacja pomiędzy serwerem a klientem w formacie JSON przez TCP  
 - [ ] Aplikacja działała zarówno jako **serwer** (akceptujący połączenia), jak i **klient** (łączyła się z innymi serwerami)  
 
@@ -262,10 +262,10 @@ Możesz zdobyć maksymalnie **20 punktów** za ten etap.
 ## Wymagania  
 
 ### 1. Refaktoryzacja MVC  
-- [ ] **Model**  
-  - [ ] Wydziel w jednej lub kilku klasach pełny stan gry (gracze, mapa, NPC, przedmioty, kolejka tur itp.).  
-- [ ] **Widok**
-  - [ ] Odpowiada za wszystkie wyjścia na konsolę (rysowanie mapy, statusy graczy, komunikaty itp.).  
+- [x] **Model**  
+  - [x] Wydziel w jednej lub kilku klasach pełny stan gry (gracze, mapa, NPC, przedmioty, kolejka tur itp.).  
+- [x] **Widok**
+  - [x] Odpowiada za wszystkie wyjścia na konsolę (rysowanie mapy, statusy graczy, komunikaty itp.).  
 - [ ] **Kontroler**
   - [ ] Odczytuje i weryfikuje polecenia użytkownika z konsoli.  
   - [ ] Wywołuje odpowiednie metody Modelu w celu aktualizacji stanu gry.  

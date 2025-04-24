@@ -33,7 +33,7 @@ class Program
         var dungeonBuilder =
             new DungeonBuilder(InitialDungeonState.Filled, RoomWidth, RoomHeight, PlayerInitialPosition);
         var dungeon = director.Build(dungeonBuilder);
-        var console = ConsoleHelper.GetInstance();
+        var gc = new GameController(dungeon);
 
         Console.CursorVisible = false;
         Console.CancelKeyPress += (_, _) =>
@@ -42,34 +42,7 @@ class Program
             Console.Clear();
         };
         Console.Clear();
-
-        while (true)
-        {
-            if (console.IsShowingInstructions)
-            {
-                if (Console.ReadKey(true).KeyChar == '?')
-                    console.HideInstructions();
-                else continue;
-            }
-
-            var inputHandler = new InputHandlerBuilder().Build(dungeon);
-
-            dungeon.Draw(inputHandler);
-            console.Reset();
-
-            var input = Console.ReadKey(true);
-
-            dungeon.ProcessInput(inputHandler, input);
         
-            if (dungeon.Player.Attributes[Attribute.Health] <= 0)
-            {
-                console.ShowDeathScreen();
-                Console.ReadKey(true);
-                return true;
-            }
-        
-            if (dungeon.ShouldQuit)
-                return false;
-        }
+        return 
     }
 }

@@ -17,6 +17,8 @@ public class Player : IDrawable
     public int Coins { get; set; }
     public int Gold { get; set; }
     public Inventory.Inventory Inventory { get; } = new();
+    public InventorySlot? SelectedSlot { get; set; }
+    public Tile? LookingAt { get; set; }
 
     private Attributes _attributes = new(
         new()

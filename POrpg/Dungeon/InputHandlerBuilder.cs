@@ -34,7 +34,7 @@ public class InputHandlerBuilder
             handlers.Add(new CycleItemsHandler());
         if (dungeon.SelectedItem is IUsable)
             handlers.Add(new UsableItemInputHandler());
-        if (dungeon.LookingAt?.Enemy != null)
+        if (dungeon.Player.LookingAt?.Enemy != null)
             handlers.Add(new ChooseAttackInputHandler());
         
         return handlers;

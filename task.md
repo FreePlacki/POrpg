@@ -242,3 +242,83 @@ For a magic attack:
 
 - attacks should be separate from the player (should be easily modified to
 allow enemy attacks)
+
+---
+
+# Etap 5: Multiplayer  
+
+## Cel zadania  
+Rozszerz istniejącą konsolową grę RPG o wsparcie dla sieciowego trybu wieloosobowego. Wszyscy gracze będą dzielić ten sam labirynt, przedmioty i wrogów. W tym etapie wykonasz następujące kroki:
+
+- [ ] Refaktoryzacja kodu zgodnie ze wzorcem **Model–Widok–Kontroler (MVC)**  
+- [ ] Komunikacja pomiędzy serwerem a klientem w formacie JSON przez TCP  
+- [ ] Aplikacja działała zarówno jako **serwer** (akceptujący połączenia), jak i **klient** (łączyła się z innymi serwerami)  
+
+Możesz zdobyć maksymalnie **20 punktów** za ten etap.  
+**Termin:** 15 maja 2025  
+
+---
+
+## Wymagania  
+
+### 1. Refaktoryzacja MVC  
+- [ ] **Model**  
+  - [ ] Wydziel w jednej lub kilku klasach pełny stan gry (gracze, mapa, NPC, przedmioty, kolejka tur itp.).  
+- [ ] **Widok**
+  - [ ] Odpowiada za wszystkie wyjścia na konsolę (rysowanie mapy, statusy graczy, komunikaty itp.).  
+- [ ] **Kontroler**
+  - [ ] Odczytuje i weryfikuje polecenia użytkownika z konsoli.  
+  - [ ] Wywołuje odpowiednie metody Modelu w celu aktualizacji stanu gry.  
+
+**Uwaga:**  
+- [ ] Model nie powinien wywoływać bezpośrednio metod konsoli.  
+- [ ] Widok nie powinien zawierać logiki gry.  
+- [ ] Model nie może zależeć od Widoku ani Kontrolera.  
+- [ ] Widok nie może zależeć od Kontrolera.  
+
+---
+
+### 2. Architektura Serwer–Klient  
+- [ ] **Opcje uruchomienia**  
+  - [ ] Zapytaj użytkownika: „Start as (S)erver or (C)lient?”  
+  - [ ] Lub obsłuż argumenty linii poleceń:  
+    - [ ] `--server [port]` (domyślnie port 5555)  
+    - [ ] `--client [adres:port]` (domyślnie adres 127.0.0.1 i port 5555)  
+- [ ] **Tryb Serwera**  
+  - [ ] Nasłuchuj na skonfigurowanym porcie TCP.  
+  - [ ] Akceptuj do **9** połączeń od klientów (graczy numerujemy i wyświetlamy za pomocą wartości `1–9`).  
+  - [ ] Po nawiązaniu każdego połączenia wyślij klientowi aktualny stan Modelu w formacie JSON.  
+  - [ ] Rozsyłaj wszelkie zmiany stanu (ruchy, ataki itp.) jako komunikaty JSON do wszystkich połączonych klientów.  
+- [ ] **Tryb Klienta**  
+  - [ ] Połącz się z podanym adresem IP i portem serwera.  
+  - [ ] Odbierz początkowy stan gry, a następnie nasłuchuj na kolejne aktualizacje.  
+  - [ ] Wysyłaj lokalne akcje gracza jako komunikaty JSON do serwera.  
+
+---
+
+### 3. Serializacja JSON  
+- [ ] Użyj `System.Text.Json` do serializacji i deserializacji obiektów.  
+- [ ] Utwórz obiekty transferu danych (DTO) lub oznacz swoje klasy Modelu atrybutami (np. `[JsonPropertyName]`), jeśli to konieczne.  
+
+---
+
+### 4. Synchronizacja rozgrywki  
+- [ ] Zapewnij, że serwer i klienci mają spójny widok świata gry.  
+- [ ] Kolejkuj nadchodzące komunikaty, aby zachować poprawną kolejność tur i uwzględnić ewentualne opóźnienia sieciowe.  
+
+- [ ] **Opcjonalnie:** Możesz zaimplementować interakcje walki między graczami, ale nie są one wymagane w tym etapie.  
+
+---
+
+## Wskazówki  
+
+### Model–Widok–Kontroler  
+1. Możesz stworzyć oddzielne klasy Widoku dla konsoli lokalnej oraz dla klientów sieciowych.  
+2. Rozważ przypisanie każdemu graczowi osobnej instancji Kontrolera.  
+3. Uruchom Widok w osobnym wątku i aktualizuj wyświetlanie za każdym razem, gdy przyjdzie żądanie od klienta — użyj `lock`, aby zsynchronizować dostęp.  
+4. Przechowuj autorytatywny stan gry na serwerze; klienci powinni trzymać jedynie dane potrzebne do renderowania.  
+
+### Serwer–Klient  
+1. Po stronie serwera utwórz osobny `Thread` dla każdego połączonego klienta oraz dodatkowy do obsługi nowych połączeń.  
+2. Na serwerze użyj `TcpListener.AcceptTcpClient()`, aby czekać na połączenia.  
+3. Po stronie klienta użyj `TcpClient`, aby nawiązać połączenie z serwerem.  

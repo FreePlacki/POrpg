@@ -266,9 +266,9 @@ Możesz zdobyć maksymalnie **20 punktów** za ten etap.
   - [x] Wydziel w jednej lub kilku klasach pełny stan gry (gracze, mapa, NPC, przedmioty, kolejka tur itp.).  
 - [x] **Widok**
   - [x] Odpowiada za wszystkie wyjścia na konsolę (rysowanie mapy, statusy graczy, komunikaty itp.).  
-- [ ] **Kontroler**
-  - [ ] Odczytuje i weryfikuje polecenia użytkownika z konsoli.  
-  - [ ] Wywołuje odpowiednie metody Modelu w celu aktualizacji stanu gry.  
+- [x] **Kontroler**
+  - [x] Odczytuje i weryfikuje polecenia użytkownika z konsoli.
+  - [x] Wywołuje odpowiednie metody Modelu w celu aktualizacji stanu gry.  
 
 **Uwaga:**  
 - [ ] Model nie powinien wywoływać bezpośrednio metod konsoli.  

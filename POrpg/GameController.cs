@@ -11,7 +11,7 @@ public class GameController
         _dungeon = dungeon;
     }
     
-    void MainLoop()
+    public bool MainLoop()
     {
         var console = ConsoleHelper.GetInstance();
         while (true)

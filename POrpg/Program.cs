@@ -42,7 +42,7 @@ class Program
             Console.Clear();
         };
         Console.Clear();
-        
-        return 
+
+        return gc.MainLoop();
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Reflection.Emit;
-using POrpg.ConsoleHelpers;
+﻿using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
 
 namespace POrpg;
@@ -39,12 +38,11 @@ class Program
             (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
             ConsoleHelper.Initialize(instructions, columns, 3);
 
-            bool playAgain = true;
-
-            while (playAgain)
+            while (true)
             {
-                playAgain = RunGame(director);
+                var playAgain = RunGame(director);
                 TurnManager.GetInstance().Reset();
+                if (!playAgain) break;
             }
         }
         else

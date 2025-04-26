@@ -245,80 +245,78 @@ allow enemy attacks)
 
 ---
 
-# Etap 5: Multiplayer  
+# Stage 5: Multiplayer  
 
-## Cel zadania  
-Rozszerz istniejącą konsolową grę RPG o wsparcie dla sieciowego trybu wieloosobowego. Wszyscy gracze będą dzielić ten sam labirynt, przedmioty i wrogów. W tym etapie wykonasz następujące kroki:
+## Task Objective  
+Extend the existing console-based RPG to support networked multiplayer. All players will share the same maze, items, and enemies. In this stage, you will:  
 
-- [x] Refaktoryzacja kodu zgodnie ze wzorcem **Model–Widok–Kontroler (MVC)**  
-- [ ] Komunikacja pomiędzy serwerem a klientem w formacie JSON przez TCP  
-- [ ] Aplikacja działała zarówno jako **serwer** (akceptujący połączenia), jak i **klient** (łączyła się z innymi serwerami)  
-
-Możesz zdobyć maksymalnie **20 punktów** za ten etap.  
-**Termin:** 15 maja 2025  
+- [ ] Refactor the codebase to follow the **Model-View-Controller (MVC)** pattern  
+- [ ] Enable JSON-based communication over TCP  
+- [ ] Make the application act as both a **server** (accepting connections) and a **client** (connecting to other servers)  
 
 ---
 
-## Wymagania  
+## Requirements  
 
-### 1. Refaktoryzacja MVC  
-- [x] **Model**  
-  - [x] Wydziel w jednej lub kilku klasach pełny stan gry (gracze, mapa, NPC, przedmioty, kolejka tur itp.).  
-- [x] **Widok**
-  - [x] Odpowiada za wszystkie wyjścia na konsolę (rysowanie mapy, statusy graczy, komunikaty itp.).  
-- [x] **Kontroler**
-  - [x] Odczytuje i weryfikuje polecenia użytkownika z konsoli.
-  - [x] Wywołuje odpowiednie metody Modelu w celu aktualizacji stanu gry.  
+### 1. MVC Refactoring  
+- **Model**  
+  - Encapsulate the entire game state (players, map, NPCs, items, turn order, etc.) in one or more classes.  
+- **View**  
+  - Handle all console output (drawing the map, player statuses, messages, etc.).  
+- **Controller**  
+  - Read and validate user commands from the console.  
+  - Invoke updates on the Model.  
 
-**Uwaga:**  
-- [ ] Model nie powinien wywoływać bezpośrednio metod konsoli.  
-- [ ] Widok nie powinien zawierać logiki gry.  
-- [ ] Model nie może zależeć od Widoku ani Kontrolera.  
-- [ ] Widok nie może zależeć od Kontrolera.  
-
----
-
-### 2. Architektura Serwer–Klient  
-- [ ] **Opcje uruchomienia**  
-  - [ ] Zapytaj użytkownika: „Start as (S)erver or (C)lient?”  
-  - [ ] Lub obsłuż argumenty linii poleceń:  
-    - [ ] `--server [port]` (domyślnie port 5555)  
-    - [ ] `--client [adres:port]` (domyślnie adres 127.0.0.1 i port 5555)  
-- [ ] **Tryb Serwera**  
-  - [ ] Nasłuchuj na skonfigurowanym porcie TCP.  
-  - [ ] Akceptuj do **9** połączeń od klientów (graczy numerujemy i wyświetlamy za pomocą wartości `1–9`).  
-  - [ ] Po nawiązaniu każdego połączenia wyślij klientowi aktualny stan Modelu w formacie JSON.  
-  - [ ] Rozsyłaj wszelkie zmiany stanu (ruchy, ataki itp.) jako komunikaty JSON do wszystkich połączonych klientów.  
-- [ ] **Tryb Klienta**  
-  - [ ] Połącz się z podanym adresem IP i portem serwera.  
-  - [ ] Odbierz początkowy stan gry, a następnie nasłuchuj na kolejne aktualizacje.  
-  - [ ] Wysyłaj lokalne akcje gracza jako komunikaty JSON do serwera.  
+**NOTE:**
+- [ ] No direct console calls in Model classes.  
+- [ ] No game logic in View classes.  
+- [ ] The Model classes cannot depend on View or Controller.  
+- [ ] The View cannot contain game logic or depend on Controller. 
 
 ---
 
-### 3. Serializacja JSON  
-- [ ] Użyj `System.Text.Json` do serializacji i deserializacji obiektów.  
-- [ ] Utwórz obiekty transferu danych (DTO) lub oznacz swoje klasy Modelu atrybutami (np. `[JsonPropertyName]`), jeśli to konieczne.  
+### 2. Server–Client Architecture  
+- [ ] **Startup Options**  
+  - Prompt the user: "Start as (S)erver or (C)lient?"
+  - Or accept command-line arguments:  
+    - `--server [port]` (default port 5555)  
+    - `--client [ip:port]` (default ip 127.0.0.1 and port 5555)  
+- [ ] **Server Mode**  
+  - Listen on the configured TCP port.  
+  - Accept up to **9** client connections (players numbered `1-9` - display player as number).  
+  - On each new connection, send the current Model state (JSON).  
+  - Broadcast all state changes (moves, attacks, etc.) as JSON messages to every client.  
+- [ ] **Client Mode**  
+  - Connect to the specified server IP and port.  
+  - Receive the initial game state, then listen for updates.  
+  - Send the local player's actions as JSON messages to the server.  
 
 ---
 
-### 4. Synchronizacja rozgrywki  
-- [ ] Zapewnij, że serwer i klienci mają spójny widok świata gry.  
-- [ ] Kolejkuj nadchodzące komunikaty, aby zachować poprawną kolejność tur i uwzględnić ewentualne opóźnienia sieciowe.  
-
-- [ ] **Opcjonalnie:** Możesz zaimplementować interakcje walki między graczami, ale nie są one wymagane w tym etapie.  
+### 3. JSON Serialization  
+- Use `System.Text.Json` for serialization and deserialization.  
+- Create Data Transfer Objects (DTOs) or decorate your Model classes with attributes (e.g., `[JsonPropertyName]`, etc.) as needed.  
 
 ---
 
-## Wskazówki  
+### 4. Gameplay Synchronization  
+- Ensure that the server and clients maintain a consistent view of the game world.  
+- Queue and order incoming messages correctly to preserve turn order and handle latency.  
 
-### Model–Widok–Kontroler  
-1. Możesz stworzyć oddzielne klasy Widoku dla konsoli lokalnej oraz dla klientów sieciowych.  
-2. Rozważ przypisanie każdemu graczowi osobnej instancji Kontrolera.  
-3. Uruchom Widok w osobnym wątku i aktualizuj wyświetlanie za każdym razem, gdy przyjdzie żądanie od klienta — użyj `lock`, aby zsynchronizować dostęp.  
-4. Przechowuj autorytatywny stan gry na serwerze; klienci powinni trzymać jedynie dane potrzebne do renderowania.  
+> **Optional:** You may implement player-vs-player combat interactions, but they are not required for this stage.  
 
-### Serwer–Klient  
-1. Po stronie serwera utwórz osobny `Thread` dla każdego połączonego klienta oraz dodatkowy do obsługi nowych połączeń.  
-2. Na serwerze użyj `TcpListener.AcceptTcpClient()`, aby czekać na połączenia.  
-3. Po stronie klienta użyj `TcpClient`, aby nawiązać połączenie z serwerem.  
+---
+
+## Hints  
+
+### Model-View-Controller  
+1. You can implement separate View classes for the local console and for networked clients.  
+2. Consider giving each player its own Controller instance.  
+3. Run the View in its own thread and update the display whenever any client request arrives — use `lock` to synchronize access.  
+4. Keep the authoritative game state on the server; clients should only store the data needed for rendering.  
+
+### Server-Client  
+1. On the server, spawn a new `Thread` for each connected client and another for accepting incoming connections.  
+2. Use `TcpListener.AcceptTcpClient()` on the server to wait for connections.  
+3. Use `TcpClient` on the client to connect to the server.  
+

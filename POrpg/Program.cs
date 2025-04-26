@@ -26,21 +26,35 @@ class Program
         }
     }
 
-    static void Main(string[] _)
+    static async Task Main(string[] _)
     {
         var isServer = ServerPrompt();
-        
-        var director = new DungeonDirector();
-        var instructions = director.Build(new InstructionsBuilder());
-        (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
-        ConsoleHelper.Initialize(instructions, columns, 3);
-
-        bool playAgain = true;
-
-        while (playAgain)
+        if (isServer)
         {
-            playAgain = RunGame(director);
-            TurnManager.GetInstance().Reset();
+            using var server = new Server();
+            server.Start();
+
+            var director = new DungeonDirector();
+            var instructions = director.Build(new InstructionsBuilder());
+            (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
+            ConsoleHelper.Initialize(instructions, columns, 3);
+
+            bool playAgain = true;
+
+            while (playAgain)
+            {
+                playAgain = RunGame(director);
+                TurnManager.GetInstance().Reset();
+            }
+        }
+        else
+        {
+            var client = new Client();
+            await client.Connect();
+            var msg = await client.Receive();
+            Console.WriteLine(msg);
+            Console.ReadKey(true);
+            return;
         }
 
         Console.Clear();

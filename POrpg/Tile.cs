@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 using POrpg.Enemies;
 using POrpg.Items;
 
 namespace POrpg;
 
+[JsonDerivedType(typeof(FloorTile)), JsonDerivedType(typeof(WallTile))]
 public abstract class Tile : IDrawable
 {
     public abstract string Symbol { get; }
@@ -15,9 +17,9 @@ public abstract class Tile : IDrawable
     public virtual IEnumerable<Item> Items => [];
     public virtual void Add(Item item) => throw new InvalidOperationException();
     public virtual void Add(Enemy enemy) => throw new InvalidOperationException();
-    public virtual Item? CurrentItem => throw new InvalidOperationException();
+    public virtual Item? CurrentItem => null;
     public virtual void RemoveCurrentItem() => throw new InvalidOperationException();
-    public virtual bool HasManyItems => throw new InvalidOperationException();
+    public virtual bool HasManyItems => false;
     public virtual void CycleItems(bool reverse = false) => throw new InvalidOperationException();
 }
 

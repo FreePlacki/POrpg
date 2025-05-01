@@ -13,6 +13,8 @@ public class Server : IDisposable
     private readonly ConcurrentDictionary<int, TcpClient> _clients = new();
     private readonly TcpListener _listener;
     private readonly CancellationTokenSource _cts = new();
+    
+    public event EventHandler<int>? ClientConnected;
 
     public Server(int port = 5555)
     {
@@ -22,7 +24,7 @@ public class Server : IDisposable
     public void Start()
     {
         _listener.Start();
-        _ = Task.Run(() => AcceptLoopAsync(_cts.Token));
+        _ = Task.Run(() => AcceptLoop(_cts.Token));
     }
 
     private void Stop()
@@ -36,7 +38,7 @@ public class Server : IDisposable
         _clients.Clear();
     }
 
-    private async Task AcceptLoopAsync(CancellationToken token)
+    private async Task AcceptLoop(CancellationToken token)
     {
         try
         {
@@ -49,10 +51,6 @@ public class Server : IDisposable
         catch (OperationCanceledException)
         {
             // expected on Stop()
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Unexpected error in accept loop: {ex}");
         }
     }
 
@@ -71,22 +69,20 @@ public class Server : IDisposable
 
         var added = _clients.TryAdd(id, client);
         Debug.Assert(added);
+        
+        ClientConnected?.Invoke(this, id);
+    }
 
-        try
-        {
-            var welcome = $"Welcome player {id}";
-            await stream.WriteAsync(Encoding.UTF8.GetBytes(welcome), token);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Client error: {e.Message}");
-        }
-        finally
-        {
-            // TODO
-            // lock (_clients) { _clients.Remove(client); }
-            client.Close();
-        }
+    public async Task SendToAll(string msg)
+    {
+        foreach (var id in _clients.Keys)
+            await SendTo(id, msg);
+    }
+
+    public async Task SendTo(int id, string msg)
+    {
+        await using var stream = _clients[id].GetStream();
+        await stream.WriteAsync(Encoding.UTF8.GetBytes(msg));
     }
 
     private int GetFreeClientId()

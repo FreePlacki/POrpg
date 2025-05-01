@@ -166,7 +166,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
     private DungeonBuilder AddItems<T>(Func<T>[] constructors, double probability, Func<T, T>[]? effects = null,
         int maxEffects = 0) where T : Item
     {
-        foreach (var tile in _dungeon)
+        foreach (var tile in _dungeon._tiles)
         {
             if (!tile.IsPassable || !(Rng.NextDouble() < probability)) continue;
 
@@ -197,7 +197,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
     public IDungeonBuilder<Dungeon> AddEnemies(double probability = 0.15)
     {
-        foreach (var tile in _dungeon)
+        foreach (var tile in _dungeon._tiles)
         {
             if (!tile.IsPassable || !(Rng.NextDouble() < probability)) continue;
 

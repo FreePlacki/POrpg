@@ -26,11 +26,22 @@ public class Client
         Debug.Assert(_client != null);
         
         await using var stream = _client.GetStream();
+        using var memoryStream = new MemoryStream();
+        var buffer = new byte[8192];
+        int totalBytesRead = 0;
         
-        var buffer = new byte[1_024];
-        int received = await stream.ReadAsync(buffer);
-
-        var message = Encoding.UTF8.GetString(buffer, 0, received);
-        return message;
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer);
+            if (bytesRead == 0) break;
+            
+            await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+            totalBytesRead += bytesRead;
+            
+            if (!stream.DataAvailable) break;
+        }
+        
+        Console.WriteLine($"Total bytes received: {totalBytesRead}");
+        return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
 }

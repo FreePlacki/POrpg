@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Diagnostics;
+using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 using POrpg.InputHandlers;
 using POrpg.Inventory;
@@ -14,7 +13,7 @@ public record struct Position(int X, int Y)
     public static Position operator +(Position a, Position b) => new(a.X + b.X, a.Y + b.Y);
 }
 
-public class Dungeon : IEnumerable<Tile>
+public class Dungeon
 {
     public int Width { get; }
     public int Height { get; }
@@ -24,13 +23,22 @@ public class Dungeon : IEnumerable<Tile>
     public Tile CurrentTile => this[Player.Position];
     public bool IsChoosingAttack { get; set; }
 
-    private readonly Tile[,] _tiles;
-    public Player Player { get; }
+    [JsonInclude]
+    public Player Player { get; set; }
+    [JsonInclude]
+    public readonly Tile[,] _tiles;
 
     public Tile this[Position p]
     {
         get => _tiles[p.Y, p.X];
         set => _tiles[p.Y, p.X] = value;
+    }
+
+    [JsonConstructor]
+    public Dungeon()
+    {
+        _tiles = new Tile[0, 0];
+        Player = new Player((0, 0));
     }
 
     public Dungeon(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
@@ -197,17 +205,17 @@ public class Dungeon : IEnumerable<Tile>
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 
     private bool CanMoveTo(Position p) => IsInBounds(p) && this[p].IsPassable;
-
-    public IEnumerator<Tile> GetEnumerator()
-    {
-        for (var y = 0; y < Height; y++)
-        {
-            for (var x = 0; x < Width; x++)
-            {
-                yield return _tiles[y, x];
-            }
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    //
+    // public IEnumerator<Tile> GetEnumerator()
+    // {
+    //     for (var y = 0; y < Height; y++)
+    //     {
+    //         for (var x = 0; x < Width; x++)
+    //         {
+    //             yield return _tiles[y, x];
+    //         }
+    //     }
+    // }
+    //
+    // IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

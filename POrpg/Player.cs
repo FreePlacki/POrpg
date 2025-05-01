@@ -1,9 +1,9 @@
+using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
 using POrpg.Effects;
 using POrpg.Inventory;
 using POrpg.Items;
-using POrpg.Items.Weapons;
 
 namespace POrpg;
 
@@ -13,6 +13,7 @@ public class Player : IDrawable
     public string Name => "Player";
     public string? Description => null;
 
+    [JsonInclude]
     public Position Position;
     public int Coins { get; set; }
     public int Gold { get; set; }
@@ -20,6 +21,7 @@ public class Player : IDrawable
     public InventorySlot? SelectedSlot { get; set; }
     public Tile? LookingAt { get; set; }
 
+    [JsonInclude]
     private Attributes _attributes = new(
         new()
         {

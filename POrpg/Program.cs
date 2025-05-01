@@ -1,12 +1,15 @@
-﻿using POrpg.ConsoleHelpers;
+﻿using System.Net.Sockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
 
 namespace POrpg;
 
 class Program
 {
-    private const int RoomWidth = 41;
-    private const int RoomHeight = 21;
+    private const int RoomWidth = 3;
+    private const int RoomHeight = 3;
     private static readonly Position PlayerInitialPosition = (0, 0);
 
     private static bool ServerPrompt()
@@ -25,10 +28,12 @@ class Program
         }
     }
 
+    private static bool _isServer;
+
     static async Task Main(string[] _)
     {
-        var isServer = ServerPrompt();
-        if (isServer)
+        _isServer = ServerPrompt();
+        if (_isServer)
         {
             using var server = new Server();
             server.Start();
@@ -37,10 +42,11 @@ class Program
             var instructions = director.Build(new InstructionsBuilder());
             (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
             ConsoleHelper.Initialize(instructions, columns, 3);
-
+            
             while (true)
             {
-                var playAgain = RunGame(director);
+                var gc = InitializeGame(director, server);
+                var playAgain = RunGame(gc);
                 TurnManager.GetInstance().Reset();
                 if (!playAgain) break;
             }
@@ -48,10 +54,19 @@ class Program
         else
         {
             var client = new Client();
-            await client.Connect();
-            var msg = await client.Receive();
-            Console.WriteLine(msg);
-            Console.ReadKey(true);
+            try
+            {
+                await client.Connect();
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Could not connect to the server.");
+                return;
+            }
+
+            var gc = await InitializeGame(client);
+            RunGame(gc);
+            
             return;
         }
 
@@ -59,13 +74,39 @@ class Program
         Console.CursorVisible = true;
     }
 
-    static bool RunGame(DungeonDirector director)
+    static async Task<GameController> InitializeGame(Client client)
+    {
+        var msg = await client.Receive();
+        Console.WriteLine(msg);
+        Console.WriteLine(msg);
+        var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(msg);
+        Environment.Exit(0);
+        return new GameController(dungeon!);
+    }
+    
+    static GameController InitializeGame(DungeonDirector director, Server server)
     {
         var dungeonBuilder =
             new DungeonBuilder(InitialDungeonState.Filled, RoomWidth, RoomHeight, PlayerInitialPosition);
         var dungeon = director.Build(dungeonBuilder);
+        var opts = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            ReferenceHandler = ReferenceHandler.Preserve,
+            IncludeFields = true,
+            // DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Converters = { new TwoDimensionalIntArrayJsonConverter<Tile>() },
+        };
+        
         var gc = new GameController(dungeon);
 
+        server.ClientConnected += async (_, id) => await server.SendTo(id, JsonSerializer.Serialize(dungeon, opts));
+        
+        return gc;
+    }
+    
+    static bool RunGame(GameController gc)
+    {
         Console.CursorVisible = false;
         Console.CancelKeyPress += (_, _) =>
         {

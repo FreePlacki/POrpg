@@ -6,7 +6,7 @@ namespace POrpg.Items.Modifiers.WeaponModifiers;
 
 public abstract class WeaponModifier : Weapon
 {
-    protected readonly Weapon Weapon;
+    public Weapon Weapon { get; set; }
 
     protected WeaponModifier(Weapon weapon)
     {

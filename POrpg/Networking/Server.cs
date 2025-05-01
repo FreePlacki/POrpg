@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json;
 
-namespace POrpg;
+namespace POrpg.Networking;
 
 public class Server : IDisposable
 {
@@ -83,6 +82,12 @@ public class Server : IDisposable
     {
         await using var stream = _clients[id].GetStream();
         await stream.WriteAsync(Encoding.UTF8.GetBytes(msg));
+    }
+    
+    public async Task SendTo(int id, byte[] msg)
+    {
+        await using var stream = _clients[id].GetStream();
+        await stream.WriteAsync(msg);
     }
 
     private int GetFreeClientId()

@@ -73,7 +73,7 @@ public class ConsoleView
     {
         var console = ConsoleHelper.GetInstance();
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
-        foreach (var attribute in _dungeon.Player.Attributes)
+        foreach (var attribute in _dungeon.Player.Attributes.attributes)
         {
             console.Write($"{attribute.Key,-15} ");
             console.WriteLine(new StyledText(attribute.Value.ToString(), Style.Gradient));

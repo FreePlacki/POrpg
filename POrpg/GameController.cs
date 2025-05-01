@@ -5,7 +5,7 @@ namespace POrpg;
 
 public class GameController
 {
-    private Dungeon.Dungeon _dungeon;
+    private readonly Dungeon.Dungeon _dungeon;
     public GameController(Dungeon.Dungeon dungeon)
     {
         _dungeon = dungeon;

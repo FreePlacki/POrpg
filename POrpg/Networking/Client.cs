@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace POrpg;
+namespace POrpg.Networking;
 
 public class Client
 {

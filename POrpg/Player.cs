@@ -13,8 +13,7 @@ public class Player : IDrawable
     public string Name => "Player";
     public string? Description => null;
 
-    [JsonInclude]
-    public Position Position;
+    public Position Position { get; set; }
     public int Coins { get; set; }
     public int Gold { get; set; }
     public Inventory.Inventory Inventory { get; } = new();
@@ -35,6 +34,7 @@ public class Player : IDrawable
 
     public List<Effect> Effects { get; } = [];
 
+    [JsonIgnore]
     public Attributes Attributes =>
         _attributes +
         Inventory.TotalAttributes +

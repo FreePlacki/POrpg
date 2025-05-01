@@ -5,7 +5,7 @@ namespace POrpg.Items.Modifiers;
 
 public abstract class Modifier : Item
 {
-    protected readonly Item Item;
+    public Item Item { get; set; }
 
     protected Modifier(Item item)
     {

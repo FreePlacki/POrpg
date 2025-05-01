@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Text;
 using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
@@ -22,7 +21,7 @@ public static class EnumExtensions
         if (attributes == null) return null;
 
         var result = new StringBuilder();
-        foreach (var attribute in attributes)
+        foreach (var attribute in attributes.attributes)
         {
             if (attribute.Value == 0) continue;
             var value = new StyledText($"{attribute.Value:+#;-#}", Style.GoodBad);
@@ -33,22 +32,25 @@ public static class EnumExtensions
     }
 }
 
-public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
+public class Attributes
 {
-    private readonly Dictionary<Attribute, int> _attributes;
+    [JsonInclude]
+    public readonly Dictionary<Attribute, int> attributes;
 
     public Attributes(Dictionary<Attribute, int> attributes)
     {
-        _attributes = attributes;
+        this.attributes = attributes;
     }
 
+    [JsonIgnore]
     public int this[Attribute attribute]
     {
-        get => _attributes[attribute];
-        set => _attributes[attribute] = value;
+        get => attributes[attribute];
+        set => attributes[attribute] = value;
     }
     
-    public bool IsEmpty => _attributes.Count == 0;
+    [JsonIgnore]
+    public bool IsEmpty => attributes.Count == 0;
 
     public static Attributes operator +(Attributes lhs, Attributes? rhs)
     {
@@ -56,9 +58,9 @@ public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
 
         var result = new Attributes(new());
 
-        foreach (var (key, value) in lhs)
+        foreach (var (key, value) in lhs.attributes)
             result.Add(key, value);
-        foreach (var (key, value) in rhs)
+        foreach (var (key, value) in rhs.attributes)
             result.Add(key, value);
 
         return result;
@@ -66,14 +68,7 @@ public class Attributes : IEnumerable<KeyValuePair<Attribute, int>>
 
     private void Add(Attribute attribute, int value)
     {
-        if (!_attributes.TryAdd(attribute, value))
-            _attributes[attribute] += value;
-    }
-
-    public IEnumerator<KeyValuePair<Attribute, int>> GetEnumerator() => _attributes.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
+        if (!attributes.TryAdd(attribute, value))
+            attributes[attribute] += value;
     }
 }

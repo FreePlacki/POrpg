@@ -15,36 +15,35 @@ public record struct Position(int X, int Y)
 
 public class Dungeon
 {
-    public int Width { get; }
-    public int Height { get; }
+    public int Width { get; set; }
+    public int Height { get; set; }
     public bool ShouldQuit { get; set; }
     public Item? CurrentItem => CurrentTile.CurrentItem;
     public Item? SelectedItem => Player.SelectedSlot != null ? Player.Inventory[Player.SelectedSlot] : null;
     public Tile CurrentTile => this[Player.Position];
     public bool IsChoosingAttack { get; set; }
 
-    [JsonInclude]
     public Player Player { get; set; }
-    [JsonInclude]
-    public readonly Tile[,] _tiles;
+    public Tile[,] Tiles { get; set; }
 
     public Tile this[Position p]
     {
-        get => _tiles[p.Y, p.X];
-        set => _tiles[p.Y, p.X] = value;
+        get => Tiles[p.Y, p.X];
+        set => Tiles[p.Y, p.X] = value;
     }
 
     [JsonConstructor]
-    public Dungeon()
+    public Dungeon(int width, int height, Tile[,] tiles, Player player)
     {
-        _tiles = new Tile[0, 0];
-        Player = new Player((0, 0));
+        (Width, Height) = (width, height);
+        Tiles           = tiles;
+        Player          = player;
     }
 
     public Dungeon(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
     {
         (Width, Height) = (width, height);
-        _tiles          = new Tile[height, width];
+        Tiles           = new Tile[height, width];
         Player          = new Player(playerInitialPosition);
 
         for (var y = 0; y < Height; y++)
@@ -153,7 +152,7 @@ public class Dungeon
         }
 
         Player.Inventory.Swap(Player.SelectedSlot, slot);
-        slot          = slot.Normalize(Player.Inventory, Player.SelectedSlot);
+        slot                = slot.Normalize(Player.Inventory, Player.SelectedSlot);
         Player.SelectedSlot = slot;
 
         return true;
@@ -196,6 +195,7 @@ public class Dungeon
             Player.LookingAt.Enemy = null;
             return;
         }
+
         damage = Player.DealDamage(Player.LookingAt.Enemy.Damage, defense);
         ConsoleHelper.GetInstance().AddNotification($"{Player.LookingAt.Name} hits back for {damage}");
     }

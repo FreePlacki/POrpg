@@ -5,7 +5,6 @@ using POrpg.Items;
 
 namespace POrpg;
 
-[JsonDerivedType(typeof(FloorTile)), JsonDerivedType(typeof(WallTile))]
 public abstract class Tile : IDrawable
 {
     public abstract string Symbol { get; }
@@ -14,7 +13,6 @@ public abstract class Tile : IDrawable
     public abstract bool IsPassable { get; }
     public Enemy? Enemy { get; set; }
 
-    public virtual IEnumerable<Item> Items => [];
     public virtual void Add(Item item) => throw new InvalidOperationException();
     public virtual void Add(Enemy enemy) => throw new InvalidOperationException();
     public virtual Item? CurrentItem => null;
@@ -26,12 +24,11 @@ public abstract class Tile : IDrawable
 public class FloorTile : Tile
 {
     public override bool IsPassable => Enemy == null;
-    public override bool HasManyItems => _items.Count > 1;
-    public override Item? CurrentItem => _items.ElementAtOrDefault(_currentItemIndex);
-    public override IEnumerable<Item> Items => _items;
+    public override bool HasManyItems => Items.Count > 1;
+    public override Item? CurrentItem => Items.ElementAtOrDefault(_currentItemIndex);
+    public List<Item> Items { get; }
     
-    private readonly List<Item> _items;
-    private bool IsEmpty => _items.Count == 0;
+    private bool IsEmpty => Items.Count == 0;
     private int _currentItemIndex;
 
     public override string Symbol =>
@@ -45,24 +42,23 @@ public class FloorTile : Tile
     public override string? Description =>
         Enemy?.Description ?? CurrentItem?.Description ?? null;
 
-
-    public FloorTile(params Item[] items)
+    public FloorTile(List<Item>? items = null)
     {
-        _items = items.ToList();
-        _currentItemIndex = items.Length - 1;
+        Items = items ?? [];
+        _currentItemIndex = Items.Count - 1;
     }
 
     public override void CycleItems(bool reverse = false)
     {
         if (!HasManyItems) return;
         var offset = reverse ? -1 : 1;
-        _currentItemIndex = (_currentItemIndex + offset + _items.Count) % _items.Count;
+        _currentItemIndex = (_currentItemIndex + offset + Items.Count) % Items.Count;
     }
 
     public override void Add(Item item)
     {
-        _items.Add(item);
-        _currentItemIndex = _items.Count - 1;
+        Items.Add(item);
+        _currentItemIndex = Items.Count - 1;
     }
 
     public override void Add(Enemy enemy)
@@ -72,9 +68,9 @@ public class FloorTile : Tile
 
     public override void RemoveCurrentItem()
     {
-        _items.RemoveAt(_currentItemIndex);
+        Items.RemoveAt(_currentItemIndex);
         if (IsEmpty) return;
-        _currentItemIndex = (_currentItemIndex - 1 + _items.Count) % _items.Count;
+        _currentItemIndex = (_currentItemIndex - 1 + Items.Count) % Items.Count;
     }
 }
 

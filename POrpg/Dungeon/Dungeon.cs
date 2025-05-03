@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
-using POrpg.InputHandlers;
 using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Weapons;
@@ -17,14 +16,9 @@ public class Dungeon
 {
     public int Width { get; set; }
     public int Height { get; set; }
-    public bool ShouldQuit { get; set; }
-    public Item? CurrentItem => CurrentTile.CurrentItem;
-    public Item? SelectedItem => Player.SelectedSlot != null ? Player.Inventory[Player.SelectedSlot] : null;
-    public Tile CurrentTile => this[Player.Position];
-    public bool IsChoosingAttack { get; set; }
 
-    public Player Player { get; set; }
-    public Tile[,] Tiles { get; set; }
+    public Dictionary<int, Player> Players { get; } = [];
+    public Tile[,] Tiles { get; init; }
 
     public Tile this[Position p]
     {
@@ -33,18 +27,17 @@ public class Dungeon
     }
 
     [JsonConstructor]
-    public Dungeon(int width, int height, Tile[,] tiles, Player player)
+    public Dungeon(int width, int height, Tile[,] tiles)
     {
         (Width, Height) = (width, height);
         Tiles           = tiles;
-        Player          = player;
     }
+    
 
-    public Dungeon(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
+    public Dungeon(InitialDungeonState initialState, int width, int height)
     {
         (Width, Height) = (width, height);
         Tiles           = new Tile[height, width];
-        Player          = new Player(playerInitialPosition);
 
         for (var y = 0; y < Height; y++)
         {
@@ -58,164 +51,157 @@ public class Dungeon
                 };
             }
         }
-
-        this[playerInitialPosition] = new FloorTile();
     }
 
-    public void ProcessInput(InputHandler inputHandler, ConsoleKeyInfo keyInfo)
+    public void AddPlayer(int playerId)
     {
-        var command = inputHandler.HandleInput(this, keyInfo);
-        command.Execute();
-        if (command.Description != null)
-            ConsoleHelper.GetInstance().AddNotification(command.Description);
-        if (command.AdvancesTurn)
-            TurnManager.GetInstance().NextTurn();
+        // TODO: calculate position
+        Players[playerId] = new Player((0, 0));
     }
-
-    public bool TryMovePlayer(Position direction)
+    
+    public bool TryMovePlayer(Position direction, int playerId)
     {
-        Player.LookingAt = null;
-        var newPos = Player.Position + direction;
+        var player = Players[playerId];
+        
+        // TODO: Looking at should be in the view
+        player.LookingAt = null;
+        var newPos = player.Position + direction;
         if (CanMoveTo(newPos))
         {
-            Player.Position = newPos;
+            player.Position = newPos;
             return true;
         }
 
         if (IsInBounds(newPos))
         {
-            Player.LookingAt = this[newPos];
+            player.LookingAt = this[newPos];
         }
 
         return false;
     }
 
-    public Item? TryPickUpItem()
+    public Item? TryPickUpItem(int playerId)
     {
-        if (CurrentItem == null || Player.Inventory.Backpack.IsFull) return null;
-        var item = CurrentItem;
-        Player.PickUp(CurrentItem);
-        CurrentTile.RemoveCurrentItem();
+        var player = Players[playerId];
+        var item = this[player.Position].CurrentItem;
+        if (item == null || player.Inventory.Backpack.IsFull) return null;
+        player.PickUp(item);
+        // TODO: consider tile.current item to be in view (it might make sense to leave it like this -- once a player
+        // shuffles items it's visible for the rest)
+        this[player.Position].RemoveCurrentItem();
         return item;
     }
 
-    private Item? TryDropItem(InventorySlot slot)
+    private Item? TryDropItem(InventorySlot slot, int playerId)
     {
-        if (Player.Inventory[slot] == null) return null;
+        var player = Players[playerId];
+        if (player.Inventory[slot] == null) return null;
 
-        var item = Player.Drop(slot);
-        CurrentTile.Add(item);
+        var item = player.Drop(slot);
+        this[player.Position].Add(item);
         return item;
     }
 
-    public Item? TryDropItem()
+    public Item? TryDropItem(int playerId)
     {
-        if (Player.SelectedSlot == null) return null;
-        var item = TryDropItem(Player.SelectedSlot);
-        Player.SelectedSlot = null;
+        var player = Players[playerId];
+        if (player.SelectedSlot == null) return null;
+        var item = TryDropItem(player.SelectedSlot, playerId);
+        player.SelectedSlot = null;
         return item;
     }
 
-    public bool TryDropAllItems()
+    public bool TryDropAllItems(int playerId)
     {
         var dropped = false;
 
-        while (TryDropItem(new BackpackSlot(0)) != null)
+        while (TryDropItem(new BackpackSlot(0), playerId) != null)
             dropped = true;
-        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.LeftHand)) != null)
+        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.LeftHand), playerId) != null)
             dropped = true;
-        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.RightHand)) != null)
+        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.RightHand), playerId) != null)
             dropped = true;
-        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.BothHands)) != null)
+        if (TryDropItem(new EquipmentSlot(EquipmentSlotType.BothHands), playerId) != null)
             dropped = true;
 
         return dropped;
     }
 
-    public bool TrySelectItem(InventorySlot slot)
+    public bool TrySelectItem(InventorySlot slot, int playerId)
     {
-        if (!slot.IsValid(Player.Inventory)) return false;
+        var player = Players[playerId];
+        if (!slot.IsValid(player.Inventory)) return false;
 
-        var normSlot = slot.Normalize(Player.Inventory, Player.SelectedSlot);
+        var normSlot = slot.Normalize(player.Inventory, player.SelectedSlot);
 
         // deselect when selecting the current active slot
-        if (Player.SelectedSlot == normSlot)
+        if (player.SelectedSlot == normSlot)
         {
-            Player.SelectedSlot = null;
+            player.SelectedSlot = null;
             return true;
         }
 
-        if (Player.SelectedSlot == null || Player.Inventory[Player.SelectedSlot] == null)
+        if (player.SelectedSlot == null || player.Inventory[player.SelectedSlot] == null)
         {
-            Player.SelectedSlot = normSlot;
+            player.SelectedSlot = normSlot;
             return true;
         }
 
-        Player.Inventory.Swap(Player.SelectedSlot, slot);
-        slot                = slot.Normalize(Player.Inventory, Player.SelectedSlot);
-        Player.SelectedSlot = slot;
+        player.Inventory.Swap(player.SelectedSlot, slot);
+        slot                = slot.Normalize(player.Inventory, player.SelectedSlot);
+        player.SelectedSlot = slot;
 
         return true;
     }
 
-    public bool TryMoveToBackpack()
+    public bool TryMoveToBackpack(int playerId)
     {
-        if (Player.SelectedSlot == null || Player.Inventory[Player.SelectedSlot] == null ||
-            !Player.SelectedSlot.CanMoveToBackpack || Player.Inventory.Backpack.IsFull) return false;
-        Player.SelectedSlot.MoveToBackpack(Player.Inventory);
-        Player.SelectedSlot = null;
+        var player = Players[playerId];
+        if (player.SelectedSlot == null || player.Inventory[player.SelectedSlot] == null ||
+            !player.SelectedSlot.CanMoveToBackpack || player.Inventory.Backpack.IsFull) return false;
+        player.SelectedSlot.MoveToBackpack(player.Inventory);
+        player.SelectedSlot = null;
 
         return true;
     }
 
-    public Item? TryUseItem()
+    public Item? TryUseItem(int playerId)
     {
-        if (Player.SelectedSlot == null) return null;
-        if (Player.Inventory[Player.SelectedSlot] is not IUsable item) return null;
+        var player = Players[playerId];
+        if (player.SelectedSlot == null) return null;
+        if (player.Inventory[player.SelectedSlot] is not IUsable item) return null;
 
-        item.Use(Player);
-        var res = Player.Drop(Player.SelectedSlot);
+        item.Use(player);
+        var res = player.Drop(player.SelectedSlot);
         return res;
     }
 
-    public void PerformAttack(IAttackVisitor visitor)
+    public void PerformAttack(IAttackVisitor visitor, int playerId)
     {
+        var player = Players[playerId];
         var damage = 0;
         var defense = 0;
-        if (Player.SelectedSlot is EquipmentSlot)
+        if (player.SelectedSlot is EquipmentSlot)
         {
-            (damage, defense) = Player.Inventory[Player.SelectedSlot]?.Accept(visitor) ?? (0, 0);
+            (damage, defense) = player.Inventory[player.SelectedSlot]?.Accept(visitor) ?? (0, 0);
         }
 
-        damage = Player.LookingAt!.Enemy!.DealDamage(damage);
-        ConsoleHelper.GetInstance().AddNotification($"Dealt {damage} damage to {Player.LookingAt.Name}");
-        if (Player.LookingAt.Enemy.Health <= 0)
+        damage = player.LookingAt!.Enemy!.DealDamage(damage);
+        ConsoleHelper.GetInstance().AddNotification($"Dealt {damage} damage to {player.LookingAt.Name}");
+        if (player.LookingAt.Enemy.Health <= 0)
         {
-            ConsoleHelper.GetInstance().AddNotification($"{Player.LookingAt.Name} has been slain");
-            Player.LookingAt.Enemy = null;
+            ConsoleHelper.GetInstance().AddNotification($"{player.LookingAt.Name} has been slain");
+            player.LookingAt.Enemy = null;
             return;
         }
 
-        damage = Player.DealDamage(Player.LookingAt.Enemy.Damage, defense);
-        ConsoleHelper.GetInstance().AddNotification($"{Player.LookingAt.Name} hits back for {damage}");
+        damage = player.DealDamage(player.LookingAt.Enemy.Damage, defense);
+        ConsoleHelper.GetInstance().AddNotification($"{player.LookingAt.Name} hits back for {damage}");
     }
 
-    public void CycleItems(bool reverse) => CurrentTile.CycleItems(reverse);
+    public void CycleItems(bool reverse, int playerId) => this[Players[playerId].Position].CycleItems(reverse);
 
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 
     private bool CanMoveTo(Position p) => IsInBounds(p) && this[p].IsPassable;
-    //
-    // public IEnumerator<Tile> GetEnumerator()
-    // {
-    //     for (var y = 0; y < Height; y++)
-    //     {
-    //         for (var x = 0; x < Width; x++)
-    //         {
-    //             yield return _tiles[y, x];
-    //         }
-    //     }
-    // }
-    //
-    // IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

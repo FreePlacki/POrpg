@@ -250,7 +250,7 @@ allow enemy attacks)
 ## Task Objective  
 Extend the existing console-based RPG to support networked multiplayer. All players will share the same maze, items, and enemies. In this stage, you will:  
 
-- [ ] Refactor the codebase to follow the **Model-View-Controller (MVC)** pattern  
+- [x] Refactor the codebase to follow the **Model-View-Controller (MVC)** pattern  
 - [ ] Enable JSON-based communication over TCP  
 - [ ] Make the application act as both a **server** (accepting connections) and a **client** (connecting to other servers)  
 
@@ -268,10 +268,10 @@ Extend the existing console-based RPG to support networked multiplayer. All play
   - Invoke updates on the Model.  
 
 **NOTE:**
-- [ ] No direct console calls in Model classes.  
-- [ ] No game logic in View classes.  
-- [ ] The Model classes cannot depend on View or Controller.  
-- [ ] The View cannot contain game logic or depend on Controller. 
+- [x] No direct console calls in Model classes.  
+- [x] No game logic in View classes.  
+- [x] The Model classes cannot depend on View or Controller.  
+- [x] The View cannot contain game logic or depend on Controller. 
 
 ---
 

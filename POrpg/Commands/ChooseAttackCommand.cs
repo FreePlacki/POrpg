@@ -1,13 +1,15 @@
+using POrpg.ConsoleHelpers;
+
 namespace POrpg.Commands;
 
 public class ChooseAttackCommand : ICommand
 {
-    private readonly Dungeon.Dungeon _dungeon;
+    private readonly ConsoleView _view;
     private bool _cancel;
 
-    public ChooseAttackCommand(Dungeon.Dungeon dungeon, bool cancel = false)
+    public ChooseAttackCommand(ConsoleView view, bool cancel = false)
     {
-        _dungeon = dungeon;
+        _view = view;
         _cancel = cancel;
     }
 
@@ -15,6 +17,6 @@ public class ChooseAttackCommand : ICommand
 
     public void Execute()
     {
-        _dungeon.IsChoosingAttack = !_cancel;
+        _view.IsChoosingAttack = !_cancel;
     }
 }

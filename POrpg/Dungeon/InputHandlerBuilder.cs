@@ -1,3 +1,4 @@
+using POrpg.ConsoleHelpers;
 using POrpg.InputHandlers;
 using POrpg.Items;
 
@@ -5,9 +6,9 @@ namespace POrpg.Dungeon;
 
 public class InputHandlerBuilder
 {
-    public InputHandler Build(Dungeon dungeon)
+    public InputHandler Build(ConsoleView view)
     {
-        var handlers = GetHandlers(dungeon);
+        var handlers = GetHandlers(view);
         
         handlers.Add(new GuardInputHandler());
         for (var i = 0; i < handlers.Count - 1; i++)
@@ -16,9 +17,9 @@ public class InputHandlerBuilder
         return handlers[0];
     }
 
-    private List<InputHandler> GetHandlers(Dungeon dungeon)
+    private List<InputHandler> GetHandlers(ConsoleView view)
     {
-        if (dungeon.IsChoosingAttack)
+        if (view.IsChoosingAttack)
             return [new AttackInputHandler()];
         
         var handlers = new List<InputHandler>
@@ -28,13 +29,13 @@ public class InputHandlerBuilder
             new InventoryInputHandler()
         };
 
-        if (dungeon.CurrentItem != null)
+        if (view.CurrentItem != null)
             handlers.Add(new ItemsHandler());
-        if (dungeon.CurrentTile.HasManyItems)
+        if (view.CurrentTile.HasManyItems)
             handlers.Add(new CycleItemsHandler());
-        if (dungeon.SelectedItem is IUsable)
+        if (view.SelectedItem is IUsable)
             handlers.Add(new UsableItemInputHandler());
-        if (dungeon.Player.LookingAt?.Enemy != null)
+        if (view.Player.LookingAt?.Enemy != null)
             handlers.Add(new ChooseAttackInputHandler());
         
         return handlers;

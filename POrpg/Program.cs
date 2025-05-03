@@ -1,12 +1,9 @@
 ﻿using System.Net.Sockets;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
 using POrpg.Effects;
 using POrpg.Enemies;
-using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Modifiers;
 using POrpg.Items.Modifiers.WeaponModifiers;
@@ -99,18 +96,13 @@ class Program
     {
         var msg = await client.Receive();
 
-        var t = new FloorTile();
-        var tj = JsonSerializer.Serialize<Tile>(t, opts);
-        Console.WriteLine(tj);
-        var tt = JsonSerializer.Deserialize<Tile>(tj, opts);
-
-        // Environment.Exit(0);
         var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(msg, opts);
         var instructions = director.Build(new InstructionsBuilder());
         (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
         ConsoleHelper.Initialize(instructions, columns, 3);
 
-        return new GameController(dungeon!);
+        // TODO: get the id
+        return new GameController(dungeon!, 0);
     }
 
     static GameController InitializeGame(DungeonDirector director, Server server, JsonSerializerOptions opts)
@@ -123,7 +115,9 @@ class Program
         (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
         ConsoleHelper.Initialize(instructions, columns, 3);
 
-        var gc = new GameController(dungeon);
+        // TODO: get the id (it will be 0 but should be the same as in the server)
+        dungeon.AddPlayer(0);
+        var gc = new GameController(dungeon, 0);
 
         server.ClientConnected += async (_, id) =>
             await server.SendTo(id, JsonSerializer.SerializeToUtf8Bytes(dungeon, opts));

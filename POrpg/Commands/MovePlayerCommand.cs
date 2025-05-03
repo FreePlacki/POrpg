@@ -1,3 +1,4 @@
+using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
 
 namespace POrpg.Commands;
@@ -6,9 +7,12 @@ public class MovePlayerCommand : ICommand
 {
     private readonly Dungeon.Dungeon _dungeon;
     private readonly Position _direction;
-    public MovePlayerCommand(Dungeon.Dungeon dungeon, Position direction)
+    private readonly int _playerId;
+
+    public MovePlayerCommand(ConsoleView view, Dungeon.Dungeon dungeon, Position direction)
     {
-        _dungeon = dungeon;
+        _playerId  = view.PlayerId;
+        _dungeon   = dungeon;
         _direction = direction;
     }
 
@@ -16,7 +20,7 @@ public class MovePlayerCommand : ICommand
 
     public void Execute()
     {
-        if (_dungeon.TryMovePlayer(_direction))
+        if (_dungeon.TryMovePlayer(_direction, _playerId))
             AdvancesTurn = true;
     }
 }

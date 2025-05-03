@@ -1,4 +1,5 @@
 using POrpg.Commands;
+using POrpg.ConsoleHelpers;
 
 namespace POrpg.InputHandlers;
 
@@ -8,7 +9,7 @@ public abstract class InputHandler
 
     public void SetNext(InputHandler? handler) => NextHandler = handler;
 
-    public abstract ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo);
+    public abstract ICommand HandleInput(ConsoleView view, Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo);
     
     public abstract IEnumerable<InputHint> GetHints();
 }

@@ -2,19 +2,30 @@ using System.Diagnostics;
 using POrpg.Dungeon;
 using POrpg.InputHandlers;
 using POrpg.Inventory;
+using POrpg.Items;
 
 namespace POrpg.ConsoleHelpers;
 
 public class ConsoleView
 {
-    private Dungeon.Dungeon _dungeon;
-    private InputHint[] _hints;
+    private readonly Dungeon.Dungeon _dungeon;
+    private InputHint[] _hints = [];
 
-    public ConsoleView(Dungeon.Dungeon dungeon, InputHint[] hints)
+    public bool IsChoosingAttack;
+    public bool ShouldQuit;
+    public int PlayerId { get; }
+    public Player Player => _dungeon.Players[PlayerId];
+    public Tile CurrentTile => _dungeon[Player.Position];
+    public Item? CurrentItem => CurrentTile.CurrentItem;
+    public Item? SelectedItem => Player.SelectedSlot != null ? Player.Inventory[Player.SelectedSlot] : null;
+
+    public ConsoleView(Dungeon.Dungeon dungeon, int playerId)
     {
         _dungeon = dungeon;
-        _hints = hints;
+        PlayerId = playerId;
     }
+
+    public void SetHints(InputHint[] hints) => _hints = hints;
     
     public void Draw()
     {
@@ -26,9 +37,9 @@ public class ConsoleView
             for (var x = 0; x < _dungeon.Width; x++)
             {
                 Position pos = (x, y);
-                if (pos == _dungeon.Player.Position)
+                if (pos == Player.Position)
                 {
-                    console.Write(new StyledText(_dungeon.Player.Symbol, Styles.Player));
+                    console.Write(new StyledText(Player.Symbol, Styles.Player));
                     continue;
                 }
 
@@ -73,15 +84,15 @@ public class ConsoleView
     {
         var console = ConsoleHelper.GetInstance();
         console.WriteLine(new StyledText("Player Stats:", Style.Underline));
-        foreach (var attribute in _dungeon.Player.Attributes.attributes)
+        foreach (var attribute in Player.Attributes.attributes)
         {
             console.Write($"{attribute.Key,-15} ");
             console.WriteLine(new StyledText(attribute.Value.ToString(), Style.Gradient));
         }
 
         console.WriteLine();
-        console.WriteLine($"{"Coins",-15} {new StyledText(_dungeon.Player.Coins.ToString(), Styles.Money)}");
-        console.WriteLine($"{"Gold",-15} {new StyledText(_dungeon.Player.Gold.ToString(), Styles.Money)}");
+        console.WriteLine($"{"Coins",-15} {new StyledText(Player.Coins.ToString(), Styles.Money)}");
+        console.WriteLine($"{"Gold",-15} {new StyledText(Player.Gold.ToString(), Styles.Money)}");
     }
 
     private void DrawInventory()
@@ -89,10 +100,10 @@ public class ConsoleView
         var console = ConsoleHelper.GetInstance();
         console.WriteLine(new StyledText("Inventory:", Style.Underline));
 
-        if (_dungeon.Player.SelectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
+        if (Player.SelectedSlot == new EquipmentSlot(EquipmentSlotType.LeftHand))
         {
             console.Write($"{new StyledText("L", Styles.Player)}. ");
-            var leftHand = _dungeon.Player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
+            var leftHand = Player.Inventory[new EquipmentSlot(EquipmentSlotType.LeftHand)];
             if (leftHand != null)
             {
                 console.WriteLine(leftHand.Name);
@@ -106,17 +117,17 @@ public class ConsoleView
             }
 
             console.Write($"{new StyledText("R", Styles.Player, Style.Faint)}. ");
-            var rightHand = _dungeon.Player.Inventory.Equipment.RightHand;
+            var rightHand = Player.Inventory.Equipment.RightHand;
             console.WriteLine(rightHand != null ? rightHand.Name : "Empty");
         }
-        else if (_dungeon.Player.SelectedSlot == new EquipmentSlot(EquipmentSlotType.RightHand))
+        else if (Player.SelectedSlot == new EquipmentSlot(EquipmentSlotType.RightHand))
         {
             console.Write($"{new StyledText("L", Styles.Player, Style.Faint)}. ");
-            var leftHand = _dungeon.Player.Inventory.Equipment.LeftHand;
+            var leftHand = Player.Inventory.Equipment.LeftHand;
             console.WriteLine(leftHand != null ? leftHand.Name : "Empty");
 
             console.Write($"{new StyledText("R", Styles.Player)}. ");
-            var rightHand = _dungeon.Player.Inventory.Equipment.RightHand;
+            var rightHand = Player.Inventory.Equipment.RightHand;
             if (rightHand != null)
             {
                 console.WriteLine(rightHand.Name);
@@ -131,10 +142,10 @@ public class ConsoleView
         }
         else
         {
-            if (_dungeon.Player.Inventory.Equipment.BothHands != null)
+            if (Player.Inventory.Equipment.BothHands != null)
             {
-                var item = _dungeon.Player.Inventory.Equipment.BothHands;
-                if (_dungeon.Player.SelectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
+                var item = Player.Inventory.Equipment.BothHands;
+                if (Player.SelectedSlot == new EquipmentSlot(EquipmentSlotType.BothHands))
                 {
                     console.WriteLine(
                         $"{new StyledText("LR", Styles.Player)}. {item.Name}");
@@ -151,23 +162,23 @@ public class ConsoleView
             else
             {
                 console.Write($"{new StyledText("L", Styles.Player, Style.Faint)}. ");
-                console.WriteLine(_dungeon.Player.Inventory.Equipment.LeftHand != null
-                    ? _dungeon.Player.Inventory.Equipment.LeftHand!.Name
+                console.WriteLine(Player.Inventory.Equipment.LeftHand != null
+                    ? Player.Inventory.Equipment.LeftHand!.Name
                     : "Empty");
                 console.Write($"{new StyledText("R", Styles.Player, Style.Faint)}. ");
-                console.WriteLine(_dungeon.Player.Inventory.Equipment.RightHand != null
-                    ? _dungeon.Player.Inventory.Equipment.RightHand!.Name
+                console.WriteLine(Player.Inventory.Equipment.RightHand != null
+                    ? Player.Inventory.Equipment.RightHand!.Name
                     : "Empty");
             }
         }
 
-        if (!_dungeon.Player.Inventory.Backpack.IsEmpty)
+        if (!Player.Inventory.Backpack.IsEmpty)
             console.WriteLine();
 
         var i = 0;
-        foreach (var item in _dungeon.Player.Inventory.Backpack.Items)
+        foreach (var item in Player.Inventory.Backpack.Items)
         {
-            if (_dungeon.Player.SelectedSlot == new BackpackSlot(i))
+            if (Player.SelectedSlot == new BackpackSlot(i))
             {
                 console.WriteLine($"{new StyledText((i + 1).ToString(), Styles.Player)}. {item.Name}");
                 console.WriteLine(item.Description);
@@ -186,10 +197,10 @@ public class ConsoleView
 
     private bool DrawActiveEffects()
     {
-        if (_dungeon.Player.Effects.Count == 0) return false;
+        if (Player.Effects.Count == 0) return false;
         var console = ConsoleHelper.GetInstance();
         console.WriteLine($"{new StyledText("Effects:", Style.Underline)}");
-        foreach (var effect in _dungeon.Player.Effects.OrderByDescending(e => e.TurnsLeft))
+        foreach (var effect in Player.Effects.OrderByDescending(e => e.TurnsLeft))
         {
             console.WriteLine(effect.Name);
             console.WriteLine(effect.Description);
@@ -200,12 +211,12 @@ public class ConsoleView
 
     private bool DrawStandingOn()
     {
-        if (_dungeon.CurrentItem == null) return false;
+        if (CurrentItem == null) return false;
         var console = ConsoleHelper.GetInstance();
 
         console.WriteLine(new StyledText("Standing on:", Style.Underline));
-        console.WriteLine(_dungeon.CurrentTile.Name);
-        console.WriteLine(_dungeon.CurrentTile.Description);
+        console.WriteLine(CurrentTile.Name);
+        console.WriteLine(CurrentTile.Description);
         foreach (var hint in _hints.Where(h => (h.Location & UiLocation.StandingOn) != 0))
             console.WriteHintLine(hint);
 
@@ -214,12 +225,12 @@ public class ConsoleView
 
     private bool DrawLookingAt()
     {
-        if (_dungeon.Player.LookingAt == null) return false;
+        if (Player.LookingAt == null) return false;
         var console = ConsoleHelper.GetInstance();
 
         console.WriteLine(new StyledText("Looking at:", Style.Underline));
-        console.WriteLine(_dungeon.Player.LookingAt.Name);
-        console.WriteLine(_dungeon.Player.LookingAt.Description);
+        console.WriteLine(Player.LookingAt.Name);
+        console.WriteLine(Player.LookingAt.Description);
         foreach (var hint in _hints.Where(h => (h.Location & UiLocation.LookingAt) != 0))
             console.WriteHintLine(hint);
 

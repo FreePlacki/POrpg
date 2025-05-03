@@ -1,15 +1,17 @@
+using POrpg.ConsoleHelpers;
+
 namespace POrpg.Commands;
 
 public class QuitCommand : ICommand
 {
-    private Dungeon.Dungeon _dungeon;
+    private readonly ConsoleView _view;
 
-    public QuitCommand(Dungeon.Dungeon dungeon)
+    public QuitCommand(ConsoleView view)
     {
-        _dungeon = dungeon;
+        _view = view;
     }
     public void Execute()
     {
-        _dungeon.ShouldQuit = true;
+        _view.ShouldQuit = true;
     }
 }

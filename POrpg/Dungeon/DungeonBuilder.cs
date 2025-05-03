@@ -61,7 +61,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
     public DungeonBuilder(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
     {
         _playerInitialPosition = playerInitialPosition;
-        _dungeon = new Dungeon(initialState, width, height, playerInitialPosition);
+        _dungeon = new Dungeon(initialState, width, height);
     }
 
     private void AddFloor(Position position)

@@ -1,15 +1,16 @@
 using POrpg.Commands;
+using POrpg.ConsoleHelpers;
 
 namespace POrpg.InputHandlers;
 
 public class ChooseAttackInputHandler : InputHandler
 {
-    public override ICommand HandleInput(Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
+    public override ICommand HandleInput(ConsoleView view, Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
     {
         return keyInfo.Key switch
         {
-            ConsoleKey.X => new ChooseAttackCommand(dungeon),
-            _ => NextHandler!.HandleInput(dungeon, keyInfo)
+            ConsoleKey.X => new ChooseAttackCommand(view),
+            _ => NextHandler!.HandleInput(view, dungeon, keyInfo)
         };
     }
 

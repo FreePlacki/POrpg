@@ -55,7 +55,10 @@ public class Dungeon
 
     public void AddPlayer(int playerId)
     {
-        // TODO: calculate position
+        var pos = new Position(0, 0);
+        var rng = Random.Shared;
+        while (!this[pos].IsPassable || Players.Values.Any(p => p.Position == pos))
+            pos = (rng.Next(Width), rng.Next(Height));
         Players[playerId] = new Player((0, 0));
     }
     

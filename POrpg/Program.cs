@@ -55,74 +55,56 @@ class Program
         };
 
         _isServer = ServerPrompt();
+        using var server = new Server();
         if (_isServer)
         {
-            using var server = new Server();
+            InitializeGame(director, server, serializerOptions);
             server.Start();
-
-            while (true)
-            {
-                var gc = InitializeGame(director, server, serializerOptions);
-                var playAgain = RunGame(gc);
-                TurnManager.GetInstance().Reset();
-                if (!playAgain) break;
-            }
+            Console.Clear();
         }
-        else
+
+        var client = new Client();
+        try
         {
-            var client = new Client();
-            try
-            {
-                await client.Connect();
-            }
-            catch (SocketException)
-            {
-                Console.WriteLine("Could not connect to the server.");
-                return;
-            }
-
-            var gc = await InitializeGame(director, client, serializerOptions);
-            RunGame(gc);
-
+            await client.Connect();
+        }
+        catch (SocketException)
+        {
+            Console.WriteLine("Could not connect to the server.");
             return;
         }
 
-        Console.Clear();
-        Console.CursorVisible = true;
+        var gc = await InitializeGame(director, client, serializerOptions);
+        TurnManager.GetInstance().Reset();
+        RunGame(gc);
     }
 
     static async Task<GameController> InitializeGame(DungeonDirector director, Client client,
         JsonSerializerOptions opts)
     {
+        var id = int.Parse(await client.Receive());
         var msg = await client.Receive();
 
-        var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(msg, opts);
+        var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(msg, opts)!;
         var instructions = director.Build(new InstructionsBuilder());
         (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
         ConsoleHelper.Initialize(instructions, columns, 3);
 
-        // TODO: get the id
-        return new GameController(dungeon!, 0);
+        dungeon.AddPlayer(id);
+        return new GameController(dungeon, id);
     }
 
-    static GameController InitializeGame(DungeonDirector director, Server server, JsonSerializerOptions opts)
+    static void InitializeGame(DungeonDirector director, Server server, JsonSerializerOptions opts)
     {
         var dungeonBuilder =
             new DungeonBuilder(InitialDungeonState.Filled, RoomWidth, RoomHeight, PlayerInitialPosition);
         var dungeon = director.Build(dungeonBuilder);
 
-        var instructions = director.Build(new InstructionsBuilder());
-        (int margin, int width)[] columns = [(0, RoomWidth), (2, 38), (2, 38)];
-        ConsoleHelper.Initialize(instructions, columns, 3);
-
-        // TODO: get the id (it will be 0 but should be the same as in the server)
-        dungeon.AddPlayer(0);
-        var gc = new GameController(dungeon, 0);
-
         server.ClientConnected += async (_, id) =>
+        {
+            await server.SendTo(id, id.ToString());
             await server.SendTo(id, JsonSerializer.SerializeToUtf8Bytes(dungeon, opts));
-
-        return gc;
+        };
     }
 
     static bool RunGame(GameController gc)

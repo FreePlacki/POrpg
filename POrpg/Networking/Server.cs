@@ -9,7 +9,7 @@ namespace POrpg.Networking;
 public class Server : IDisposable
 {
     private const int MaxClients = 9;
-    private readonly ConcurrentDictionary<int, TcpClient> _clients = new();
+    private readonly ConcurrentDictionary<int, NetworkStream> _clients = new();
     private readonly TcpListener _listener;
     private readonly CancellationTokenSource _cts = new();
     
@@ -66,7 +66,7 @@ public class Server : IDisposable
             return;
         }
 
-        var added = _clients.TryAdd(id, client);
+        var added = _clients.TryAdd(id, client.GetStream());
         Debug.Assert(added);
         
         ClientConnected?.Invoke(this, id);
@@ -80,14 +80,12 @@ public class Server : IDisposable
 
     public async Task SendTo(int id, string msg)
     {
-        await using var stream = _clients[id].GetStream();
-        await stream.WriteAsync(Encoding.UTF8.GetBytes(msg));
+        await SendTo(id, Encoding.UTF8.GetBytes(msg));
     }
     
     public async Task SendTo(int id, byte[] msg)
     {
-        await using var stream = _clients[id].GetStream();
-        await stream.WriteAsync(msg);
+        await _clients[id].WriteAsync(msg);
     }
 
     private int GetFreeClientId()

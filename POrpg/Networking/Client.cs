@@ -7,8 +7,9 @@ namespace POrpg.Networking;
 
 public class Client
 {
-    private IPEndPoint _endPoint;
+    private readonly IPEndPoint _endPoint;
     private TcpClient? _client;
+    private NetworkStream _stream;
     
     public Client(string address = "127.0.0.1", int port = 5555)
     {
@@ -19,29 +20,29 @@ public class Client
     {
         _client = new();
         await _client.ConnectAsync(_endPoint);
+        _stream = _client.GetStream();
     }
 
     public async Task<string> Receive()
     {
         Debug.Assert(_client != null);
+        Debug.Assert(_client.Connected);
         
-        await using var stream = _client.GetStream();
         using var memoryStream = new MemoryStream();
         var buffer = new byte[8192];
         int totalBytesRead = 0;
         
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(buffer);
+            int bytesRead = await _stream.ReadAsync(buffer);
             if (bytesRead == 0) break;
             
             await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead));
             totalBytesRead += bytesRead;
             
-            if (!stream.DataAvailable) break;
+            if (!_stream.DataAvailable) break;
         }
         
-        Console.WriteLine($"Total bytes received: {totalBytesRead}");
         return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
 }

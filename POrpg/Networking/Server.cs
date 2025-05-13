@@ -3,23 +3,29 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace POrpg.Networking;
 
 public class Server : IDisposable
 {
-    private const int MaxClients = 9;
+    private const int MaxClients = 10;
     private readonly ConcurrentDictionary<int, NetworkStream> _clients = new();
     private readonly TcpListener _listener;
     private readonly CancellationTokenSource _cts = new();
+
+    private readonly Dungeon.Dungeon _dungeon;
+    private readonly JsonSerializerOptions _serializerOptions;
     
     public event EventHandler<int>? ClientConnected;
 
-    public Server(int port = 5555)
+    public Server(Dungeon.Dungeon dungeon, JsonSerializerOptions options, int port = 5555)
     {
+        _dungeon = dungeon;
+        _serializerOptions = options;
         _listener = new TcpListener(IPAddress.Any, port);
     }
-
+    
     public void Start()
     {
         _listener.Start();
@@ -55,19 +61,22 @@ public class Server : IDisposable
 
     private async Task HandleClient(TcpClient client, CancellationToken token)
     {
-        await using var stream = client.GetStream();
+        var stream = client.GetStream();
 
         var id = GetFreeClientId();
         if (id == -1)
         {
             const string msg = "Server full, try again later";
-            _ = stream.WriteAsync(Encoding.UTF8.GetBytes(msg), token);
+            await stream.WriteAsync(Encoding.UTF8.GetBytes(msg), token);
             client.Close();
             return;
         }
 
-        var added = _clients.TryAdd(id, client.GetStream());
+        var added = _clients.TryAdd(id, stream);
         Debug.Assert(added);
+        // TODO
+        // var joinMsg = new JoinAckMessage(id, JsonSerializer.SerializeToUtf8Bytes(_dungeon, _serializerOptions));
+        // await SendTo(id, joinMsg);
         
         ClientConnected?.Invoke(this, id);
     }

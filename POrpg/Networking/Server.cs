@@ -94,6 +94,7 @@ public class Server : IDisposable
 
     public async Task SendTo(int id, byte[] msg)
     {
+        await _clients[id].WriteAsync(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(msg.Length)));
         await _clients[id].WriteAsync(msg);
     }
 

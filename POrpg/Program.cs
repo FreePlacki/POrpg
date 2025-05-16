@@ -79,7 +79,7 @@ class Program
         RunGame(gc);
     }
 
-    static async Task<GameController> InitializeGame(DungeonDirector director, Client client,
+    private static async Task<GameController> InitializeGame(DungeonDirector director, Client client,
         JsonSerializerOptions opts)
     {
         var id = int.Parse(await client.Receive());
@@ -94,7 +94,7 @@ class Program
         return new GameController(dungeon, id);
     }
 
-    static void InitializeGame(DungeonDirector director, Server server, JsonSerializerOptions opts)
+    private static void InitializeGame(DungeonDirector director, Server server, JsonSerializerOptions opts)
     {
         var dungeonBuilder =
             new DungeonBuilder(InitialDungeonState.Filled, RoomWidth, RoomHeight, PlayerInitialPosition);

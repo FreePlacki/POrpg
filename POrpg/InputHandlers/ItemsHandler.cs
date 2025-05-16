@@ -1,16 +1,15 @@
 using POrpg.Commands;
-using POrpg.ConsoleHelpers;
 
 namespace POrpg.InputHandlers;
 
 public class ItemsHandler : InputHandler
 {
-    public override ICommand HandleInput(ConsoleView view, Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
+    public override ICommand HandleInput(ConsoleKeyInfo keyInfo)
     {
         return keyInfo.Key switch
         {
-            ConsoleKey.E => new PickUpItemCommand(view, dungeon),
-            _ => NextHandler!.HandleInput(view, dungeon, keyInfo)
+            ConsoleKey.E => new PickUpItemCommand(),
+            _ => NextHandler!.HandleInput(keyInfo)
         };
     }
 

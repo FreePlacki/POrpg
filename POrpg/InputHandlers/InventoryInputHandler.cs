@@ -1,18 +1,16 @@
 using POrpg.Commands;
-using POrpg.ConsoleHelpers;
-using POrpg.Inventory;
 
 namespace POrpg.InputHandlers;
 
 public class InventoryInputHandler : InputHandler
 {
-    public override ICommand HandleInput(ConsoleView view, Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
+    public override ICommand HandleInput(ConsoleKeyInfo keyInfo)
     {
         return keyInfo.Key switch
         {
-            ConsoleKey.Q when keyInfo.Modifiers == ConsoleModifiers.None => new DropItemCommand(view, dungeon),
-            ConsoleKey.Q when keyInfo.Modifiers == ConsoleModifiers.Shift => new DropAllItemsCommand(view, dungeon),
-            _ => NextHandler!.HandleInput(view, dungeon, keyInfo)
+            ConsoleKey.Q when keyInfo.Modifiers == ConsoleModifiers.None => new DropItemCommand(),
+            ConsoleKey.Q when keyInfo.Modifiers == ConsoleModifiers.Shift => new DropAllItemsCommand(),
+            _ => NextHandler!.HandleInput(keyInfo)
         };
     }
 

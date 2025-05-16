@@ -1,16 +1,15 @@
 using POrpg.Commands;
-using POrpg.ConsoleHelpers;
 
 namespace POrpg.InputHandlers;
 
 public class UsableItemInputHandler : InputHandler
 {
-    public override ICommand HandleInput(ConsoleView view, Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
+    public override ICommand HandleInput(ConsoleKeyInfo keyInfo)
     {
         return keyInfo.Key switch
         {
-            ConsoleKey.F => new UseItemCommand(view, dungeon),
-            _ => NextHandler!.HandleInput(view, dungeon, keyInfo)
+            ConsoleKey.F => new UseItemCommand(),
+            _ => NextHandler!.HandleInput(keyInfo)
         };
     }
 

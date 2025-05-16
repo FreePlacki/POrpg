@@ -9,19 +9,19 @@ public class InputHandlerBuilder
     public InputHandler Build(ConsoleView view)
     {
         var handlers = GetHandlers(view);
-        
+
         handlers.Add(new GuardInputHandler());
         for (var i = 0; i < handlers.Count - 1; i++)
             handlers[i].SetNext(handlers[i + 1]);
-        
+
         return handlers[0];
     }
 
     private List<InputHandler> GetHandlers(ConsoleView view)
     {
         if (view.IsChoosingAttack)
-            return [new AttackInputHandler()];
-        
+            return [new AttackInputHandler(view.Player.Attributes)];
+
         var handlers = new List<InputHandler>
         {
             new UiInputHandler(),
@@ -37,7 +37,7 @@ public class InputHandlerBuilder
             handlers.Add(new UsableItemInputHandler());
         if (view.Player.LookingAt?.Enemy != null)
             handlers.Add(new ChooseAttackInputHandler());
-        
+
         return handlers;
     }
 }

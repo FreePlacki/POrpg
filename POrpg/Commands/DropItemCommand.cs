@@ -1,23 +1,12 @@
-using POrpg.ConsoleHelpers;
-
 namespace POrpg.Commands;
 
 public class DropItemCommand : ICommand
 {
-    private readonly Dungeon.Dungeon _dungeon;
-    private readonly int _playerId;
-    
-    public DropItemCommand(ConsoleView view, Dungeon.Dungeon dungeon)
-    {
-        _playerId = view.PlayerId;
-        _dungeon = dungeon;
-    }
-
     public string? Description { get; private set; }
-    
-    public void Execute()
+
+    public void Execute(Dungeon.Dungeon dungeon, int playerId)
     {
-        var item = _dungeon.TryDropItem(_playerId);
+        var item = dungeon.TryDropItem(playerId);
         if (item != null)
             Description = $"Dropped {item.Name}";
     }

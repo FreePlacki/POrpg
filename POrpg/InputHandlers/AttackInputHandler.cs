@@ -1,20 +1,26 @@
 using POrpg.Commands;
-using POrpg.ConsoleHelpers;
 using POrpg.Items.Weapons;
 
 namespace POrpg.InputHandlers;
 
 public class AttackInputHandler : InputHandler
 {
-    public override ICommand HandleInput(ConsoleView view, Dungeon.Dungeon dungeon, ConsoleKeyInfo keyInfo)
+    private readonly Attributes _playerAttributes;
+
+    public AttackInputHandler(Attributes playerAttributes)
+    {
+        _playerAttributes = playerAttributes;
+    }
+
+    public override ICommand HandleInput(ConsoleKeyInfo keyInfo)
     {
         return keyInfo.Key switch
         {
-            ConsoleKey.N => new PerformAttackCommand(view, dungeon, new NormalAttackVisitor(view.Player.Attributes)),
-            ConsoleKey.S => new PerformAttackCommand(view, dungeon, new StealthAttackVisitor(view.Player.Attributes)),
-            ConsoleKey.M => new PerformAttackCommand(view, dungeon, new MagicAttackVisitor(view.Player.Attributes)),
-            ConsoleKey.C => new ChooseAttackCommand(view, cancel: true),
-            _ => NextHandler!.HandleInput(view, dungeon, keyInfo)
+            ConsoleKey.N => new PerformAttackCommand(new NormalAttackVisitor(_playerAttributes)),
+            ConsoleKey.S => new PerformAttackCommand(new StealthAttackVisitor(_playerAttributes)),
+            ConsoleKey.M => new PerformAttackCommand(new MagicAttackVisitor(_playerAttributes)),
+            ConsoleKey.C => new ChooseAttackCommand(cancel: true),
+            _ => NextHandler!.HandleInput(keyInfo)
         };
     }
 

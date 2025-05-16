@@ -4,19 +4,17 @@ namespace POrpg.Commands;
 
 public class ChooseAttackCommand : ICommand
 {
-    private readonly ConsoleView _view;
     private bool _cancel;
 
-    public ChooseAttackCommand(ConsoleView view, bool cancel = false)
+    public ChooseAttackCommand(bool cancel = false)
     {
-        _view = view;
         _cancel = cancel;
     }
 
     public bool AdvancesTurn => false;
 
-    public void Execute()
+    public void Execute(ConsoleView view)
     {
-        _view.IsChoosingAttack = !_cancel;
+        view.IsChoosingAttack = !_cancel;
     }
 }

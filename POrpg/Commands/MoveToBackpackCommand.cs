@@ -1,20 +1,9 @@
-using POrpg.ConsoleHelpers;
-
 namespace POrpg.Commands;
 
 public class MoveToBackpackCommand : ICommand
 {
-    private readonly Dungeon.Dungeon _dungeon;
-    private readonly int _playerId;
-
-    public MoveToBackpackCommand(ConsoleView view, Dungeon.Dungeon dungeon)
+    public void Execute(Dungeon.Dungeon dungeon, int playerId)
     {
-        _playerId = view.PlayerId;
-        _dungeon  = dungeon;
-    }
-
-    public void Execute()
-    {
-        _dungeon.TryMoveToBackpack(_playerId);
+        dungeon.TryMoveToBackpack(playerId);
     }
 }

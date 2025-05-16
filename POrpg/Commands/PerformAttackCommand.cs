@@ -5,22 +5,22 @@ namespace POrpg.Commands;
 
 public class PerformAttackCommand : ICommand
 {
-    private readonly Dungeon.Dungeon _dungeon;
-    private readonly ConsoleView _view;
     private readonly IAttackVisitor _visitor;
 
-    public PerformAttackCommand(ConsoleView view, Dungeon.Dungeon dungeon, IAttackVisitor visitor)
+    public PerformAttackCommand(IAttackVisitor visitor)
     {
-        _view    = view;
-        _dungeon = dungeon;
         _visitor = visitor;
     }
 
     public bool AdvancesTurn => true;
 
-    public void Execute()
+    public void Execute(Dungeon.Dungeon dungeon, int playerId)
     {
-        _dungeon.PerformAttack(_visitor, _view.PlayerId);
-        _view.IsChoosingAttack = false;
+        dungeon.PerformAttack(_visitor, playerId);
+    }
+
+    public void Execute(ConsoleView view)
+    {
+        view.IsChoosingAttack = false;
     }
 }

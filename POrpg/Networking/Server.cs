@@ -16,16 +16,16 @@ public class Server : IDisposable
 
     private readonly Dungeon.Dungeon _dungeon;
     private readonly JsonSerializerOptions _serializerOptions;
-    
+
     public event EventHandler<int>? ClientConnected;
 
-    public Server(Dungeon.Dungeon dungeon, JsonSerializerOptions options, int port = 5555)
+    public Server(int port = 5555)
     {
-        _dungeon = dungeon;
-        _serializerOptions = options;
+        // _dungeon = dungeon;
+        // _serializerOptions = options;
         _listener = new TcpListener(IPAddress.Any, port);
     }
-    
+
     public void Start()
     {
         _listener.Start();
@@ -77,7 +77,7 @@ public class Server : IDisposable
         // TODO
         // var joinMsg = new JoinAckMessage(id, JsonSerializer.SerializeToUtf8Bytes(_dungeon, _serializerOptions));
         // await SendTo(id, joinMsg);
-        
+
         ClientConnected?.Invoke(this, id);
     }
 
@@ -91,7 +91,7 @@ public class Server : IDisposable
     {
         await SendTo(id, Encoding.UTF8.GetBytes(msg));
     }
-    
+
     public async Task SendTo(int id, byte[] msg)
     {
         await _clients[id].WriteAsync(msg);

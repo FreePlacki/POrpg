@@ -8,12 +8,13 @@ public class GameController
 {
     private readonly Dungeon.Dungeon _dungeon;
     private readonly ConsoleView _view;
+
     public GameController(Dungeon.Dungeon dungeon, int playerId)
     {
         _dungeon = dungeon;
         _view = new ConsoleView(_dungeon, playerId);
     }
-    
+
     public bool MainLoop()
     {
         var console = ConsoleHelper.GetInstance();
@@ -28,21 +29,21 @@ public class GameController
 
             var inputHandler = new InputHandlerBuilder().Build(_view);
             _view.SetHints(inputHandler.GetHints().ToArray());
-            
+
             _view.Draw();
 
             console.Reset();
 
             var input = Console.ReadKey(true);
             ProcessInput(inputHandler, input);
-        
+
             if (_view.Player.Attributes[Attribute.Health] <= 0)
             {
                 console.ShowDeathScreen();
                 Console.ReadKey(true);
                 return true;
             }
-        
+
             if (_view.ShouldQuit)
                 return false;
         }
@@ -50,8 +51,9 @@ public class GameController
 
     private void ProcessInput(InputHandler handler, ConsoleKeyInfo input)
     {
-        var command = handler.HandleInput(_view, _dungeon, input);
-        command.Execute();
+        var command = handler.HandleInput(input);
+        command.Execute(_dungeon, _view.PlayerId);
+        command.Execute(_view);
         if (command.Description != null)
             ConsoleHelper.GetInstance().AddNotification(command.Description);
         if (command.AdvancesTurn)

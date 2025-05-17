@@ -1,5 +1,4 @@
-using System.Text.Json;
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.Dungeon;
 using POrpg.InputHandlers;
 using POrpg.Networking;
@@ -19,11 +18,8 @@ public class ClientController
 
     public async Task Initialize()
     {
-        var id = int.Parse(await _client.Receive());
-        var dungeonMsg = await _client.Receive();
-        var instructions = await _client.Receive();
+        var (id, dungeon, instructions) = (await _client.Receive() as JoinMessage)!;
 
-        var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(dungeonMsg, ServerController.SerializerOptions)!;
         (int margin, int width)[] columns = [(0, dungeon.Width), (2, dungeon.Width - 3), (2, dungeon.Width - 3)];
         ConsoleHelper.Initialize(instructions, columns, 3);
 
@@ -37,9 +33,16 @@ public class ClientController
     {
         while (!_view.ShouldQuit)
         {
-            var dungeonMsg = await _client.Receive();
-            var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(dungeonMsg, ServerController.SerializerOptions)!;
-            _view.Dungeon = dungeon;
+            switch (await _client.Receive())
+            {
+                case StateMessage { Dungeon: var dungeon }:
+                    _view.Dungeon = dungeon;
+                    break;
+                case NotificationMessage { Notification: var notification }:
+                    ConsoleHelper.GetInstance().AddNotification(notification);
+                    break;
+            }
+
             DisplayView();
         }
     }
@@ -84,7 +87,7 @@ public class ClientController
     private async Task ProcessInput(InputHandler handler, ConsoleKeyInfo input)
     {
         var command = handler.HandleInput(input);
-        await _client.Send(JsonSerializer.Serialize(command, ServerController.SerializerOptions));
+        await _client.Send(new CommandMessage(command));
         command.Execute(_view);
 
         if (command.Description != null)

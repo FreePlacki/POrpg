@@ -1,5 +1,5 @@
 using System.Text;
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.Inventory;
 using POrpg.Items.Weapons;
 

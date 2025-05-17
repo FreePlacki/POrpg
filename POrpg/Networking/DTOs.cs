@@ -1,7 +1,13 @@
+using POrpg.Commands;
+
 namespace POrpg.Networking;
 
-public record InputMessage(int PlayerId, string Key);
+public interface IMessage;
 
-public record StateMessage(byte[] Dungeon);
+public record NotificationMessage(string Notification) : IMessage;
 
-public record JoinAckMessage(int PlayerId, byte[] Dungeon);
+public record StateMessage(Dungeon.Dungeon Dungeon) : IMessage;
+
+public record CommandMessage(ICommand Command) : IMessage;
+
+public record JoinMessage(int PlayerId, Dungeon.Dungeon Dungeon, string Instructions) : IMessage;

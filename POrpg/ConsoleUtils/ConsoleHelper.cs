@@ -1,10 +1,9 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using POrpg.Dungeon;
 using POrpg.InputHandlers;
 
-namespace POrpg.ConsoleHelpers;
+namespace POrpg.ConsoleUtils;
 
 public class ConsoleHelper
 {
@@ -184,7 +183,7 @@ public class ConsoleHelper
     {
         Write(new StyledText($"{hint.Description} ({new StyledText(hint.Key, Styles.Player)})", Style.Faint));
     }
-    
+
     public void WriteHintLine(InputHint hint)
     {
         WriteHint(hint);

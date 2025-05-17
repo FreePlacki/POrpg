@@ -1,6 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 
 namespace POrpg;
 
@@ -34,8 +34,7 @@ public static class EnumExtensions
 
 public class Attributes
 {
-    [JsonInclude]
-    public readonly Dictionary<Attribute, int> attributes;
+    [JsonInclude] public readonly Dictionary<Attribute, int> attributes;
 
     public Attributes(Dictionary<Attribute, int> attributes)
     {
@@ -48,9 +47,8 @@ public class Attributes
         get => attributes[attribute];
         set => attributes[attribute] = value;
     }
-    
-    [JsonIgnore]
-    public bool IsEmpty => attributes.Count == 0;
+
+    [JsonIgnore] public bool IsEmpty => attributes.Count == 0;
 
     public static Attributes operator +(Attributes lhs, Attributes? rhs)
     {

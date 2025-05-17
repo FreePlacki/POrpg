@@ -1,4 +1,4 @@
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.InputHandlers;
 using POrpg.Items;
 

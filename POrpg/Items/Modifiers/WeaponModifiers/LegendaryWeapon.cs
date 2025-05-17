@@ -1,4 +1,4 @@
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.Items.Weapons;
 
 namespace POrpg.Items.Modifiers.WeaponModifiers;
@@ -21,5 +21,6 @@ public class LegendaryWeapon : WeaponModifier
             { Attribute.Aggression, 5 },
             { Attribute.Wisdom, 5 }
         }) + Weapon.Attributes;
+
     public override int Damage => Weapon.Damage;
 }

@@ -1,12 +1,11 @@
 using System.Text.Json.Serialization;
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 
 namespace POrpg.Items.Potions;
 
 public abstract class Potion : Item, IUsable
 {
-    [JsonInclude]
-    protected readonly int? Duration;
+    [JsonInclude] protected readonly int? Duration;
 
     protected Potion(int? duration)
     {

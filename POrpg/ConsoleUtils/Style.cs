@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace POrpg.ConsoleHelpers;
+namespace POrpg.ConsoleUtils;
 
 public enum Style : byte
 {
@@ -49,10 +49,10 @@ public class StyledText
         var t = text;
         foreach (var style in styles)
             t = new StyledText(t, style);
-        _style     = t._style;
-        _reset     = t._reset;
+        _style = t._style;
+        _reset = t._reset;
         _innerText = t._innerText;
-        _text      = t._text;
+        _text = t._text;
     }
 
     public StyledText(string text, params Style[] styles) : this(new StyledText(text), styles)

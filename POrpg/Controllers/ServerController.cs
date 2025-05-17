@@ -1,40 +1,11 @@
-using System.Text.Json;
-using POrpg.Commands;
+using POrpg.ConsoleUtils;
 using POrpg.Dungeon;
-using POrpg.Effects;
-using POrpg.Enemies;
-using POrpg.Items;
-using POrpg.Items.Modifiers;
-using POrpg.Items.Modifiers.WeaponModifiers;
-using POrpg.Items.Potions;
-using POrpg.Items.Weapons;
 using POrpg.Networking;
 
 namespace POrpg.Controllers;
 
 public class ServerController
 {
-    public static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        WriteIndented = true,
-        IncludeFields = true,
-        IgnoreReadOnlyFields = false,
-        IgnoreReadOnlyProperties = false,
-        Converters =
-        {
-            new TwoDimensionalArrayJsonConverter<Tile>(),
-            new PolymorphicConverterFactory<Tile>(),
-            new PolymorphicConverterFactory<Item>(),
-            new PolymorphicConverterFactory<Enemy>(),
-            new PolymorphicConverterFactory<Effect>(),
-            new PolymorphicConverterFactory<Potion>(),
-            new PolymorphicConverterFactory<Weapon>(),
-            new PolymorphicConverterFactory<Modifier>(),
-            new PolymorphicConverterFactory<WeaponModifier>(),
-            new PolymorphicConverterFactory<ICommand>(),
-        }
-    };
-
     private readonly Dungeon.Dungeon _dungeon;
     private readonly string _instructions;
     private readonly Server _server;
@@ -57,16 +28,16 @@ public class ServerController
     private async void OnClientConnected(object? _, int id)
     {
         _dungeon.AddPlayer(id);
-        await _server.SendTo(id, id.ToString());
-        await _server.SendTo(id, JsonSerializer.SerializeToUtf8Bytes(_dungeon, SerializerOptions));
-        await _server.SendTo(id, _instructions);
+        await _server.SendTo(id, new JoinMessage(id, _dungeon, _instructions));
+        await _server.SendToAll(
+            new NotificationMessage($"Player {new StyledText(id.ToString(), Styles.Player)} connected"), except: [id]);
     }
 
-    private async void OnMessageReceived(object? _, (int playerId, string msg) data)
+    private async void OnMessageReceived(object? _, (int playerId, IMessage msg) data)
     {
-        var command = JsonSerializer.Deserialize<ICommand>(data.msg, SerializerOptions)!;
+        var command = (data.msg as CommandMessage)!.Command;
         command.Execute(_dungeon, data.playerId);
 
-        await _server.SendToAll(JsonSerializer.SerializeToUtf8Bytes(_dungeon, SerializerOptions));
+        await _server.SendToAll(new StateMessage(_dungeon));
     }
 }

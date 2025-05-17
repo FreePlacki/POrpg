@@ -4,7 +4,7 @@ using POrpg.InputHandlers;
 using POrpg.Inventory;
 using POrpg.Items;
 
-namespace POrpg.ConsoleHelpers;
+namespace POrpg.ConsoleUtils;
 
 public class ConsoleView
 {

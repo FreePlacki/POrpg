@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.Dungeon;
 using POrpg.Effects;
 using POrpg.Inventory;
@@ -20,8 +20,7 @@ public class Player : IDrawable
     public InventorySlot? SelectedSlot { get; set; }
     public Tile? LookingAt { get; set; }
 
-    [JsonInclude]
-    private Attributes _attributes = new(
+    [JsonInclude] private Attributes _attributes = new(
         new()
         {
             { Attribute.Strength, 10 },

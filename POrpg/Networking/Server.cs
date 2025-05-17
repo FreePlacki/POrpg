@@ -3,6 +3,15 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
+using POrpg.Commands;
+using POrpg.Effects;
+using POrpg.Enemies;
+using POrpg.Items;
+using POrpg.Items.Modifiers;
+using POrpg.Items.Modifiers.WeaponModifiers;
+using POrpg.Items.Potions;
+using POrpg.Items.Weapons;
 
 namespace POrpg.Networking;
 
@@ -14,7 +23,30 @@ public class Server : IDisposable
     private readonly CancellationTokenSource _cts = new();
 
     public event EventHandler<int>? ClientConnected;
-    public event EventHandler<(int, string)>? MessageReceived;
+    public event EventHandler<(int, IMessage)>? MessageReceived;
+
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        WriteIndented = true,
+        IncludeFields = true,
+        IgnoreReadOnlyFields = false,
+        IgnoreReadOnlyProperties = false,
+        Converters =
+        {
+            new TwoDimensionalArrayJsonConverter<Tile>(),
+            new PolymorphicConverterFactory<Tile>(),
+            new PolymorphicConverterFactory<Item>(),
+            new PolymorphicConverterFactory<Enemy>(),
+            new PolymorphicConverterFactory<Effect>(),
+            new PolymorphicConverterFactory<Potion>(),
+            new PolymorphicConverterFactory<Weapon>(),
+            new PolymorphicConverterFactory<Modifier>(),
+            new PolymorphicConverterFactory<WeaponModifier>(),
+            new PolymorphicConverterFactory<ICommand>(),
+            new PolymorphicConverterFactory<IMessage>(),
+        }
+    };
+
 
     public Server(int port = 5555)
     {
@@ -83,19 +115,15 @@ public class Server : IDisposable
         }
     }
 
-    public async Task SendToAll(byte[] msg)
+    public async Task SendToAll(IMessage message, HashSet<int>? except = null)
     {
-        foreach (var id in _clients.Keys)
-            await SendTo(id, msg);
+        foreach (var id in _clients.Keys.Where(id => except == null || !except.Contains(id)))
+            await SendTo(id, message);
     }
 
-    public async Task SendToAll(int id, string msg) => await SendToAll(Encoding.UTF8.GetBytes(msg));
+    public async Task SendTo(int id, IMessage message) => await Send(_clients[id], message);
 
-    public async Task SendTo(int id, string msg) => await SendTo(id, Encoding.UTF8.GetBytes(msg));
-
-    public async Task SendTo(int id, byte[] msg) => await Send(_clients[id], msg);
-
-    public static async Task<string> Receive(NetworkStream stream)
+    public static async Task<IMessage> Receive(NetworkStream stream)
     {
         var lenBuffer = new byte[4];
         await stream.ReadExactlyAsync(lenBuffer, 0, 4);
@@ -113,16 +141,17 @@ public class Server : IDisposable
             remaining -= toRead;
         }
 
-        return Encoding.UTF8.GetString(memoryStream.ToArray());
+        var msg = Encoding.UTF8.GetString(memoryStream.ToArray());
+        return JsonSerializer.Deserialize<IMessage>(msg, SerializerOptions)!;
     }
 
-    public static async Task Send(NetworkStream stream, byte[] msg)
+    public static async Task Send(NetworkStream stream, IMessage message)
     {
+        var json = JsonSerializer.Serialize(message, SerializerOptions);
+        var msg = Encoding.UTF8.GetBytes(json);
         await stream.WriteAsync(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(msg.Length)));
         await stream.WriteAsync(msg);
     }
-
-    public static async Task Send(NetworkStream stream, string msg) => await Send(stream, Encoding.UTF8.GetBytes(msg));
 
     private int GetFreeClientId()
     {

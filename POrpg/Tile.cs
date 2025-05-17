@@ -1,4 +1,4 @@
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.Enemies;
 using POrpg.Items;
 

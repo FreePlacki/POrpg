@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using POrpg.ConsoleHelpers;
+using POrpg.ConsoleUtils;
 using POrpg.Items.Weapons;
 
 namespace POrpg.Commands;

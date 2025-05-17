@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace POrpg.Networking;
 
@@ -23,7 +22,7 @@ public class Client
         _stream = _client.GetStream();
     }
 
-    public async Task<string> Receive()
+    public async Task<IMessage> Receive()
     {
         Debug.Assert(_client != null);
         Debug.Assert(_client.Connected);
@@ -31,11 +30,11 @@ public class Client
         return await Server.Receive(_stream);
     }
 
-    public async Task Send(string msg)
+    public async Task Send(IMessage message)
     {
         Debug.Assert(_client != null);
         Debug.Assert(_client.Connected);
 
-        await Server.Send(_stream, Encoding.UTF8.GetBytes(msg));
+        await Server.Send(_stream, message);
     }
 }

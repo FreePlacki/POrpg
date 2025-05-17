@@ -24,11 +24,11 @@ public class FloorTile : Tile
 {
     public override bool IsPassable => Enemy == null;
     public override bool HasManyItems => Items.Count > 1;
-    public override Item? CurrentItem => Items.ElementAtOrDefault(_currentItemIndex);
+    public override Item? CurrentItem => Items.ElementAtOrDefault(CurrentItemIndex);
     public List<Item> Items { get; }
 
     private bool IsEmpty => Items.Count == 0;
-    private int _currentItemIndex;
+    public int CurrentItemIndex { get; private set; }
 
     public override string Symbol =>
         Enemy != null ? !IsEmpty ? new StyledText(Enemy.Symbol, Styles.Stacked).ToString() : Enemy.Symbol :
@@ -41,23 +41,23 @@ public class FloorTile : Tile
     public override string? Description =>
         Enemy?.Description ?? CurrentItem?.Description ?? null;
 
-    public FloorTile(List<Item>? items = null)
+    public FloorTile(List<Item>? items = null, int currentItemIndex = -1)
     {
         Items = items ?? [];
-        _currentItemIndex = Items.Count - 1;
+        CurrentItemIndex = currentItemIndex == -1 ? Items.Count - 1 : currentItemIndex;
     }
 
     public override void CycleItems(bool reverse = false)
     {
         if (!HasManyItems) return;
         var offset = reverse ? -1 : 1;
-        _currentItemIndex = (_currentItemIndex + offset + Items.Count) % Items.Count;
+        CurrentItemIndex = (CurrentItemIndex + offset + Items.Count) % Items.Count;
     }
 
     public override void Add(Item item)
     {
         Items.Add(item);
-        _currentItemIndex = Items.Count - 1;
+        CurrentItemIndex = Items.Count - 1;
     }
 
     public override void Add(Enemy enemy)
@@ -67,9 +67,9 @@ public class FloorTile : Tile
 
     public override void RemoveCurrentItem()
     {
-        Items.RemoveAt(_currentItemIndex);
+        Items.RemoveAt(CurrentItemIndex);
         if (IsEmpty) return;
-        _currentItemIndex = (_currentItemIndex - 1 + Items.Count) % Items.Count;
+        CurrentItemIndex = (CurrentItemIndex - 1 + Items.Count) % Items.Count;
     }
 }
 

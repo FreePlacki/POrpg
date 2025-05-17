@@ -26,7 +26,7 @@ public class Server : IDisposable
     public event EventHandler<int>? ClientConnected;
     public event EventHandler<(int, IMessage)>? MessageReceived;
 
-    public static readonly JsonSerializerOptions SerializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         WriteIndented = true,
         IncludeFields = true,

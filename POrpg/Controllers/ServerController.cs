@@ -40,6 +40,8 @@ public class ServerController
 
         if (command.AdvancesTurn)
             _dungeon.TurnManager.NextTurn();
+        if (command.Description != null)
+            await _server.SendTo(data.playerId, new NotificationMessage(command.Description));
 
         await _server.SendToAll(new StateMessage(_dungeon));
     }

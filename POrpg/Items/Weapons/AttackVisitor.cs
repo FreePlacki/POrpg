@@ -10,48 +10,48 @@ public interface IAttackVisitor
 
 public class NormalAttackVisitor : IAttackVisitor
 {
-    private readonly Attributes _attributes;
+    public Attributes Attributes { get; }
 
     public NormalAttackVisitor(Attributes attributes)
     {
-        _attributes = attributes;
+        Attributes = attributes;
     }
 
     public (int damage, int defense) Visit(HeavyWeapon weapon) =>
-        (weapon.Damage + _attributes[Attribute.Strength] + _attributes[Attribute.Aggression],
-            _attributes[Attribute.Strength] + _attributes[Attribute.Luck]);
+        (weapon.Damage + Attributes[Attribute.Strength] + Attributes[Attribute.Aggression],
+            Attributes[Attribute.Strength] + Attributes[Attribute.Luck]);
 
     public (int damage, int defense) Visit(LightWeapon weapon) =>
-        (weapon.Damage + _attributes[Attribute.Dexterity] + _attributes[Attribute.Luck],
-            _attributes[Attribute.Dexterity] + _attributes[Attribute.Luck]);
+        (weapon.Damage + Attributes[Attribute.Dexterity] + Attributes[Attribute.Luck],
+            Attributes[Attribute.Dexterity] + Attributes[Attribute.Luck]);
 
     public (int damage, int defense) Visit(MagicWeapon weapon) =>
-        (1, _attributes[Attribute.Dexterity] + _attributes[Attribute.Luck]);
+        (1, Attributes[Attribute.Dexterity] + Attributes[Attribute.Luck]);
 
     public (int damage, int defense) Visit(Item nonWeapon) =>
-        (0, _attributes[Attribute.Dexterity]);
+        (0, Attributes[Attribute.Dexterity]);
 }
 
 public class StealthAttackVisitor : IAttackVisitor
 {
-    private readonly Attributes _attributes;
+    public Attributes Attributes { get; }
 
     public StealthAttackVisitor(Attributes attributes)
     {
-        _attributes = attributes;
+        Attributes = attributes;
     }
 
     public (int damage, int defense) Visit(HeavyWeapon weapon)
     {
-        int baseDamage = weapon.Damage + _attributes[Attribute.Strength] +
-                         _attributes[Attribute.Aggression];
-        return (baseDamage / 2, _attributes[Attribute.Strength]);
+        int baseDamage = weapon.Damage + Attributes[Attribute.Strength] +
+                         Attributes[Attribute.Aggression];
+        return (baseDamage / 2, Attributes[Attribute.Strength]);
     }
 
     public (int damage, int defense) Visit(LightWeapon weapon)
     {
-        int baseDamage = weapon.Damage + _attributes[Attribute.Dexterity] + _attributes[Attribute.Luck];
-        return (baseDamage * 2, _attributes[Attribute.Dexterity]);
+        int baseDamage = weapon.Damage + Attributes[Attribute.Dexterity] + Attributes[Attribute.Luck];
+        return (baseDamage * 2, Attributes[Attribute.Dexterity]);
     }
 
     public (int damage, int defense) Visit(MagicWeapon weapon) => (1, 0);
@@ -61,20 +61,20 @@ public class StealthAttackVisitor : IAttackVisitor
 
 public class MagicAttackVisitor : IAttackVisitor
 {
-    private readonly Attributes _attributes;
+    public Attributes Attributes { get; }
 
     public MagicAttackVisitor(Attributes attributes)
     {
-        _attributes = attributes;
+        Attributes = attributes;
     }
 
-    public (int damage, int defense) Visit(HeavyWeapon weapon) => (1, _attributes[Attribute.Luck]);
+    public (int damage, int defense) Visit(HeavyWeapon weapon) => (1, Attributes[Attribute.Luck]);
 
-    public (int damage, int defense) Visit(LightWeapon weapon) => (1, _attributes[Attribute.Luck]);
+    public (int damage, int defense) Visit(LightWeapon weapon) => (1, Attributes[Attribute.Luck]);
 
     public (int damage, int defense) Visit(MagicWeapon weapon) =>
-        (weapon.Damage + _attributes[Attribute.Wisdom],
-            _attributes[Attribute.Wisdom] * 2);
+        (weapon.Damage + Attributes[Attribute.Wisdom],
+            Attributes[Attribute.Wisdom] * 2);
 
-    public (int damage, int defense) Visit(Item nonWeapon) => (0, _attributes[Attribute.Luck]);
+    public (int damage, int defense) Visit(Item nonWeapon) => (0, Attributes[Attribute.Luck]);
 }

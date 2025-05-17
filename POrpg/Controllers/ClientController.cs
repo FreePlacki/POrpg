@@ -93,8 +93,5 @@ public class ClientController
         await _client.Send(new CommandMessage(command));
         command.Execute(_view);
         _inputHandler = new InputHandlerBuilder().Build(_view);
-
-        if (command.Description != null)
-            ConsoleHelper.GetInstance().AddNotification(command.Description);
     }
 }

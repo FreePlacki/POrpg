@@ -46,6 +46,7 @@ public class Server : IDisposable
             new PolymorphicConverterFactory<ICommand>(),
             new PolymorphicConverterFactory<IMessage>(),
             new PolymorphicConverterFactory<InventorySlot>(),
+            new PolymorphicConverterFactory<IAttackVisitor>(),
         }
     };
 

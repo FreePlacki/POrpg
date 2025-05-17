@@ -26,7 +26,7 @@ public class ConsoleView
     }
 
     public void SetHints(InputHint[] hints) => _hints = hints;
-    
+
     public void Draw()
     {
         var sw = Stopwatch.StartNew();
@@ -37,9 +37,10 @@ public class ConsoleView
             for (var x = 0; x < _dungeon.Width; x++)
             {
                 Position pos = (x, y);
-                if (pos == Player.Position)
+                var player = _dungeon.Players.Values.FirstOrDefault(p => p.Position == pos);
+                if (player != null)
                 {
-                    console.Write(new StyledText(Player.Symbol, Styles.Player));
+                    console.Write(new StyledText(player.Symbol, Styles.Player));
                     continue;
                 }
 

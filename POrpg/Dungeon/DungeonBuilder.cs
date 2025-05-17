@@ -17,7 +17,6 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 {
     private readonly Dungeon _dungeon;
     private static readonly Random Rng = new();
-    private readonly Position _playerInitialPosition;
 
     private readonly Func<Item>[] _itemConstructors =
     [
@@ -58,9 +57,8 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
         w => new Powerful(w), w => new TwoHandedWeapon(w)
     ];
 
-    public DungeonBuilder(InitialDungeonState initialState, int width, int height, Position playerInitialPosition)
+    public DungeonBuilder(InitialDungeonState initialState, int width, int height)
     {
-        _playerInitialPosition = playerInitialPosition;
         _dungeon = new Dungeon(initialState, width, height);
     }
 
@@ -128,7 +126,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
         ];
         List<WallCandidate> candidates = [];
 
-        var seed = _playerInitialPosition;
+        var seed = new Position(0, 0);
 
         foreach (var d in directions)
         {
@@ -157,8 +155,6 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
                     candidates.Add(new WallCandidate(wall, neighbor));
             }
         }
-
-        _dungeon[_playerInitialPosition] = new FloorTile();
 
         return this;
     }
@@ -213,7 +209,7 @@ public class DungeonBuilder : IDungeonBuilder<Dungeon>
 
     public Dungeon Build()
     {
-        _dungeon[_playerInitialPosition] = new FloorTile();
+        _dungeon[(0, 0)] = new FloorTile();
         return _dungeon;
     }
 }

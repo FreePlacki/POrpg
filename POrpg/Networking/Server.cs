@@ -22,7 +22,6 @@ public class Server : IDisposable
     public Server(int port = 5555)
     {
         // _dungeon = dungeon;
-        // _serializerOptions = options;
         _listener = new TcpListener(IPAddress.Any, port);
     }
 

@@ -1,18 +1,33 @@
+using System.Text.Json;
 using POrpg.ConsoleHelpers;
 using POrpg.Dungeon;
 using POrpg.InputHandlers;
+using POrpg.Networking;
 
-namespace POrpg;
+namespace POrpg.Controllers;
 
-public class GameController
+public class ClientController
 {
-    private readonly Dungeon.Dungeon _dungeon;
-    private readonly ConsoleView _view;
+    private Dungeon.Dungeon _dungeon;
+    private ConsoleView _view;
+    private readonly Client _client;
 
-    public GameController(Dungeon.Dungeon dungeon, int playerId)
+    public ClientController(Client client)
     {
-        _dungeon = dungeon;
-        _view = new ConsoleView(_dungeon, playerId);
+        _client = client;
+    }
+
+    public async Task Initialize()
+    {
+        var id = int.Parse(await _client.Receive());
+        var dungeonMsg = await _client.Receive();
+        var instructions = await _client.Receive();
+
+        _dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(dungeonMsg, ServerController.SerializerOptions)!;
+        (int margin, int width)[] columns = [(0, _dungeon.Width), (2, _dungeon.Width - 3), (2, _dungeon.Width - 3)];
+        ConsoleHelper.Initialize(instructions, columns, 3);
+
+        _view = new ConsoleView(_dungeon, id);
     }
 
     public bool MainLoop()

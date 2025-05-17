@@ -27,17 +27,17 @@ public class Dungeon
     }
 
     [JsonConstructor]
-    public Dungeon(int width, int height, Tile[,] tiles)
+    public Dungeon(int width, int height, Tile[,] tiles, Dictionary<int, Player> players)
     {
         (Width, Height) = (width, height);
-        Tiles           = tiles;
+        Tiles = tiles;
+        Players = players;
     }
-    
 
     public Dungeon(InitialDungeonState initialState, int width, int height)
     {
         (Width, Height) = (width, height);
-        Tiles           = new Tile[height, width];
+        Tiles = new Tile[height, width];
 
         for (var y = 0; y < Height; y++)
         {
@@ -59,13 +59,13 @@ public class Dungeon
         var rng = Random.Shared;
         while (!this[pos].IsPassable || Players.Values.Any(p => p.Position == pos))
             pos = (rng.Next(Width), rng.Next(Height));
-        Players[playerId] = new Player((0, 0));
+        Players[playerId] = new Player(pos);
     }
-    
+
     public bool TryMovePlayer(Position direction, int playerId)
     {
         var player = Players[playerId];
-        
+
         // TODO: Looking at should be in the view
         player.LookingAt = null;
         var newPos = player.Position + direction;
@@ -151,7 +151,7 @@ public class Dungeon
         }
 
         player.Inventory.Swap(player.SelectedSlot, slot);
-        slot                = slot.Normalize(player.Inventory, player.SelectedSlot);
+        slot = slot.Normalize(player.Inventory, player.SelectedSlot);
         player.SelectedSlot = slot;
 
         return true;

@@ -9,10 +9,7 @@ public class TurnManager
 {
     public int Turn { get; private set; }
     private readonly List<ITurnObserver> _observers = [];
-    private static TurnManager? _instance;
-    
-    public static TurnManager GetInstance() => _instance ??= new TurnManager();
-    
+
     public void RegisterObserver(ITurnObserver observer) => _observers.Add(observer);
     public void UnregisterObserver(ITurnObserver observer) => _observers.Remove(observer);
 

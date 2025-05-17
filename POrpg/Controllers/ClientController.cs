@@ -43,7 +43,9 @@ public class ClientController
                     break;
             }
 
-            DisplayView();
+            _inputHandler = new InputHandlerBuilder().Build(_view);
+            if (!ConsoleHelper.GetInstance().IsShowingInstructions)
+                DisplayView();
         }
     }
 
@@ -63,11 +65,12 @@ public class ClientController
             if (console.IsShowingInstructions)
             {
                 if (Console.ReadKey(true).KeyChar == '?')
+                {
                     console.HideInstructions();
+                    DisplayView();
+                }
                 else continue;
             }
-
-            _inputHandler = new InputHandlerBuilder().Build(_view);
 
             var input = Console.ReadKey(true);
             await ProcessInput(_inputHandler, input);
@@ -89,10 +92,9 @@ public class ClientController
         var command = handler.HandleInput(input);
         await _client.Send(new CommandMessage(command));
         command.Execute(_view);
+        _inputHandler = new InputHandlerBuilder().Build(_view);
 
         if (command.Description != null)
             ConsoleHelper.GetInstance().AddNotification(command.Description);
-        if (command.AdvancesTurn)
-            TurnManager.GetInstance().NextTurn();
     }
 }

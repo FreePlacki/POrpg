@@ -14,11 +14,12 @@ public record struct Position(int X, int Y)
 
 public class Dungeon
 {
-    public int Width { get; set; }
-    public int Height { get; set; }
+    public int Width { get; }
+    public int Height { get; }
 
     public Dictionary<int, Player> Players { get; } = [];
-    public Tile[,] Tiles { get; init; }
+    public Tile[,] Tiles { get; }
+    public TurnManager TurnManager { get; }
 
     public Tile this[Position p]
     {
@@ -27,17 +28,19 @@ public class Dungeon
     }
 
     [JsonConstructor]
-    public Dungeon(int width, int height, Tile[,] tiles, Dictionary<int, Player> players)
+    public Dungeon(int width, int height, Tile[,] tiles, Dictionary<int, Player> players, TurnManager turnManager)
     {
         (Width, Height) = (width, height);
         Tiles = tiles;
         Players = players;
+        TurnManager = turnManager;
     }
 
     public Dungeon(InitialDungeonState initialState, int width, int height)
     {
         (Width, Height) = (width, height);
         Tiles = new Tile[height, width];
+        TurnManager = new TurnManager();
 
         for (var y = 0; y < Height; y++)
         {
@@ -174,7 +177,7 @@ public class Dungeon
         if (player.SelectedSlot == null) return null;
         if (player.Inventory[player.SelectedSlot] is not IUsable item) return null;
 
-        item.Use(player);
+        item.Use(this, player);
         var res = player.Drop(player.SelectedSlot);
         return res;
     }

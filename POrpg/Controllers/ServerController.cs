@@ -24,7 +24,7 @@ public class ServerController
         _server.MessageReceived += OnMessageReceived;
     }
 
-    // https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void
+    // on using async void: https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void
     private async void OnClientConnected(object? _, int id)
     {
         _dungeon.AddPlayer(id);
@@ -37,6 +37,9 @@ public class ServerController
     {
         var command = (data.msg as CommandMessage)!.Command;
         command.Execute(_dungeon, data.playerId);
+
+        if (command.AdvancesTurn)
+            _dungeon.TurnManager.NextTurn();
 
         await _server.SendToAll(new StateMessage(_dungeon));
     }

@@ -9,8 +9,9 @@ public class HealthPotion : Potion
     }
 
     public override string Name => "Health Potion";
-    public override void Use(Player player)
+
+    public override void Use(Dungeon.Dungeon dungeon, Player player)
     {
-        _ = new HealEffect(player);
+        _ = new HealEffect(dungeon, player);
     }
 }

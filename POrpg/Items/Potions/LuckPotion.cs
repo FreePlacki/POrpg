@@ -9,8 +9,9 @@ public class LuckPotion : Potion
     }
 
     public override string Name => "Luck Potion";
-    public override void Use(Player player)
+
+    public override void Use(Dungeon.Dungeon dungeon, Player player)
     {
-        _ = new LuckEffect(player, duration: Duration);
+        _ = new LuckEffect(dungeon, player, duration: Duration);
     }
 }

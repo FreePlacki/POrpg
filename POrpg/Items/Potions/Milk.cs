@@ -7,7 +7,8 @@ public class Milk : Potion
     }
 
     public override string Name => "Milk";
-    public override void Use(Player player)
+
+    public override void Use(Dungeon.Dungeon dungeon, Player player)
     {
         player.Effects.Clear();
     }

@@ -2,5 +2,5 @@ namespace POrpg.Items;
 
 public interface IUsable
 {
-    void Use(Player player);
+    void Use(Dungeon.Dungeon dungeon, Player player);
 }

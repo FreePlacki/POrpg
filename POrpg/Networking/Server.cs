@@ -7,6 +7,7 @@ using System.Text.Json;
 using POrpg.Commands;
 using POrpg.Effects;
 using POrpg.Enemies;
+using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Modifiers;
 using POrpg.Items.Modifiers.WeaponModifiers;
@@ -25,7 +26,7 @@ public class Server : IDisposable
     public event EventHandler<int>? ClientConnected;
     public event EventHandler<(int, IMessage)>? MessageReceived;
 
-    private static readonly JsonSerializerOptions SerializerOptions = new()
+    public static readonly JsonSerializerOptions SerializerOptions = new()
     {
         WriteIndented = true,
         IncludeFields = true,
@@ -44,6 +45,7 @@ public class Server : IDisposable
             new PolymorphicConverterFactory<WeaponModifier>(),
             new PolymorphicConverterFactory<ICommand>(),
             new PolymorphicConverterFactory<IMessage>(),
+            new PolymorphicConverterFactory<InventorySlot>(),
         }
     };
 

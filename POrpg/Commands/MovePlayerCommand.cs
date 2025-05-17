@@ -1,11 +1,10 @@
-using System.Text.Json.Serialization;
 using POrpg.Dungeon;
 
 namespace POrpg.Commands;
 
 public class MovePlayerCommand : ICommand
 {
-    [JsonInclude] public Position Direction { get; }
+    public Position Direction { get; }
 
     public MovePlayerCommand(Position direction)
     {

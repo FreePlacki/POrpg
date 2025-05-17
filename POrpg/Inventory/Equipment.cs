@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using POrpg.Items;
 
 namespace POrpg.Inventory;
@@ -14,24 +15,35 @@ public enum EquipmentSlotType
 
 public class Equipment
 {
-    private readonly Dictionary<EquipmentSlotType, Item?> _equipment = new()
-    {
-        { EquipmentSlotType.LeftHand, null },
-        { EquipmentSlotType.RightHand, null },
-        { EquipmentSlotType.BothHands, null }
-    };
+    public Dictionary<EquipmentSlotType, Item?> Items { get; }
 
-    public Item? LeftHand => _equipment[EquipmentSlotType.LeftHand];
-    public Item? RightHand => _equipment[EquipmentSlotType.RightHand];
-    public Item? BothHands => _equipment[EquipmentSlotType.BothHands];
+    public Equipment()
+    {
+        Items = new()
+        {
+            { EquipmentSlotType.LeftHand, null },
+            { EquipmentSlotType.RightHand, null },
+            { EquipmentSlotType.BothHands, null }
+        };
+    }
+
+    [JsonConstructor]
+    public Equipment(Dictionary<EquipmentSlotType, Item?> items)
+    {
+        Items = items;
+    }
+
+    public Item? LeftHand => Items[EquipmentSlotType.LeftHand];
+    public Item? RightHand => Items[EquipmentSlotType.RightHand];
+    public Item? BothHands => Items[EquipmentSlotType.BothHands];
 
     public Item? this[EquipmentSlotType slot]
     {
-        get => _equipment[slot];
+        get => Items[slot];
         set
         {
             Debug.Assert((value?.EquipmentSlotType & slot) != 0);
-            _equipment[slot] = value;
+            Items[slot] = value;
         }
     }
 }

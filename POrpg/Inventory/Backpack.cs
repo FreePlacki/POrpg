@@ -1,33 +1,45 @@
+using System.Text.Json.Serialization;
 using POrpg.Items;
 
 namespace POrpg.Inventory;
 
 public class Backpack
 {
-    public List<Item> Items { get; } = [];
+    public List<Item> Items { get; }
     public bool IsEmpty => Items.Count == 0;
     public bool IsFull => Items.Count >= 9;
+
+    public Backpack()
+    {
+        Items = [];
+    }
+
+    [JsonConstructor]
+    public Backpack(List<Item> items)
+    {
+        Items = items;
+    }
 }
 
 public record BackpackSlot : InventorySlot
 {
-    private readonly int _slotIndex;
+    public int SlotIndex { get; }
 
     public BackpackSlot(int slotIndex)
     {
-        _slotIndex = slotIndex;
+        SlotIndex = slotIndex;
     }
 
     public override Item? Get(Inventory inventory)
     {
-        return _slotIndex < inventory.Backpack.Items.Count
-            ? inventory.Backpack.Items[_slotIndex]
+        return SlotIndex < inventory.Backpack.Items.Count
+            ? inventory.Backpack.Items[SlotIndex]
             : null;
     }
 
     public override void Set(Inventory inventory, Item? item)
     {
-        if (_slotIndex >= inventory.Backpack.Items.Count)
+        if (SlotIndex >= inventory.Backpack.Items.Count)
         {
             if (item != null)
                 inventory.Backpack.Items.Add(item);
@@ -36,11 +48,11 @@ public record BackpackSlot : InventorySlot
 
         if (item == null)
         {
-            inventory.Backpack.Items.RemoveAt(_slotIndex);
+            inventory.Backpack.Items.RemoveAt(SlotIndex);
             return;
         }
 
-        inventory.Backpack.Items[_slotIndex] = item;
+        inventory.Backpack.Items[SlotIndex] = item;
     }
 
     public override Item? Remove(Inventory inventory)
@@ -50,5 +62,5 @@ public record BackpackSlot : InventorySlot
         return item;
     }
 
-    public override bool IsValid(Inventory inventory) => _slotIndex >= 0 && _slotIndex < inventory.Backpack.Items.Count;
+    public override bool IsValid(Inventory inventory) => SlotIndex >= 0 && SlotIndex < inventory.Backpack.Items.Count;
 }

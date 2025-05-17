@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using POrpg.Items;
 
 namespace POrpg.Inventory;
@@ -23,8 +24,21 @@ public abstract record InventorySlot
 
 public class Inventory
 {
-    public Equipment Equipment { get; } = new();
-    public Backpack Backpack { get; } = new();
+    public Equipment Equipment { get; }
+    public Backpack Backpack { get; }
+
+    public Inventory()
+    {
+        Equipment = new Equipment();
+        Backpack = new Backpack();
+    }
+
+    [JsonConstructor]
+    public Inventory(Equipment equipment, Backpack backpack)
+    {
+        Equipment = equipment;
+        Backpack = backpack;
+    }
 
     public Item? this[InventorySlot slot]
     {

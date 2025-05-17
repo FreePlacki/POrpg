@@ -16,7 +16,7 @@ public class Player : IDrawable
     public Position Position { get; set; }
     public int Coins { get; set; }
     public int Gold { get; set; }
-    public Inventory.Inventory Inventory { get; } = new();
+    public Inventory.Inventory Inventory { get; }
     public InventorySlot? SelectedSlot { get; set; }
     public Tile? LookingAt { get; set; }
 
@@ -39,7 +39,19 @@ public class Player : IDrawable
         Inventory.TotalAttributes +
         Effects.Aggregate(new Attributes(new()), (acc, e) => acc + e.Attributes);
 
-    public Player(Position position) => Position = position;
+    public Player(Position position)
+    {
+        Position = position;
+        Inventory = new();
+    }
+
+    [JsonConstructor]
+    public Player(Position position, Inventory.Inventory inventory, List<Effect> effects)
+    {
+        Position = position;
+        Inventory = inventory;
+        Effects = effects;
+    }
 
     public void PickUp(Item item)
     {

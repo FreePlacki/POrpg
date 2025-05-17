@@ -52,7 +52,7 @@ public class ConsoleView
         }
 
         console.ChangeColumn(1);
-        console.WriteLine($"{new StyledText("Turn:", Style.Underline)} {TurnManager.GetInstance().Turn}");
+        console.WriteLine($"{new StyledText("Turn:", Style.Underline)} {Dungeon.TurnManager.Turn}");
         console.WriteLine();
         DrawStats();
         console.HorizontalDivider();

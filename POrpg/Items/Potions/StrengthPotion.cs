@@ -9,8 +9,9 @@ public class StrengthPotion : Potion
     }
 
     public override string Name => "Strength Potion";
-    public override void Use(Player player)
+
+    public override void Use(Dungeon.Dungeon dungeon, Player player)
     {
-        _ = new PowerEffect(player, Duration);
+        _ = new PowerEffect(dungeon, player, Duration);
     }
 }

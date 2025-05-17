@@ -8,20 +8,21 @@ namespace POrpg.ConsoleHelpers;
 
 public class ConsoleView
 {
-    private readonly Dungeon.Dungeon _dungeon;
-    private InputHint[] _hints = [];
+    public Dungeon.Dungeon Dungeon;
 
     public bool IsChoosingAttack;
     public bool ShouldQuit;
     public int PlayerId { get; }
-    public Player Player => _dungeon.Players[PlayerId];
-    public Tile CurrentTile => _dungeon[Player.Position];
+    public Player Player => Dungeon.Players[PlayerId];
+    public Tile CurrentTile => Dungeon[Player.Position];
     public Item? CurrentItem => CurrentTile.CurrentItem;
     public Item? SelectedItem => Player.SelectedSlot != null ? Player.Inventory[Player.SelectedSlot] : null;
 
+    private InputHint[] _hints = [];
+
     public ConsoleView(Dungeon.Dungeon dungeon, int playerId)
     {
-        _dungeon = dungeon;
+        Dungeon = dungeon;
         PlayerId = playerId;
     }
 
@@ -32,19 +33,19 @@ public class ConsoleView
         var sw = Stopwatch.StartNew();
         var console = ConsoleHelper.GetInstance();
 
-        for (var y = 0; y < _dungeon.Height; y++)
+        for (var y = 0; y < Dungeon.Height; y++)
         {
-            for (var x = 0; x < _dungeon.Width; x++)
+            for (var x = 0; x < Dungeon.Width; x++)
             {
                 Position pos = (x, y);
-                var player = _dungeon.Players.Values.FirstOrDefault(p => p.Position == pos);
+                var player = Dungeon.Players.Values.FirstOrDefault(p => p.Position == pos);
                 if (player != null)
                 {
                     console.Write(new StyledText(player.Symbol, Styles.Player));
                     continue;
                 }
 
-                console.Write(_dungeon[pos].Symbol);
+                console.Write(Dungeon[pos].Symbol);
             }
 
             console.WriteLine();

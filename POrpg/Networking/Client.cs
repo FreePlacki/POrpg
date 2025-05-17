@@ -28,22 +28,14 @@ public class Client
         Debug.Assert(_client != null);
         Debug.Assert(_client.Connected);
 
-        var lenBuffer = new byte[4];
-        await _stream.ReadExactlyAsync(lenBuffer, 0, 4);
-        var msgLen = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(lenBuffer, 0));
+        return await Server.Receive(_stream);
+    }
 
-        using var memoryStream = new MemoryStream(msgLen);
-        var buffer = new byte[8192];
-        var remaining = msgLen;
-        while (remaining > 0)
-        {
-            var toRead = Math.Min(remaining, buffer.Length);
-            await _stream.ReadExactlyAsync(buffer, 0, toRead);
+    public async Task Send(string msg)
+    {
+        Debug.Assert(_client != null);
+        Debug.Assert(_client.Connected);
 
-            await memoryStream.WriteAsync(buffer.AsMemory(0, toRead));
-            remaining -= toRead;
-        }
-
-        return Encoding.UTF8.GetString(memoryStream.ToArray());
+        await Server.Send(_stream, Encoding.UTF8.GetBytes(msg));
     }
 }

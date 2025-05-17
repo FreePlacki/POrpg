@@ -8,7 +8,6 @@ namespace POrpg.Controllers;
 
 public class ClientController
 {
-    private Dungeon.Dungeon _dungeon;
     private ConsoleView _view;
     private readonly Client _client;
 
@@ -23,14 +22,14 @@ public class ClientController
         var dungeonMsg = await _client.Receive();
         var instructions = await _client.Receive();
 
-        _dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(dungeonMsg, ServerController.SerializerOptions)!;
-        (int margin, int width)[] columns = [(0, _dungeon.Width), (2, _dungeon.Width - 3), (2, _dungeon.Width - 3)];
+        var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(dungeonMsg, ServerController.SerializerOptions)!;
+        (int margin, int width)[] columns = [(0, dungeon.Width), (2, dungeon.Width - 3), (2, dungeon.Width - 3)];
         ConsoleHelper.Initialize(instructions, columns, 3);
 
-        _view = new ConsoleView(_dungeon, id);
+        _view = new ConsoleView(dungeon, id);
     }
 
-    public bool MainLoop()
+    public async Task<bool> MainLoop()
     {
         var console = ConsoleHelper.GetInstance();
         while (true)
@@ -50,7 +49,7 @@ public class ClientController
             console.Reset();
 
             var input = Console.ReadKey(true);
-            ProcessInput(inputHandler, input);
+            await ProcessInput(inputHandler, input);
 
             if (_view.Player.Attributes[Attribute.Health] <= 0)
             {
@@ -64,11 +63,16 @@ public class ClientController
         }
     }
 
-    private void ProcessInput(InputHandler handler, ConsoleKeyInfo input)
+    private async Task ProcessInput(InputHandler handler, ConsoleKeyInfo input)
     {
         var command = handler.HandleInput(input);
-        command.Execute(_dungeon, _view.PlayerId);
+        await _client.Send(JsonSerializer.Serialize(command, ServerController.SerializerOptions));
+        var dungeonMsg = await _client.Receive();
+        var dungeon = JsonSerializer.Deserialize<Dungeon.Dungeon>(dungeonMsg, ServerController.SerializerOptions)!;
+        _view.Dungeon = dungeon;
+
         command.Execute(_view);
+
         if (command.Description != null)
             ConsoleHelper.GetInstance().AddNotification(command.Description);
         if (command.AdvancesTurn)

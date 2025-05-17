@@ -1,10 +1,11 @@
+using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 
 namespace POrpg.Commands;
 
 public class ChooseAttackCommand : ICommand
 {
-    private bool _cancel;
+    [JsonInclude] private readonly bool _cancel;
 
     public ChooseAttackCommand(bool cancel = false)
     {

@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace POrpg.Commands;
 
 public class CycleItemsCommand : ICommand
 {
-    private readonly bool _reverse;
+    [JsonInclude] private readonly bool _reverse;
 
     public CycleItemsCommand(bool reverse = false)
     {

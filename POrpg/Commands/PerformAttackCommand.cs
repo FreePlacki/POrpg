@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 using POrpg.Items.Weapons;
 
@@ -5,7 +6,7 @@ namespace POrpg.Commands;
 
 public class PerformAttackCommand : ICommand
 {
-    private readonly IAttackVisitor _visitor;
+    [JsonInclude] private readonly IAttackVisitor _visitor;
 
     public PerformAttackCommand(IAttackVisitor visitor)
     {

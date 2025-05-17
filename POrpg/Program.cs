@@ -40,7 +40,6 @@ class Program
             return;
         }
 
-        TurnManager.GetInstance().Reset();
         var clientController = new ClientController(client);
         await clientController.Initialize();
 
@@ -52,6 +51,6 @@ class Program
         };
         Console.Clear();
 
-        clientController.MainLoop();
+        await clientController.MainLoop();
     }
 }

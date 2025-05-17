@@ -1,10 +1,11 @@
+using System.Text.Json.Serialization;
 using POrpg.Inventory;
 
 namespace POrpg.Commands;
 
 public class SelectItemCommand : ICommand
 {
-    private readonly InventorySlot _selectedSlot;
+    [JsonInclude] private readonly InventorySlot _selectedSlot;
 
     public SelectItemCommand(InventorySlot selectedSlot)
     {

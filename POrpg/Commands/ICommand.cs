@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 
 namespace POrpg.Commands;
@@ -12,6 +13,6 @@ public interface ICommand
     {
     }
 
-    string? Description => null;
-    bool AdvancesTurn => Description != null;
+    [JsonInclude] string? Description => null;
+    [JsonInclude] bool AdvancesTurn => Description != null;
 }

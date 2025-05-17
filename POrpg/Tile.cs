@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using POrpg.ConsoleHelpers;
 using POrpg.Enemies;
 using POrpg.Items;
@@ -27,7 +26,7 @@ public class FloorTile : Tile
     public override bool HasManyItems => Items.Count > 1;
     public override Item? CurrentItem => Items.ElementAtOrDefault(_currentItemIndex);
     public List<Item> Items { get; }
-    
+
     private bool IsEmpty => Items.Count == 0;
     private int _currentItemIndex;
 

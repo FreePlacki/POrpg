@@ -9,8 +9,9 @@ namespace POrpg;
 
 public class Player : IDrawable
 {
-    public string Symbol => new StyledText("¶", Styles.Player).ToString();
-    public string Name => "Player";
+    public int Id { get; }
+    public string Symbol => new StyledText(Id.ToString(), Styles.Player).ToString();
+    public string Name => $"Player {new StyledText(Id.ToString(), Styles.Player)}";
     public string? Description => null;
 
     public Position Position { get; set; }
@@ -37,17 +38,19 @@ public class Player : IDrawable
     public Attributes Attributes =>
         Effects.Aggregate(_attributes + Inventory.TotalAttributes, (acc, e) => acc + e.Attributes);
 
-    public Player(Position position)
+    public Player(Position position, int id)
     {
         Position = position;
+        Id = id;
         Inventory = new();
         Effects = [];
     }
 
     [JsonConstructor]
-    public Player(Position position, Inventory.Inventory inventory, List<Effect> effects)
+    public Player(Position position, int id, Inventory.Inventory inventory, List<Effect> effects)
     {
         Position = position;
+        Id = id;
         Inventory = inventory;
         Effects = effects;
     }

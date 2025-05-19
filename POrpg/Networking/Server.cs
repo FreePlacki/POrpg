@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using POrpg.Commands;
+using POrpg.ConsoleUtils;
 using POrpg.Effects;
 using POrpg.Enemies;
 using POrpg.Inventory;
@@ -124,7 +125,19 @@ public class Server : IDisposable
             await SendTo(id, message);
     }
 
-    public async Task SendTo(int id, IMessage message) => await Send(_clients[id], message);
+    public async Task SendTo(int id, IMessage message)
+    {
+        try
+        {
+            await Send(_clients[id], message);
+        }
+        catch (IOException)
+        {
+            _clients.TryRemove(id, out _);
+            await SendToAll(
+                new NotificationMessage($"Player {new StyledText(id.ToString(), Styles.Player)} disconnected."));
+        }
+    }
 
     public static async Task<IMessage> Receive(NetworkStream stream)
     {

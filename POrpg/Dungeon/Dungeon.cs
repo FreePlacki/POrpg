@@ -62,7 +62,7 @@ public class Dungeon
         var rng = Random.Shared;
         while (!this[pos].IsPassable || Players.Values.Any(p => p.Position == pos))
             pos = (rng.Next(Width), rng.Next(Height));
-        Players[playerId] = new Player(pos);
+        Players[playerId] = new Player(pos, playerId);
     }
 
     public bool TryMovePlayer(Position direction, int playerId)

@@ -64,7 +64,17 @@ class Program
         };
         Console.Clear();
 
-        await clientController.MainLoop();
+        try
+        {
+            await clientController.MainLoop();
+        }
+        catch (IOException)
+        {
+            Console.Clear();
+            Console.WriteLine(new StyledText($"Lost connection to the server.", Style.Red));
+            Console.CursorVisible = true;
+            return;
+        }
 
         Console.CursorVisible = true;
         Console.Clear();

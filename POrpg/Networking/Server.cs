@@ -52,7 +52,7 @@ public class Server : IDisposable
     };
 
 
-    public Server(int port = 5555)
+    public Server(int port)
     {
         _listener = new TcpListener(IPAddress.Any, port);
     }

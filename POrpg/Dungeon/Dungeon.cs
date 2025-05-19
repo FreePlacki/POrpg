@@ -69,7 +69,6 @@ public class Dungeon
     {
         var player = Players[playerId];
 
-        // TODO: Looking at should be in the view
         player.LookingAt = null;
         var newPos = player.Position + direction;
         if (CanMoveTo(newPos))

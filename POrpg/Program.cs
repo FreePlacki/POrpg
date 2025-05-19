@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Net;
+using System.Net.Sockets;
 using POrpg.ConsoleUtils;
 using POrpg.Controllers;
 using POrpg.Networking;
@@ -7,8 +8,6 @@ namespace POrpg;
 
 class Program
 {
-    private static ServerController? _serverController;
-
     private static bool ServerPrompt()
     {
         Console.WriteLine(
@@ -26,30 +25,96 @@ class Program
         }
     }
 
-    private static async Task Main(string[] _)
+    private static void Usage()
     {
-        var isServer = ServerPrompt();
-        if (isServer)
+        Console.Error.WriteLine("Usage:");
+        Console.Error.WriteLine($"\t{Environment.GetCommandLineArgs().First()} [--server [port]] [--client [ip:port]]");
+        Environment.Exit(1);
+    }
+
+    private static void WriteError(string message) =>
+        Console.Error.WriteLine(new StyledText(message, Style.Red));
+
+    private record Options(bool IsServer, IPAddress Address, int Port);
+
+    private static Options ParseOptions(string[] args)
+    {
+        if (args.Length > 2) Usage();
+
+        var isServer = args.Length == 0
+            ? ServerPrompt()
+            : args[0] switch
+            {
+                "--server" => true,
+                "--client" => false,
+                _ => throw new ArgumentException($"Unknown argument: {args[0]}")
+            };
+
+        var address = IPAddress.Parse("127.0.0.1");
+        var port = 5555;
+
+        if (args.Length == 2)
+        {
+            var value = args[1];
+            try
+            {
+                if (isServer)
+                {
+                    port = int.Parse(value);
+                }
+                else
+                {
+                    var parts = value.Split(':');
+                    address = IPAddress.Parse(parts[0]);
+                    port = int.Parse(parts[1]);
+                }
+            }
+            catch
+            {
+                throw new ArgumentException(isServer
+                    ? $"Invalid port number: {value}"
+                    : $"Invalid address: {value}");
+            }
+        }
+
+        return new Options(isServer, address, port);
+    }
+
+    private static async Task Main(string[] args)
+    {
+        Options opts;
+        try
+        {
+            opts = ParseOptions(args);
+        }
+        catch (ArgumentException e)
+        {
+            WriteError(e.Message);
+            Usage();
+            return;
+        }
+
+        if (opts.IsServer)
         {
             try
             {
-                _serverController = new ServerController();
+                _ = new ServerController(opts.Port);
             }
             catch (SocketException e)
             {
-                Console.WriteLine(new StyledText($"Could not start the server ({e.Message}).", Style.Red));
+                WriteError($"Could not start the server ({e.Message}).");
                 return;
             }
         }
 
-        var client = new Client();
+        var client = new Client(opts.Address, opts.Port);
         try
         {
             await client.Connect();
         }
         catch (SocketException e)
         {
-            Console.WriteLine(new StyledText($"Could not connect to the server ({e.Message}).", Style.Red));
+            WriteError($"Could not connect to the server ({e.Message}).");
             return;
         }
 
@@ -71,7 +136,7 @@ class Program
         catch (IOException)
         {
             Console.Clear();
-            Console.WriteLine(new StyledText($"Lost connection to the server.", Style.Red));
+            WriteError("Lost connection to the server.");
             Console.CursorVisible = true;
             return;
         }

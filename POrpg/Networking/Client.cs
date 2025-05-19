@@ -8,11 +8,11 @@ public class Client
 {
     private readonly IPEndPoint _endPoint;
     private TcpClient? _client;
-    private NetworkStream _stream;
+    private NetworkStream? _stream;
 
-    public Client(string address = "127.0.0.1", int port = 5555)
+    public Client(IPAddress address, int port)
     {
-        _endPoint = new IPEndPoint(IPAddress.Parse(address), port);
+        _endPoint = new IPEndPoint(address, port);
     }
 
     public async Task Connect()
@@ -27,7 +27,7 @@ public class Client
         Debug.Assert(_client != null);
         Debug.Assert(_client.Connected);
 
-        return await Server.Receive(_stream);
+        return await Server.Receive(_stream!);
     }
 
     public async Task Send(IMessage message)
@@ -35,6 +35,6 @@ public class Client
         Debug.Assert(_client != null);
         Debug.Assert(_client.Connected);
 
-        await Server.Send(_stream, message);
+        await Server.Send(_stream!, message);
     }
 }

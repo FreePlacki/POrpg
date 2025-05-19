@@ -11,12 +11,11 @@ public class MovePlayerCommand : ICommand
         Direction = direction;
     }
 
-    public bool AdvancesTurn { get; private set; }
-    public string? Description { get; private set; }
+    public bool AdvancesTurn { get; private set; } = true;
 
     public void Execute(Dungeon.Dungeon dungeon, int playerId)
     {
-        if (dungeon.TryMovePlayer(Direction, playerId))
-            AdvancesTurn = true;
+        if (!dungeon.TryMovePlayer(Direction, playerId))
+            AdvancesTurn = false;
     }
 }

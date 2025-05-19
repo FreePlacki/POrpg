@@ -251,8 +251,8 @@ allow enemy attacks)
 Extend the existing console-based RPG to support networked multiplayer. All players will share the same maze, items, and enemies. In this stage, you will:  
 
 - [x] Refactor the codebase to follow the **Model-View-Controller (MVC)** pattern  
-- [ ] Enable JSON-based communication over TCP  
-- [ ] Make the application act as both a **server** (accepting connections) and a **client** (connecting to other servers)  
+- [x] Enable JSON-based communication over TCP  
+- [x] Make the application act as both a **server** (accepting connections) and a **client** (connecting to other servers)  
 
 ---
 
@@ -276,17 +276,17 @@ Extend the existing console-based RPG to support networked multiplayer. All play
 ---
 
 ### 2. Server–Client Architecture  
-- [ ] **Startup Options**  
+- [x] **Startup Options**  
   - Prompt the user: "Start as (S)erver or (C)lient?"
   - Or accept command-line arguments:  
     - `--server [port]` (default port 5555)  
     - `--client [ip:port]` (default ip 127.0.0.1 and port 5555)  
-- [ ] **Server Mode**  
+- [x] **Server Mode**  
   - Listen on the configured TCP port.  
   - Accept up to **9** client connections (players numbered `1-9` - display player as number).  
   - On each new connection, send the current Model state (JSON).  
   - Broadcast all state changes (moves, attacks, etc.) as JSON messages to every client.  
-- [ ] **Client Mode**  
+- [x] **Client Mode**  
   - Connect to the specified server IP and port.  
   - Receive the initial game state, then listen for updates.  
   - Send the local player's actions as JSON messages to the server.  

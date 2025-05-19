@@ -10,16 +10,17 @@ public class ServerController
     private readonly string _instructions;
     private readonly Server _server;
     private readonly Queue<int> _turns = [];
+    private readonly object _lock = new();
 
-    public ServerController()
+    public ServerController(int port)
     {
         var director = new DungeonDirector();
         var dungeonBuilder =
-            new DungeonBuilder(InitialDungeonState.Empty, 41, 21);
+            new DungeonBuilder(InitialDungeonState.Filled, 41, 21);
         _dungeon = director.Build(dungeonBuilder);
         _instructions = director.Build(new InstructionsBuilder());
 
-        _server = new Server();
+        _server = new Server(port);
         _server.Start();
         _server.ClientConnected += OnClientConnected;
         _server.MessageReceived += OnMessageReceived;
@@ -28,8 +29,12 @@ public class ServerController
     // on using async void: https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void
     private async void OnClientConnected(object? _, int id)
     {
-        _dungeon.AddPlayer(id);
-        _turns.Enqueue(id);
+        lock (_lock)
+        {
+            _dungeon.AddPlayer(id);
+            _turns.Enqueue(id);
+        }
+
         await _server.SendTo(id, new JoinMessage(id, _dungeon, _instructions));
         await _server.SendToAll(
             new NotificationMessage($"Player {new StyledText(id.ToString(), Styles.Player)} connected"), except: [id]);
@@ -37,8 +42,10 @@ public class ServerController
 
     private async void OnMessageReceived(object? _, (int playerId, IMessage msg) data)
     {
+        var command = (data.msg as CommandMessage)!.Command;
         var currentTurn = _turns.First();
-        if (currentTurn != data.playerId)
+
+        if (command.AdvancesTurn && currentTurn != data.playerId)
         {
             await _server.SendTo(data.playerId,
                 new NotificationMessage(
@@ -46,15 +53,19 @@ public class ServerController
             return;
         }
 
-        var command = (data.msg as CommandMessage)!.Command;
-        command.Execute(_dungeon, data.playerId);
+        lock (_lock)
+        {
+            command.Execute(_dungeon, data.playerId);
 
-        _turns.Dequeue();
-        _turns.Enqueue(data.playerId);
-        _dungeon.TurnManager.CurrentlyPlaying = _turns.First();
+            if (command.AdvancesTurn)
+            {
+                _turns.Dequeue();
+                _turns.Enqueue(data.playerId);
+                _dungeon.TurnManager.CurrentlyPlaying = _turns.First();
+                _dungeon.NextTurn();
+            }
+        }
 
-        if (command.AdvancesTurn)
-            _dungeon.NextTurn();
         if (command.Description != null)
             await _server.SendTo(data.playerId, new NotificationMessage(command.Description));
 

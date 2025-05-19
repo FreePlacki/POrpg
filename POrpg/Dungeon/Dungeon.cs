@@ -90,7 +90,13 @@ public class Dungeon
     {
         var player = Players[playerId];
         var item = this[player.Position].CurrentItem;
-        if (item == null || player.Inventory.Backpack.IsFull) return null;
+        if (item == null) return null;
+        if (player.Inventory.Backpack.IsFull)
+        {
+            ConsoleHelper.GetInstance().AddNotification("Your backpack is full!");
+            return null;
+        }
+
         player.PickUp(item);
         // TODO: consider tile.current item to be in view (it might make sense to leave it like this -- once a player
         // shuffles items it's visible for the rest)

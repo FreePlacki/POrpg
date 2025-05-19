@@ -20,8 +20,8 @@ public class ClientController
     {
         var (id, dungeon, instructions) = (await _client.Receive() as JoinMessage)!;
 
-        (int margin, int width)[] columns = [(0, dungeon.Width), (2, dungeon.Width - 3), (2, dungeon.Width - 3)];
-        ConsoleHelper.Initialize(instructions, columns, 3);
+        (int margin, int width)[] columns = [(0, dungeon.Width), (3, dungeon.Width - 3), (3, dungeon.Width - 3)];
+        ConsoleHelper.Initialize(instructions, columns, 5);
 
         _view = new ConsoleView(dungeon, id);
         _inputHandler = new InputHandlerBuilder().Build(_view);

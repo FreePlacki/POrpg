@@ -10,7 +10,7 @@ public class ConsoleHelper
     private static ConsoleHelper? _instance;
 
     private readonly (int margin, int width)[] _columns;
-    private int _logSize;
+    private readonly int _logSize;
 
     private int[] _currentColumnHeights;
     private int[] _previousColumnHeights;
@@ -120,7 +120,6 @@ public class ConsoleHelper
             if (i != 0)
                 WriteLine();
             WriteToBuffer(l);
-            _column += GetVisibleLength(l);
             i++;
         }
     }
@@ -129,8 +128,11 @@ public class ConsoleHelper
     {
         Write(text);
         var padding = ColumnStart(_columnIndex) + _columns[_columnIndex].width - _column;
-        if (padding > 0)
-            WriteToBuffer(new string(' ', padding));
+        var space = padding > 0 ? new string(' ', padding) : "";
+        var dividerLine = _line < _lines.Count && _lines[_line][^5] == '━';
+        var sign = dividerLine ? "╋" : "┃";
+        var extraSpace = dividerLine ? new StyledText("━", Style.Faint).ToString() : " ";
+        WriteToBuffer($"{space}{extraSpace}{new StyledText(sign, Style.Faint)}");
         SetCursorPosition(ColumnStart(_columnIndex), _line + 1);
     }
 
@@ -146,16 +148,23 @@ public class ConsoleHelper
         WriteLine(new StyledText(text));
     }
 
-    public void HorizontalDivider(int width = 30)
+    public void HorizontalDivider()
     {
-        WriteLine(new StyledText(new string('\u2550', width), Style.Faint));
+        var width = _columns[_columnIndex].width;
+        if (width <= 0) return;
+
+        // -5 for the previous style (Faint)!
+        _lines[_line][^5] = '╋';
+        _lines[_line].Append(new StyledText("━", Style.Faint));
+        WriteLine(new StyledText($"{new string('━', width)}", Style.Faint));
     }
 
     public void Reset()
     {
+        ChangeColumn(0); // to save the _currentColumnHeights
         for (var i = 0; i < _columns.Length; i++)
         {
-            var s = new string(' ', _columns[i].width);
+            var s = new string(' ', _columns[i].width + 20);
             for (var j = _currentColumnHeights[i]; j < _previousColumnHeights[i]; j++)
             {
                 SetCursorPosition(ColumnStart(i), j);
@@ -173,7 +182,7 @@ public class ConsoleHelper
         _line = 0;
         _columnIndex = 0;
         _column = ColumnStart(_columnIndex);
-        _previousColumnHeights = _currentColumnHeights;
+        _previousColumnHeights = _currentColumnHeights.ToArray();
         _currentColumnHeights = new int[_columns.Length];
         SetCursorPosition(ColumnStart(_columnIndex), _line);
         Console.SetCursorPosition(ColumnStart(_columnIndex), _line);
@@ -208,9 +217,9 @@ public class ConsoleHelper
 
         if (_column < visibleLength - 1)
         {
-            currentLine.Remove(_column, GetVisibleLength(s));
+            currentLine.Remove(_column, s.Length);
             currentLine.Insert(_column, s);
-            _column += s.Length - GetVisibleLength(s);
+            // _column += s.Length - GetVisibleLength(s);
         }
         else
         {
@@ -218,6 +227,8 @@ public class ConsoleHelper
                 currentLine.Append(new string(' ', _column - visibleLength));
             currentLine.Append(s);
         }
+
+        _column += GetVisibleLength(s);
     }
 
     private static int GetVisibleLength(string text)

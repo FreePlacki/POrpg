@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using POrpg.Dungeon;
 using POrpg.InputHandlers;
 using POrpg.Inventory;
@@ -30,7 +29,6 @@ public class ConsoleView
 
     public void Draw()
     {
-        var sw = Stopwatch.StartNew();
         var console = ConsoleHelper.GetInstance();
 
         for (var y = 0; y < Dungeon.Height; y++)
@@ -51,6 +49,18 @@ public class ConsoleView
             console.WriteLine();
         }
 
+        console.WriteLine();
+        console.PrintNotifications();
+        console.WriteLine();
+
+        foreach (var hint in _hints.Where(h => (h.Location & UiLocation.Bottom) != 0))
+        {
+            console.WriteHint(hint);
+            console.Write(" ");
+        }
+
+        for (var i = 0; i < 5; i++) console.WriteLine();
+
         console.ChangeColumn(1);
         console.WriteLine($"{new StyledText("Turn:", Style.Underline)} {Dungeon.TurnManager.Turn}");
         console.WriteLine();
@@ -65,21 +75,6 @@ public class ConsoleView
             console.HorizontalDivider();
         if (DrawLookingAt())
             console.HorizontalDivider();
-
-        console.ChangeColumn(0);
-        console.PrintNotifications();
-        console.WriteLine();
-
-        foreach (var hint in _hints.Where(h => (h.Location & UiLocation.Bottom) != 0))
-        {
-            console.WriteHint(hint);
-            console.Write(" ");
-        }
-
-        console.WriteLine();
-
-        sw.Stop();
-        console.WriteLine(new StyledText($"Frame time: {sw.Elapsed.Milliseconds} ms", Style.Faint));
     }
 
     private void DrawStats()

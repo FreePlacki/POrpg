@@ -89,7 +89,8 @@ public class ConsoleView
     private void DrawStats()
     {
         var console = ConsoleHelper.GetInstance();
-        console.WriteLine(new StyledText("Player Stats:", Style.Underline));
+        console.WriteLine(new StyledText($"Player {new StyledText(PlayerId.ToString(), Styles.Player)} Stats:",
+            Style.Underline));
         foreach (var attribute in Player.Attributes.attributes)
         {
             console.Write($"{attribute.Key,-15} ");

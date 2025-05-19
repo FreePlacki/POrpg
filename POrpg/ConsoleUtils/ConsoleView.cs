@@ -62,7 +62,7 @@ public class ConsoleView
         for (var i = 0; i < 5; i++) console.WriteLine();
 
         console.ChangeColumn(1);
-        console.WriteLine($"{new StyledText("Turn:", Style.Underline)} {Dungeon.TurnManager.Turn}");
+        DrawTurn();
         console.WriteLine();
         DrawStats();
         console.HorizontalDivider();
@@ -75,6 +75,15 @@ public class ConsoleView
             console.HorizontalDivider();
         if (DrawLookingAt())
             console.HorizontalDivider();
+    }
+
+    private void DrawTurn()
+    {
+        var console = ConsoleHelper.GetInstance();
+        var turn = Dungeon.TurnManager.Turn;
+        var player = Dungeon.TurnManager.CurrentlyPlaying.ToString();
+        console.WriteLine(
+            $"{new StyledText("Turn:", Style.Underline)} {turn} (Player {new StyledText(player, Styles.Player)})");
     }
 
     private void DrawStats()

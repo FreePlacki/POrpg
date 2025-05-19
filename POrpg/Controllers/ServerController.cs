@@ -9,6 +9,7 @@ public class ServerController
     private readonly Dungeon.Dungeon _dungeon;
     private readonly string _instructions;
     private readonly Server _server;
+    private readonly Queue<int> _turns = [];
 
     public ServerController()
     {
@@ -28,6 +29,7 @@ public class ServerController
     private async void OnClientConnected(object? _, int id)
     {
         _dungeon.AddPlayer(id);
+        _turns.Enqueue(id);
         await _server.SendTo(id, new JoinMessage(id, _dungeon, _instructions));
         await _server.SendToAll(
             new NotificationMessage($"Player {new StyledText(id.ToString(), Styles.Player)} connected"), except: [id]);
@@ -35,8 +37,21 @@ public class ServerController
 
     private async void OnMessageReceived(object? _, (int playerId, IMessage msg) data)
     {
+        var currentTurn = _turns.First();
+        if (currentTurn != data.playerId)
+        {
+            await _server.SendTo(data.playerId,
+                new NotificationMessage(
+                    $"It's Player {new StyledText(currentTurn.ToString(), Styles.Player)}'s turn."));
+            return;
+        }
+
         var command = (data.msg as CommandMessage)!.Command;
         command.Execute(_dungeon, data.playerId);
+
+        _turns.Dequeue();
+        _turns.Enqueue(data.playerId);
+        _dungeon.TurnManager.CurrentlyPlaying = _turns.First();
 
         if (command.AdvancesTurn)
             _dungeon.NextTurn();

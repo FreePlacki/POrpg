@@ -6,6 +6,7 @@ namespace POrpg;
 public class TurnManager
 {
     public int Turn { get; private set; }
+    public int CurrentlyPlaying { get; set; }
     public List<Effect> Observers { get; }
 
     public void RegisterObserver(Effect observer) => Observers.Add(observer);
@@ -14,13 +15,15 @@ public class TurnManager
     public TurnManager()
     {
         Observers = [];
+        CurrentlyPlaying = 0;
     }
 
     [JsonConstructor]
-    public TurnManager(int turn, List<Effect> observers)
+    public TurnManager(int turn, List<Effect> observers, int currentlyPlaying)
     {
         Turn = turn;
         Observers = observers;
+        CurrentlyPlaying = currentlyPlaying;
     }
 
     public void NextTurn()

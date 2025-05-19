@@ -10,8 +10,8 @@ public class LuckPotion : Potion
 
     public override string Name => "Luck Potion";
 
-    public override void Use(Dungeon.Dungeon dungeon, Player player)
+    public override void Use(Dungeon.Dungeon dungeon, int playerId)
     {
-        _ = new LuckEffect(dungeon, player, duration: Duration);
+        dungeon.TurnManager.RegisterObserver(new LuckEffect(playerId));
     }
 }

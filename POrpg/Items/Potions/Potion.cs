@@ -13,7 +13,7 @@ public abstract class Potion : Item, IUsable
     }
 
     public override string Symbol => new StyledText(Name.First().ToString(), Styles.Potion).ToString();
-    public abstract void Use(Dungeon.Dungeon dungeon, Player player);
+    public abstract void Use(Dungeon.Dungeon dungeon, int playerId);
 
     public override string? Description => Duration != null ? $"Duration: {Duration}" : null;
 }

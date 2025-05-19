@@ -2,11 +2,13 @@ namespace POrpg.Effects;
 
 public class LuckEffect : Effect
 {
-    public LuckEffect(Dungeon.Dungeon dungeon, Player player, int? duration = 4, string name = "Luck",
-        bool isPermanent = false)
-        : base(dungeon, player, duration, name, isPermanent)
+    public LuckEffect(int playerId) : base(playerId)
     {
+        Duration = 10;
     }
 
-    public override Attributes Attributes => new(new() { { Attribute.Luck, TurnsLeft } });
+    public override Attributes Attributes => new(new() { { Attribute.Luck, Duration } });
+    public override string Name => "Luck";
+    public override int Duration { get; set; }
+    public override bool IsPermanent => false;
 }

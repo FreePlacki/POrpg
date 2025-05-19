@@ -31,18 +31,17 @@ public class Player : IDrawable
             { Attribute.Wisdom, 10 }
         });
 
-    public List<Effect> Effects { get; } = [];
+    public List<Effect> Effects { get; set; }
 
     [JsonIgnore]
     public Attributes Attributes =>
-        _attributes +
-        Inventory.TotalAttributes +
-        Effects.Aggregate(new Attributes(new()), (acc, e) => acc + e.Attributes);
+        Effects.Aggregate(_attributes + Inventory.TotalAttributes, (acc, e) => acc + e.Attributes);
 
     public Player(Position position)
     {
         Position = position;
         Inventory = new();
+        Effects = [];
     }
 
     [JsonConstructor]
@@ -65,16 +64,6 @@ public class Player : IDrawable
         var item = Inventory.RemoveAt(slot)!;
         return item;
     }
-
-    public void AddEffect(Effect effect)
-    {
-        if (effect.IsPermanent)
-            _attributes += effect.Attributes;
-        else
-            Effects.Add(effect);
-    }
-
-    public void RemoveEffect(Effect effect) => Effects.Remove(effect);
 
     public int DealDamage(int damage, int defense)
     {

@@ -10,8 +10,8 @@ public class HealthPotion : Potion
 
     public override string Name => "Health Potion";
 
-    public override void Use(Dungeon.Dungeon dungeon, Player player)
+    public override void Use(Dungeon.Dungeon dungeon, int playerId)
     {
-        _ = new HealEffect(dungeon, player);
+        dungeon.TurnManager.RegisterObserver(new HealEffect(playerId));
     }
 }

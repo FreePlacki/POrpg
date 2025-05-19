@@ -10,8 +10,8 @@ public class StrengthPotion : Potion
 
     public override string Name => "Strength Potion";
 
-    public override void Use(Dungeon.Dungeon dungeon, Player player)
+    public override void Use(Dungeon.Dungeon dungeon, int playerId)
     {
-        _ = new PowerEffect(dungeon, player, Duration);
+        dungeon.TurnManager.RegisterObserver(new PowerEffect(playerId));
     }
 }

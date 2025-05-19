@@ -183,7 +183,7 @@ public class Dungeon
         if (player.SelectedSlot == null) return null;
         if (player.Inventory[player.SelectedSlot] is not IUsable item) return null;
 
-        item.Use(this, player);
+        item.Use(this, playerId);
         var res = player.Drop(player.SelectedSlot);
         return res;
     }
@@ -216,4 +216,11 @@ public class Dungeon
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 
     private bool CanMoveTo(Position p) => IsInBounds(p) && this[p].IsPassable;
+
+    public void NextTurn()
+    {
+        TurnManager.NextTurn();
+        foreach (var (id, player) in Players)
+            player.Effects = TurnManager.Observers.Where(o => o.PlayerId == id).ToList();
+    }
 }

@@ -8,6 +8,9 @@ public class UseItemCommand : ICommand
     {
         var item = dungeon.TryUseItem(playerId);
         if (item != null)
+        {
             Description = $"Used {item.Name}";
+            dungeon.Players[playerId].SelectedSlot = null;
+        }
     }
 }

@@ -197,7 +197,7 @@ public class ConsoleView
         if (Player.Effects.Count == 0) return false;
         var console = ConsoleHelper.GetInstance();
         console.WriteLine($"{new StyledText("Effects:", Style.Underline)}");
-        foreach (var effect in Player.Effects.OrderByDescending(e => e.TurnsLeft))
+        foreach (var effect in Player.Effects.OrderByDescending(e => e.Duration))
         {
             console.WriteLine(effect.Name);
             console.WriteLine(effect.Description);

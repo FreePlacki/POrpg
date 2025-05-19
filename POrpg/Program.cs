@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using POrpg.ConsoleUtils;
 using POrpg.Controllers;
 using POrpg.Networking;
 
@@ -10,7 +11,8 @@ class Program
 
     private static bool ServerPrompt()
     {
-        Console.WriteLine("Start as (S)erver or (C)lient");
+        Console.WriteLine(
+            $"Start as {new StyledText("S", Styles.Player)}erver or {new StyledText("C", Styles.Player)}lient?");
         while (true)
         {
             var input = Console.ReadKey(true);
@@ -27,16 +29,27 @@ class Program
     private static async Task Main(string[] _)
     {
         var isServer = ServerPrompt();
-        if (isServer) _serverController = new ServerController();
+        if (isServer)
+        {
+            try
+            {
+                _serverController = new ServerController();
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(new StyledText($"Could not start the server ({e.Message}).", Style.Red));
+                return;
+            }
+        }
 
         var client = new Client();
         try
         {
             await client.Connect();
         }
-        catch (SocketException)
+        catch (SocketException e)
         {
-            Console.WriteLine("Could not connect to the server.");
+            Console.WriteLine(new StyledText($"Could not connect to the server ({e.Message}).", Style.Red));
             return;
         }
 
@@ -52,5 +65,8 @@ class Program
         Console.Clear();
 
         await clientController.MainLoop();
+
+        Console.CursorVisible = true;
+        Console.Clear();
     }
 }

@@ -14,7 +14,7 @@ public class ServerController
     {
         var director = new DungeonDirector();
         var dungeonBuilder =
-            new DungeonBuilder(InitialDungeonState.Filled, 41, 21);
+            new DungeonBuilder(InitialDungeonState.Empty, 41, 21);
         _dungeon = director.Build(dungeonBuilder);
         _instructions = director.Build(new InstructionsBuilder());
 
@@ -39,7 +39,7 @@ public class ServerController
         command.Execute(_dungeon, data.playerId);
 
         if (command.AdvancesTurn)
-            _dungeon.TurnManager.NextTurn();
+            _dungeon.NextTurn();
         if (command.Description != null)
             await _server.SendTo(data.playerId, new NotificationMessage(command.Description));
 

@@ -2,10 +2,12 @@ namespace POrpg.Effects;
 
 public class HealEffect : Effect
 {
-    public HealEffect(Dungeon.Dungeon dungeon, Player player, int? duration = null, string name = "Heal")
-        : base(dungeon, player, duration ?? 0, name, duration == null)
+    public HealEffect(int playerId) : base(playerId)
     {
     }
 
     public override Attributes Attributes => new(new() { { Attribute.Health, 5 } });
+    public override string Name => "Heal";
+    public override int Duration { get; set; } = 0;
+    public override bool IsPermanent => true;
 }

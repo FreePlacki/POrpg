@@ -215,18 +215,9 @@ public class ConsoleHelper
         var currentLine = _lines[_line];
         var visibleLength = GetVisibleLength(currentLine.ToString());
 
-        if (_column < visibleLength - 1)
-        {
-            currentLine.Remove(_column, s.Length);
-            currentLine.Insert(_column, s);
-            // _column += s.Length - GetVisibleLength(s);
-        }
-        else
-        {
-            if (visibleLength < _column)
-                currentLine.Append(new string(' ', _column - visibleLength));
-            currentLine.Append(s);
-        }
+        if (visibleLength < _column)
+            currentLine.Append(new string(' ', _column - visibleLength));
+        currentLine.Append(s);
 
         _column += GetVisibleLength(s);
     }

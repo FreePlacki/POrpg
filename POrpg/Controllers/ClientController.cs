@@ -7,9 +7,9 @@ namespace POrpg.Controllers;
 
 public class ClientController
 {
-    private ConsoleView _view;
+    private ConsoleView? _view;
     private readonly Client _client;
-    private InputHandler _inputHandler;
+    private InputHandler? _inputHandler;
 
     public ClientController(Client client)
     {
@@ -31,7 +31,7 @@ public class ClientController
 
     private async Task ViewUpdateLoop()
     {
-        while (!_view.ShouldQuit)
+        while (!_view!.ShouldQuit)
         {
             switch (await _client.Receive())
             {
@@ -51,7 +51,7 @@ public class ClientController
 
     private void DisplayView()
     {
-        _view.SetHints(_inputHandler.GetHints().ToArray());
+        _view!.SetHints(_inputHandler!.GetHints().ToArray());
         _view.Draw();
         ConsoleHelper.GetInstance().Reset();
     }
@@ -73,9 +73,9 @@ public class ClientController
             }
 
             var input = Console.ReadKey(true);
-            await ProcessInput(_inputHandler, input);
+            await ProcessInput(_inputHandler!, input);
 
-            if (_view.Player.Attributes[Attribute.Health] <= 0)
+            if (_view!.Player.Attributes[Attribute.Health] <= 0)
             {
                 console.ShowDeathScreen();
                 Console.ReadKey(true);
@@ -91,7 +91,7 @@ public class ClientController
     {
         var command = handler.HandleInput(input);
         await _client.Send(new CommandMessage(command));
-        command.Execute(_view);
-        _inputHandler = new InputHandlerBuilder().Build(_view);
+        command.Execute(_view!);
+        _inputHandler = new InputHandlerBuilder().Build(_view!);
     }
 }

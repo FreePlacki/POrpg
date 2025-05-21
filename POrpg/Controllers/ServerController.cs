@@ -10,7 +10,7 @@ public class ServerController
     private readonly string _instructions;
     private readonly Server _server;
     private readonly Queue<int> _turns = [];
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     public ServerController(int port)
     {
@@ -38,6 +38,7 @@ public class ServerController
         await _server.SendTo(id, new JoinMessage(id, _dungeon, _instructions));
         await _server.SendToAll(
             new NotificationMessage($"Player {new StyledText(id.ToString(), Styles.Player)} connected"), except: [id]);
+        await _server.SendToAll(new StateMessage(_dungeon), except: [id]);
     }
 
     private async void OnMessageReceived(object? _, (int playerId, IMessage msg) data)

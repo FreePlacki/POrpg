@@ -101,16 +101,6 @@ public class ConsoleHelper
         Console.Clear();
     }
 
-    public void ShowDeathScreen()
-    {
-        Reset();
-        Console.Clear();
-        WriteLine("You died!");
-        WriteLine();
-        WriteLine(new StyledText("Press any key to continue", Style.Faint));
-        Reset();
-    }
-
     public void Write(StyledText text)
     {
         var lines = text.ToString().Split('\n').SelectMany(l => WrapAnsiString(l).Split('\n'));

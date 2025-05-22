@@ -26,6 +26,7 @@ public class Server : IDisposable
 
     public event EventHandler<int>? ClientConnected;
     public event EventHandler<(int, IMessage)>? MessageReceived;
+    public event EventHandler<int>? ClientDisconnected;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -135,6 +136,7 @@ public class Server : IDisposable
             _clients.TryRemove(id, out _);
             await SendToAll(
                 new NotificationMessage($"Player {new StyledText(id.ToString(), Styles.Player)} disconnected."));
+            ClientDisconnected?.Invoke(this, id);
         }
     }
 

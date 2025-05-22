@@ -9,6 +9,7 @@ public class ConsoleView
 {
     public Dungeon.Dungeon Dungeon;
 
+    public bool IsPlayerDead;
     public bool IsChoosingAttack;
     public bool ShouldQuit;
     public int PlayerId { get; }

@@ -23,6 +23,7 @@ public class ServerController
         _server = new Server(port);
         _server.Start();
         _server.ClientConnected += OnClientConnected;
+        _server.ClientDisconnected += OnClientDisconnected;
         _server.MessageReceived += OnMessageReceived;
     }
 
@@ -41,10 +42,25 @@ public class ServerController
         await _server.SendToAll(new StateMessage(_dungeon), except: [id]);
     }
 
+    private async void OnClientDisconnected(object? _, int id)
+    {
+        lock (_lock)
+        {
+            _dungeon.RemovePlayer(id);
+        }
+
+        await _server.SendToAll(new StateMessage(_dungeon));
+    }
+
     private async void OnMessageReceived(object? _, (int playerId, IMessage msg) data)
     {
         var command = (data.msg as CommandMessage)!.Command;
         var currentTurn = _turns.First();
+        if (!_dungeon.Players.ContainsKey(currentTurn))
+        {
+            _turns.Dequeue();
+            currentTurn = _turns.First();
+        }
 
         if (command.AdvancesTurn && currentTurn != data.playerId)
         {
@@ -65,6 +81,16 @@ public class ServerController
                 _dungeon.TurnManager.CurrentlyPlaying = _turns.First();
                 _dungeon.NextTurn();
             }
+        }
+
+        if (_dungeon.Players[data.playerId].Attributes[Attribute.Health] <= 0)
+        {
+            await _server.SendToAll(
+                new NotificationMessage($"Player {new StyledText(data.playerId.ToString(), Styles.Player)} died"),
+                except: [data.playerId]);
+            await _server.SendTo(data.playerId, new NotificationMessage("You died!"));
+            await _server.SendTo(data.playerId, new YouDiedMessage());
+            _dungeon.RemovePlayer(data.playerId);
         }
 
         if (command.Description != null)

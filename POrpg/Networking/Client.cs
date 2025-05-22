@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
@@ -22,18 +21,21 @@ public class Client
         _stream = _client.GetStream();
     }
 
-    public async Task<IMessage> Receive()
+    public void Disconnect()
     {
-        Debug.Assert(_client != null);
-        Debug.Assert(_client.Connected);
+        _client?.Close();
+    }
+
+    public async Task<IMessage?> Receive()
+    {
+        if (_client?.Connected == false) return null;
 
         return await Server.Receive(_stream!);
     }
 
     public async Task Send(IMessage message)
     {
-        Debug.Assert(_client != null);
-        Debug.Assert(_client.Connected);
+        if (_client?.Connected == false) return;
 
         await Server.Send(_stream!, message);
     }

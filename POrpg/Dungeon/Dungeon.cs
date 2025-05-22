@@ -64,6 +64,8 @@ public class Dungeon
             pos = (rng.Next(Width), rng.Next(Height));
         Players[playerId] = new Player(pos, playerId);
     }
+    
+    public void RemovePlayer(int playerId) => Players.Remove(playerId);
 
     public bool TryMovePlayer(Position direction, int playerId)
     {

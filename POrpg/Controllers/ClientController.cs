@@ -41,9 +41,13 @@ public class ClientController
                 case NotificationMessage { Notification: var notification }:
                     ConsoleHelper.GetInstance().AddNotification(notification);
                     break;
+                case YouDiedMessage:
+                    _view.IsPlayerDead = true;
+                    break;
             }
 
-            _inputHandler = new InputHandlerBuilder().Build(_view);
+            if (!_view.IsPlayerDead)
+                _inputHandler = new InputHandlerBuilder().Build(_view);
             if (!ConsoleHelper.GetInstance().IsShowingInstructions)
                 DisplayView();
         }
@@ -75,14 +79,7 @@ public class ClientController
             var input = Console.ReadKey(true);
             await ProcessInput(_inputHandler!, input);
 
-            if (_view!.Player.Attributes[Attribute.Health] <= 0)
-            {
-                console.ShowDeathScreen();
-                Console.ReadKey(true);
-                return true;
-            }
-
-            if (_view.ShouldQuit)
+            if (_view!.ShouldQuit)
                 return false;
         }
     }
@@ -90,8 +87,11 @@ public class ClientController
     private async Task ProcessInput(InputHandler handler, ConsoleKeyInfo input)
     {
         var command = handler.HandleInput(input);
-        await _client.Send(new CommandMessage(command));
         command.Execute(_view!);
-        _inputHandler = new InputHandlerBuilder().Build(_view!);
+        if (!_view!.IsPlayerDead)
+        {
+            await _client.Send(new CommandMessage(command));
+            _inputHandler = new InputHandlerBuilder().Build(_view!);
+        }
     }
 }

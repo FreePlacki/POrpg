@@ -205,10 +205,11 @@ public class ConsoleView
 
     private bool DrawActiveEffects()
     {
-        if (Player.Effects.Count == 0) return false;
+        var effects = Player.Effects.Where(e => e.Duration > 0).OrderByDescending(e => e.Duration).ToList();
+        if (effects.Count == 0) return false;
         var console = ConsoleHelper.GetInstance();
         console.WriteLine($"{new StyledText("Effects:", Style.Underline)}");
-        foreach (var effect in Player.Effects.OrderByDescending(e => e.Duration))
+        foreach (var effect in effects)
         {
             console.WriteLine(effect.Name);
             console.WriteLine(effect.Description);

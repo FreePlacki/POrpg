@@ -8,12 +8,6 @@ using POrpg.Items.Weapons;
 
 namespace POrpg.Dungeon;
 
-public record struct Position(int X, int Y)
-{
-    public static implicit operator Position((int x, int y) p) => new() { X = p.x, Y = p.y };
-    public static Position operator +(Position a, Position b) => new(a.X + b.X, a.Y + b.Y);
-}
-
 public class Dungeon
 {
     public int Width { get; }
@@ -66,7 +60,7 @@ public class Dungeon
             pos = (rng.Next(Width), rng.Next(Height));
         Players[playerId] = new Player(pos, playerId);
     }
-    
+
     public void RemovePlayer(int playerId) => Players.Remove(playerId);
 
     public bool TryMovePlayer(Position direction, int playerId)
@@ -218,15 +212,16 @@ public class Dungeon
 
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 
-    private bool CanMoveTo(Position p) => IsInBounds(p) && this[p].IsPassable;
+    private bool CanMoveTo(Position p) =>
+        IsInBounds(p) && this[p].IsPassable && Players.Values.All(pl => pl.Position != p);
 
     private void MoveEnemy(Position enemyPosition, Decision decision)
     {
         switch (decision)
         {
-            case Stay:
+            case StayDecision:
                 return;
-            case Move {Direction: var direction}:
+            case MoveDecision { Direction: var direction }:
                 var newPos = enemyPosition + direction;
                 if (CanMoveTo(newPos))
                 {
@@ -235,11 +230,11 @@ public class Dungeon
                 }
 
                 break;
-            case Attack:
+            case AttackDecition:
                 throw new NotImplementedException();
         }
     }
-    
+
     public void NextTurn()
     {
         TurnManager.NextTurn();
@@ -254,7 +249,7 @@ public class Dungeon
                 var enemy = this[pos].Enemy;
                 if (enemy == null) continue;
 
-                var decision = enemy.Behaviour.ComputeAction(this);
+                var decision = enemy.ComputeDecision((x, y), this);
                 MoveEnemy(pos, decision);
             }
         }

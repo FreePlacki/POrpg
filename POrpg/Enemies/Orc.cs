@@ -11,7 +11,7 @@ public class Orc : Enemy
     public override int Damage => 10;
     public override int Health { get; protected set; }
     public override int Armor => 10;
-    public override IBehaviour Behaviour => new AggressiveBehaviour();
+    protected override IBehaviour Behaviour { get; } = new AggressiveBehaviour();
 
     public Orc()
     {

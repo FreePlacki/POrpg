@@ -11,7 +11,7 @@ public class Skeleton : Enemy
     public override int Damage => 5;
     public override int Health { get; protected set; }
     public override int Armor => 0;
-    public override IBehaviour Behaviour => new CalmBehaviour();
+    protected override IBehaviour Behaviour { get; } = new CalmBehaviour();
 
     public Skeleton()
     {

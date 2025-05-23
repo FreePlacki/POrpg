@@ -1,3 +1,4 @@
+using POrpg.Dungeon;
 using POrpg.Enemies.Behaviours;
 
 namespace POrpg.Enemies;
@@ -11,7 +12,7 @@ public abstract class Enemy : IDrawable
     public abstract int Damage { get; }
     public abstract int Health { get; protected set; }
     public abstract int Armor { get; }
-    public abstract IBehaviour Behaviour { get; }
+    protected abstract IBehaviour Behaviour { get; }
 
     public int DealDamage(int damage)
     {
@@ -19,4 +20,7 @@ public abstract class Enemy : IDrawable
         Health -= dmg;
         return dmg;
     }
+
+    public Decision ComputeDecision(Position position, Dungeon.Dungeon dungeon) =>
+        Behaviour.ComputeAction(position, dungeon);
 }

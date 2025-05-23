@@ -10,6 +10,7 @@ public abstract class Tile : IDrawable
     public abstract string Name { get; }
     public virtual string? Description => null;
     public abstract bool IsPassable { get; }
+    public abstract bool BlocksVision { get; }
     public Enemy? Enemy { get; set; }
 
     public virtual void Add(Item item) => throw new InvalidOperationException();
@@ -23,6 +24,7 @@ public abstract class Tile : IDrawable
 public class FloorTile : Tile
 {
     public override bool IsPassable => Enemy == null;
+    public override bool BlocksVision => false;
     public override bool HasManyItems => Items.Count > 1;
     public override Item? CurrentItem => Items.ElementAtOrDefault(CurrentItemIndex);
     public List<Item> Items { get; }
@@ -78,4 +80,5 @@ public class WallTile : Tile
     public override string Symbol => new StyledText("\u2588", Style.Faint).ToString();
     public override string Name => "Wall";
     public override bool IsPassable => false;
+    public override bool BlocksVision => true;
 }

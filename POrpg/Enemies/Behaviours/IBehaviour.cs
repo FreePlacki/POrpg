@@ -4,13 +4,13 @@ namespace POrpg.Enemies.Behaviours;
 
 public abstract record Decision;
 
-public sealed record Stay : Decision;
+public sealed record StayDecision : Decision;
 
-public sealed record Move(Position Direction) : Decision;
+public sealed record MoveDecision(Position Direction) : Decision;
 
-public sealed record Attack(Player player) : Decision;
+public sealed record AttackDecition(Player player) : Decision;
 
 public interface IBehaviour
 {
-    Decision ComputeAction(Dungeon.Dungeon dungeon);
+    Decision ComputeAction(Position position, Dungeon.Dungeon dungeon);
 }

@@ -320,3 +320,27 @@ Extend the existing console-based RPG to support networked multiplayer. All play
 2. Use `TcpListener.AcceptTcpClient()` on the server to wait for connections.  
 3. Use `TcpClient` on the client to connect to the server.  
 
+---
+
+# Stage 6 Changing the behavior of opponents
+
+## Objective of the task
+
+Implementing the logic of different behaviors of opponents.
+
+## Requirements
+
+### Changing the behavior of opponents
+
+The objective of the task is to extend the logic of opponents to their behavior. It affects how the opponent moves around the maze, and whether they attack the player.
+
+Examples of behaviors:
+- [x] calm opponent: Does not move around the maze, does not attack unprovoked.
+- [ ] aggressive opponent: If the player is near him, he moves towards him, and attacks him if he is within range.
+- [ ] skittish opponent: When the player is near him, he tries to escape from him, moving away from his current position.
+
+- [ ] Adding new behaviors, as well as changing the behavior of the opponent during the program should be easy (e.g. when the opponent's health reaches a low level, he may start to run away from the player)
+
+Each opponent should be able to show any type of behavior.
+
+To implement this task, you should use the Strategy pattern

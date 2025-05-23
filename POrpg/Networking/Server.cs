@@ -8,6 +8,7 @@ using POrpg.Commands;
 using POrpg.ConsoleUtils;
 using POrpg.Effects;
 using POrpg.Enemies;
+using POrpg.Enemies.Behaviours;
 using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Modifiers;
@@ -49,6 +50,7 @@ public class Server : IDisposable
             new PolymorphicConverterFactory<IMessage>(),
             new PolymorphicConverterFactory<InventorySlot>(),
             new PolymorphicConverterFactory<IAttackVisitor>(),
+            new PolymorphicConverterFactory<IBehaviour>(),
         }
     };
 

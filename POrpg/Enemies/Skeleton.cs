@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using POrpg.ConsoleUtils;
+using POrpg.Enemies.Behaviours;
 
 namespace POrpg.Enemies;
 
@@ -10,6 +11,7 @@ public class Skeleton : Enemy
     public override int Damage => 5;
     public override int Health { get; protected set; }
     public override int Armor => 0;
+    public override IBehaviour Behaviour => new CalmBehaviour();
 
     public Skeleton()
     {

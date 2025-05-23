@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using POrpg.ConsoleUtils;
+using POrpg.Enemies;
+using POrpg.Enemies.Behaviours;
 using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Weapons;
@@ -218,10 +220,43 @@ public class Dungeon
 
     private bool CanMoveTo(Position p) => IsInBounds(p) && this[p].IsPassable;
 
+    private void MoveEnemy(Position enemyPosition, Decision decision)
+    {
+        switch (decision)
+        {
+            case Stay:
+                return;
+            case Move {Direction: var direction}:
+                var newPos = enemyPosition + direction;
+                if (CanMoveTo(newPos))
+                {
+                    this[newPos].Enemy = this[enemyPosition].Enemy;
+                    this[enemyPosition].Enemy = null;
+                }
+
+                break;
+            case Attack:
+                throw new NotImplementedException();
+        }
+    }
+    
     public void NextTurn()
     {
         TurnManager.NextTurn();
         foreach (var (id, player) in Players)
             player.Effects = TurnManager.Observers.Where(o => o.PlayerId == id).ToList();
+
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                var pos = (x, y);
+                var enemy = this[pos].Enemy;
+                if (enemy == null) continue;
+
+                var decision = enemy.Behaviour.ComputeAction(this);
+                MoveEnemy(pos, decision);
+            }
+        }
     }
 }

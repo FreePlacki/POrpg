@@ -1,3 +1,5 @@
+using POrpg.Enemies.Behaviours;
+
 namespace POrpg.Enemies;
 
 public abstract class Enemy : IDrawable
@@ -9,6 +11,7 @@ public abstract class Enemy : IDrawable
     public abstract int Damage { get; }
     public abstract int Health { get; protected set; }
     public abstract int Armor { get; }
+    public abstract IBehaviour Behaviour { get; }
 
     public int DealDamage(int damage)
     {

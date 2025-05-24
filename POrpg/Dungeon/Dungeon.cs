@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using POrpg.ConsoleUtils;
-using POrpg.Enemies.Behaviours;
 using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Weapons;
@@ -211,32 +210,8 @@ public class Dungeon
 
     public bool IsInBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 
-    private bool CanMoveTo(Position p) =>
+    public bool CanMoveTo(Position p) =>
         IsInBounds(p) && this[p].IsPassable && Players.Values.All(pl => pl.Position != p);
-
-    private void ExecuteEnemyDecision(Position enemyPosition, Decision decision)
-    {
-        switch (decision)
-        {
-            case StayDecision:
-                return;
-            case MoveDecision { Direction: var direction }:
-                var newPos = enemyPosition + direction;
-                if (CanMoveTo(newPos))
-                {
-                    this[newPos].Enemy = this[enemyPosition].Enemy;
-                    this[enemyPosition].Enemy = null;
-                }
-
-                break;
-            case AttackDecision { PlayerId: var playerId }:
-                var player = Players[playerId];
-                var enemy = this[enemyPosition].Enemy!;
-                var damage = player.DealDamage(enemy.Damage, 0);
-                ConsoleHelper.GetInstance().AddNotification($"{enemy.Name} attacks you for {damage}");
-                break;
-        }
-    }
 
     public void NextTurn()
     {
@@ -253,7 +228,7 @@ public class Dungeon
                 if (enemy == null) continue;
 
                 var decision = enemy.ComputeDecision((x, y), this);
-                ExecuteEnemyDecision(pos, decision);
+                decision.Execute(this);
             }
         }
     }

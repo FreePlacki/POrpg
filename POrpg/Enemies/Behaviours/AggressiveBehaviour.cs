@@ -1,4 +1,5 @@
 using POrpg.Dungeon;
+using POrpg.Enemies.Decisions;
 
 namespace POrpg.Enemies.Behaviours;
 
@@ -51,7 +52,7 @@ public class AggressiveBehaviour : IBehaviour
         _lastSeenTarget = target;
 
         if (position.Distance(target.Value) == 1)
-            return new AttackDecision(dungeon.Players
+            return new AttackDecision(position, dungeon.Players
                 .Where(p => p.Value.Position == target.Value)
                 .Select(p => p.Key)
                 .First());
@@ -60,7 +61,7 @@ public class AggressiveBehaviour : IBehaviour
         var dy = target.Value.Y - position.Y;
 
         if (Math.Abs(dx) > Math.Abs(dy))
-            return new MoveDecision((dx > 0 ? 1 : -1, 0));
-        return new MoveDecision((0, dy > 0 ? 1 : -1));
+            return new MoveDecision(position, (dx > 0 ? 1 : -1, 0));
+        return new MoveDecision(position, (0, dy > 0 ? 1 : -1));
     }
 }

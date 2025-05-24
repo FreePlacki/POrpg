@@ -26,7 +26,8 @@ public class InputHandlerBuilder
         {
             new UiInputHandler(),
             new MovementInputHandler(),
-            new InventoryInputHandler()
+            new InventoryInputHandler(),
+            new RestInputHandler(),
         };
 
         if (view.CurrentItem != null)

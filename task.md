@@ -336,7 +336,7 @@ The objective of the task is to extend the logic of opponents to their behavior.
 
 Examples of behaviors:
 - [x] calm opponent: Does not move around the maze, does not attack unprovoked.
-- [ ] aggressive opponent: If the player is near him, he moves towards him, and attacks him if he is within range.
+- [x] aggressive opponent: If the player is near him, he moves towards him, and attacks him if he is within range.
 - [ ] skittish opponent: When the player is near him, he tries to escape from him, moving away from his current position.
 
 - [ ] Adding new behaviors, as well as changing the behavior of the opponent during the program should be easy (e.g. when the opponent's health reaches a low level, he may start to run away from the player)

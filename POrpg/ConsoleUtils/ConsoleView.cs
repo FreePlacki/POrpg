@@ -54,10 +54,12 @@ public class ConsoleView
         console.PrintNotifications();
         console.WriteLine();
 
+        var j = 0;
         foreach (var hint in _hints.Where(h => (h.Location & UiLocation.Bottom) != 0))
         {
             console.WriteHint(hint);
-            console.Write(" ");
+            if (++j == 3) console.WriteLine();
+            else console.Write(" ");
         }
 
         for (var i = 0; i < 5; i++) console.WriteLine();

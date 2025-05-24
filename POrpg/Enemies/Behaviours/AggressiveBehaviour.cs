@@ -5,7 +5,7 @@ namespace POrpg.Enemies.Behaviours;
 public class AggressiveBehaviour : IBehaviour
 {
     private Position? _lastSeenTarget;
-    
+
     private bool CanSee(Dungeon.Dungeon dungeon, Position from, Position to)
     {
         // Bresenham's line algorithm
@@ -49,6 +49,12 @@ public class AggressiveBehaviour : IBehaviour
         }
 
         _lastSeenTarget = target;
+
+        if (position.Distance(target.Value) == 1)
+            return new AttackDecision(dungeon.Players
+                .Where(p => p.Value.Position == target.Value)
+                .Select(p => p.Key)
+                .First());
 
         var dx = target.Value.X - position.X;
         var dy = target.Value.Y - position.Y;

@@ -8,7 +8,7 @@ public sealed record StayDecision : Decision;
 
 public sealed record MoveDecision(Position Direction) : Decision;
 
-public sealed record AttackDecition(Player player) : Decision;
+public sealed record AttackDecision(int PlayerId) : Decision;
 
 public interface IBehaviour
 {

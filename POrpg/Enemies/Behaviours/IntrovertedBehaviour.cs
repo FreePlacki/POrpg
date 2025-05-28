@@ -5,21 +5,20 @@ namespace POrpg.Enemies.Behaviours;
 
 public class IntrovertedBehaviour : IBehaviour
 {
-    private AggressiveBehaviour _aggressiveBehaviour = new();
+    private readonly AggressiveBehaviour _aggressiveBehaviour = new();
 
     public Decision ComputeAction(Position position, Dungeon.Dungeon dungeon)
     {
+        var target = dungeon.Players.Values
+            .FirstOrDefault(p => p.Position.Distance(position) == 1)
+            ?.Position;
+
+        if (target != null && target.Value.Distance(position) == 1)
+            return new MoveDecision(position, position - target.Value);
+        
         var decision = _aggressiveBehaviour.ComputeAction(position, dungeon);
         if (decision is MoveDecision moveDecision)
-        {
-            return new MoveDecision(moveDecision.Position, moveDecision.Direction switch
-            {
-                { X: 1, Y: 0 } => new Position(-1, 0),
-                { X: -1, Y: 0 } => new Position(1, 0),
-                { X: 0, Y: 1 } => new Position(0, -1),
-                { X: 0, Y: -1 } => new Position(0, 1)
-            });
-        }
+            return new MoveDecision(moveDecision.Position, -1 * moveDecision.Direction);
 
         return decision;
     }

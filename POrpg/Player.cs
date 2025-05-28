@@ -26,7 +26,7 @@ public class Player : IDrawable
         {
             { Attribute.Strength, 10 },
             { Attribute.Dexterity, 10 },
-            { Attribute.Health, 10 },
+            { Attribute.Health, 50 },
             { Attribute.Luck, 10 },
             { Attribute.Aggression, 10 },
             { Attribute.Wisdom, 10 }

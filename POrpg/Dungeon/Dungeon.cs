@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using POrpg.ConsoleUtils;
+using POrpg.Enemies.Decisions;
 using POrpg.Inventory;
 using POrpg.Items;
 using POrpg.Items.Weapons;
@@ -212,6 +213,34 @@ public class Dungeon
 
     public bool CanMoveTo(Position p) =>
         IsInBounds(p) && this[p].IsPassable && Players.Values.All(pl => pl.Position != p);
+    
+    public bool CanSee(Position from, Position to)
+    {
+        var a = new Position(from.X, from.Y);
+        var b = new Position(to.X, to.Y);
+        var d = new Position(Math.Abs(b.X - a.X), -Math.Abs(b.Y - a.Y));
+        var s = new Position(a.X < b.X ? 1 : -1, a.Y < b.Y ? 1 : -1);
+        var err = d.X + d.Y;
+        while (true)
+        {
+            if (this[a].BlocksVision) return false;
+            if (a == b) break;
+            var e2 = 2 * err;
+            if (e2 >= d.Y)
+            {
+                err += d.Y;
+                a.X += s.X;
+            }
+
+            if (e2 <= d.X)
+            {
+                err += d.X;
+                a.Y += s.Y;
+            }
+        }
+
+        return true;
+    }
 
     public void NextTurn()
     {
@@ -219,6 +248,7 @@ public class Dungeon
         foreach (var (id, player) in Players)
             player.Effects = TurnManager.Observers.Where(o => o.PlayerId == id).ToList();
 
+        var decisions = new List<Decision>();
         for (var y = 0; y < Height; y++)
         {
             for (var x = 0; x < Width; x++)
@@ -228,8 +258,10 @@ public class Dungeon
                 if (enemy == null) continue;
 
                 var decision = enemy.ComputeDecision((x, y), this);
-                decision.Execute(this);
+                decisions.Add(decision);
             }
         }
+        foreach (var decision in decisions)
+            decision.Execute(this);
     }
 }

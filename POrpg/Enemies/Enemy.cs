@@ -11,9 +11,9 @@ public abstract class Enemy : IDrawable
     public string Description => $"Damage: {Damage}\nArmor: {Armor}\nHealth: {Health}";
 
     public abstract int Damage { get; }
-    public abstract int Health { get; protected set; }
+    public abstract int Health { get; set; }
     public abstract int Armor { get; }
-    protected abstract IBehaviour Behaviour { get; }
+    public abstract IBehaviour Behaviour { get; set; }
 
     public int DealDamage(int damage)
     {

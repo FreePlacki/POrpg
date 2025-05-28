@@ -52,10 +52,14 @@ public class AggressiveBehaviour : IBehaviour
         _lastSeenTarget = target;
 
         if (position.Distance(target.Value) == 1)
-            return new AttackDecision(position, dungeon.Players
+        {
+            var playerToAttack = dungeon.Players
                 .Where(p => p.Value.Position == target.Value)
-                .Select(p => p.Key)
-                .First());
+                .Select(p => p.Key).ToArray();
+            if (playerToAttack.Length != 0)
+                return new AttackDecision(position, playerToAttack.First());
+            return new StayDecision();
+        }
 
         var dx = target.Value.X - position.X;
         var dy = target.Value.Y - position.Y;

@@ -18,7 +18,7 @@ public class IntrovertedBehaviour : IBehaviour
         
         var decision = _aggressiveBehaviour.ComputeAction(position, dungeon);
         if (decision is MoveDecision moveDecision)
-            return new MoveDecision(moveDecision.Position, -1 * moveDecision.Direction);
+            return new MoveDecision(moveDecision.Position, moveDecision.Target - 2 * (moveDecision.Target - position));
 
         return decision;
     }

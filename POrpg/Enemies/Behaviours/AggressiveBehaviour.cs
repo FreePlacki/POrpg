@@ -29,14 +29,8 @@ public class AggressiveBehaviour : IBehaviour
                 .Select(p => p.Key).ToArray();
             if (playerToAttack.Length != 0)
                 return new AttackDecision(position, playerToAttack.First());
-            return new MoveDecision(position, target.Value - position);
         }
 
-        var dx = target.Value.X - position.X;
-        var dy = target.Value.Y - position.Y;
-
-        if (Math.Abs(dx) > Math.Abs(dy))
-            return new MoveDecision(position, (dx > 0 ? 1 : -1, 0));
-        return new MoveDecision(position, (0, dy > 0 ? 1 : -1));
+        return new MoveDecision(position, target.Value);
     }
 }

@@ -5,18 +5,27 @@ namespace POrpg.Enemies.Decisions;
 public class MoveDecision : Decision
 {
     public readonly Position Position;
-    public readonly Position Direction;
+    public readonly Position Target;
 
-    public MoveDecision(Position position, Position direction)
+    public MoveDecision(Position position, Position target)
     {
         Position = position;
-        Direction = direction;
+        Target = target;
     }
 
     public override void Execute(Dungeon.Dungeon dungeon)
     {
-        var newPos = Position + Direction;
-        if (!dungeon.CanMoveTo(newPos)) return;
+        var directions = new List<Position> { (0, 1), (1, 0), (0, -1), (-1, 0) };
+        var newPos = Position;
+        foreach (var dir in directions)
+        {
+            var pos = Position + dir;
+            if (!dungeon.CanMoveTo(pos)) continue;
+            if (pos.Distance(Target) < Position.Distance(Target))
+                newPos = pos;
+        }
+
+        if (newPos == Position) return;
 
         dungeon[newPos].Enemy = dungeon[Position].Enemy;
         dungeon[Position].Enemy = null;

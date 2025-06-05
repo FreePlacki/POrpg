@@ -3,7 +3,7 @@ using POrpg.Enemies.Decisions;
 
 namespace POrpg.Enemies.Behaviours;
 
-public class AggressiveBehaviour : IBehaviour
+public class ShyBehaviour : IBehaviour
 {
     private Position? _lastSeenTarget;
 
@@ -29,15 +29,6 @@ public class AggressiveBehaviour : IBehaviour
 
         _lastSeenTarget = target;
 
-        if (position.Distance(target.Value) == 1)
-        {
-            var playerToAttack = dungeon.Players
-                .Where(p => p.Value.Position == target.Value)
-                .Select(p => p.Key).ToArray();
-            if (playerToAttack.Length != 0)
-                return new AttackDecision(position, playerToAttack.First());
-        }
-
-        return new MoveDecision(position, target.Value);
+        return new MoveDecision(position, target.Value, moveAway: true);
     }
 }

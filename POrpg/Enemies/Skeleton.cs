@@ -18,15 +18,10 @@ public class Skeleton : Enemy
         get => _health;
         set
         {
-            // if (_health >= 50 && value < 50)
-            //     Behaviour = new IntrovertedBehaviour();
-            // if (_health < 50 && value >= 50)
-            //     Behaviour = new AggressiveBehaviour();
+            var threashold = 50;
+            if (_health > threashold && value <= threashold)
+                Behaviour = new ShyBehaviour();
             _health = value;
-            if (_health >= 50 && Behaviour is IntrovertedBehaviour)
-                Behaviour = new AggressiveBehaviour();
-            else if (_health < 50 && Behaviour is AggressiveBehaviour)
-                Behaviour = new IntrovertedBehaviour();
         }
     }
     public override int Armor => 0;
